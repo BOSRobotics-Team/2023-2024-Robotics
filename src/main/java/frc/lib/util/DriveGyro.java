@@ -1,6 +1,5 @@
 package frc.lib.util;
-
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
@@ -10,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveGyro {
 
   private AHRS ahrs = null;
-  private PigeonIMU pigeon = null;
+  private Pigeon2 pigeon = null;
 
   private double simAngle = 0.0;
   private double simRate = 0.0;
@@ -27,7 +26,7 @@ public class DriveGyro {
 
   public DriveGyro(boolean sim, int pigeonID) {
     if (!sim) {
-      pigeon = new PigeonIMU(pigeonID);
+      pigeon = new Pigeon2(pigeonID);
       pigeon.configFactoryDefault();
     }
   }
