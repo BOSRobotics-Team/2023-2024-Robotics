@@ -1,5 +1,6 @@
 package frc.lib.util;
-import com.ctre.phoenix.sensors.Pigeon2;
+
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
@@ -8,28 +9,35 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveGyro {
 
-  private AHRS ahrs = null;
-  private Pigeon2 pigeon = null;
+  public static final int DRIVEGYRO_SIM = -2; 
+  public static final int DRIVEGYRO_NAVX = -1;
 
-  private double simAngle = 0.0;
+  private AHRS ahrs = null;
+  private WPI_Pigeon2 pigeon = null;
+
   private double simRate = 0.0;
   private double simHeading = 0.0;
 
-  /** Whether or not to use the NavX for driving straight */
-  private boolean overrideGyro = false;
-
-  public DriveGyro(boolean sim) {
-    if (!sim) {
+  public DriveGyro(int gyroId) {
+    if (gyroId == DRIVEGYRO_NAVX) {
       ahrs = new AHRS();
-    }
-  }
-
-  public DriveGyro(boolean sim, int pigeonID) {
-    if (!sim) {
-      pigeon = new Pigeon2(pigeonID);
+    } else if (gyroId != DRIVEGYRO_SIM) {
+      pigeon = new WPI_Pigeon2(gyroId);
       pigeon.configFactoryDefault();
     }
   }
+
+  /** Zero the robot's heading. */
+  public void reset() {
+    if (ahrs != null) {
+      ahrs.reset();
+    } 
+    if (pigeon != null) {
+      pigeon.reset();
+    }
+    simHeading = 0.0;
+  }
+
   /**
    * Set the robot's heading.
    *
@@ -37,12 +45,12 @@ public class DriveGyro {
    */
   public void setHeadingDegrees(final double heading) {
     if (ahrs != null) {
-      ahrs.setAngleAdjustment(heading + ahrs.getRotation2d().getDegrees());
-    } else if (pigeon != null) {
-      pigeon.setYaw(heading);
-    } else {
-      simHeading += heading;
+      ahrs.setAngleAdjustment(heading + ahrs.getYaw());
     }
+    if (pigeon != null) {
+      pigeon.setYaw(heading);
+    }
+    simHeading += heading;
   }
 
   /*  SimValue names  -> function
@@ -62,6 +70,8 @@ public class DriveGyro {
       int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
       SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
       angle.set(heading);
+    } else if (pigeon != null) {
+      pigeon.setYaw(heading);
     } else {
       simHeading = heading;
     }
@@ -69,9 +79,9 @@ public class DriveGyro {
 
   public double getHeadingDegrees() {
     if (ahrs != null) {
-      return ahrs.getRotation2d().getDegrees();
+      return ahrs.getAngle();
     } else if (pigeon != null) {
-      return pigeon.getYaw();
+      return pigeon.getAngle();
     }
     return simHeading;
   }
@@ -80,23 +90,9 @@ public class DriveGyro {
     if (ahrs != null) {
       return ahrs.getRotation2d();
     } else if (pigeon != null) {
-      double[] ypr = new double[3];
-      pigeon.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(ypr[0]);
+      return pigeon.getRotation2d();
     }
     return Rotation2d.fromDegrees(simHeading);
-  }
-
-  /** Zero the robot's heading. */
-  public void zeroHeading() {
-    if (ahrs != null) {
-      ahrs.reset();
-      ahrs.setAngleAdjustment(ahrs.getRotation2d().getDegrees());
-    } else if (pigeon != null) {
-      pigeon.setYaw(0);
-    } else {
-      simHeading = 0.0;
-    }
   }
 
   /**
@@ -108,44 +104,16 @@ public class DriveGyro {
     if (ahrs != null) {
       return -ahrs.getRate();
     } else if (pigeon != null) {
-      double[] xyz_dps = new double[3];
-      pigeon.getRawGyro(xyz_dps);
-      return xyz_dps[0];
+      return -pigeon.getRate();
     }
     return -simRate;
-  }
-
-  /**
-   * Get the robot's angular displacement since being turned on.
-   *
-   * @return Angular displacement in degrees.
-   */
-  public double getAngularDisplacement() {
-    if (ahrs != null) {
-      return -ahrs.getAngle();
-    } else if (pigeon != null) {
-      double[] xyz_deg = new double[3];
-      pigeon.getAccumGyro(xyz_deg);
-      return xyz_deg[0];
-    }
-    return -simAngle;
-  }
-
-  /** @return true if the NavX is currently overriden, false otherwise. */
-  public boolean getOverrideGyro() {
-    return overrideGyro;
-  }
-
-  /** @param override true to override the NavX, false to un-override it. */
-  public void setOverrideGyro(final boolean override) {
-    overrideGyro = override;
   }
 
   public void logPeriodic() {
     /* Smart dash plots */
     if (ahrs != null) {
-      //          SmartDashboard.putBoolean( "IMU_Connected",        ahrs.isConnected());
-      //          SmartDashboard.putBoolean( "IMU_IsCalibrating",    ahrs.isCalibrating());
+      SmartDashboard.putBoolean( "IMU_Connected",        ahrs.isConnected());
+      // SmartDashboard.putBoolean( "IMU_IsCalibrating",    ahrs.isCalibrating());
       SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
       SmartDashboard.putNumber("IMU_Pitch", ahrs.getPitch());
       SmartDashboard.putNumber("IMU_Roll", ahrs.getRoll());
@@ -154,7 +122,7 @@ public class DriveGyro {
       SmartDashboard.putNumber("IMU_CompassHeading", ahrs.getCompassHeading());
 
       /* Display 9-axis Heading (requires magnetometer calibration to be useful)  */
-      //          SmartDashboard.putNumber(  "IMU_FusedHeading",     ahrs.getFusedHeading());
+      SmartDashboard.putNumber("IMU_FusedHeading", ahrs.getFusedHeading());
 
       /* These functions are compatible w/the WPI Gyro Class */
       SmartDashboard.putNumber("IMU_TotalYaw", ahrs.getAngle());
@@ -215,6 +183,18 @@ public class DriveGyro {
       /* Connectivity Debugging Support                                           */
       //          SmartDashboard.putNumber(  "IMU_Update_Count",     ahrs.getUpdateCount());
       //          SmartDashboard.putNumber(  "IMU_Byte_Count",       ahrs.getByteCount());
+    }
+    else if (pigeon != null) {
+      SmartDashboard.putNumber("IMU_Yaw", pigeon.getYaw());
+      SmartDashboard.putNumber("IMU_Pitch", pigeon.getPitch());
+      SmartDashboard.putNumber("IMU_Roll", pigeon.getRoll());
+
+      /* Display tilt-corrected, Magnetometer-based heading (requires magnetometer calibration to be useful)                                   */
+      SmartDashboard.putNumber("IMU_CompassHeading", pigeon.getCompassHeading());
+
+      /* These functions are compatible w/the WPI Gyro Class */
+      SmartDashboard.putNumber("IMU_TotalYaw", pigeon.getAngle());
+      SmartDashboard.putNumber("IMU_YawRateDPS", pigeon.getRate());
     }
   }
 }
