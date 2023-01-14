@@ -22,7 +22,7 @@ public class Swerve extends SubsystemBase {
     public DriveGyro gyro;
 
     public Swerve() {
-        gyro = new DriveGyro(DriveGyro.DRIVEGYRO_NAVX);//(Constants.Swerve.pigeonID);
+        gyro = new DriveGyro(Constants.Swerve.gyroID, Constants.Swerve.gyroCANBus);
         zeroGyro();
         
         mSwerveMods = new SwerveModule[] {
@@ -94,7 +94,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getYaw() {
-        return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getHeadingDegrees()) : Rotation2d.fromDegrees(gyro.getHeadingDegrees());
+        return gyro.getHeading();
     }
 
     @Override

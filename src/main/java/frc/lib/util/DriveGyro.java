@@ -10,20 +10,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveGyro {
 
   public static final int DRIVEGYRO_SIM = -2; 
-  public static final int DRIVEGYRO_NAVX = -1;
+  public static final int DRIVEGYRO_NAVX = -1; // values from 0+ are for Pigeon CAN devices
+  public static final int DRIVEGYRO_CCW = 0; // set gyro yaw to counter-clockwise for angle direction
+  public static final int DRIVEGYRO_CW = 1; // set gyro yaw to clockwise for angle direction
 
   private AHRS ahrs = null;
   private WPI_Pigeon2 pigeon = null;
 
   private double simRate = 0.0;
   private double simHeading = 0.0;
+  private boolean ccwHeading = false;
 
-  public DriveGyro(int gyroId) {
+  public DriveGyro(int gyroId, String canBus) {
     if (gyroId == DRIVEGYRO_NAVX) {
       ahrs = new AHRS();
+      ccwHeading = false;
     } else if (gyroId != DRIVEGYRO_SIM) {
-      pigeon = new WPI_Pigeon2(gyroId);
+      pigeon = new WPI_Pigeon2(gyroId, canBus);
       pigeon.configFactoryDefault();
+      ccwHeading = true;
     }
   }
 
@@ -38,6 +43,10 @@ public class DriveGyro {
     simHeading = 0.0;
   }
 
+  public void setGyroDirection(int direction) {
+    ccwHeading = (direction == DRIVEGYRO_CCW);
+  }
+
   /**
    * Set the robot's heading.
    *
@@ -45,10 +54,10 @@ public class DriveGyro {
    */
   public void setHeadingDegrees(final double heading) {
     if (ahrs != null) {
-      ahrs.setAngleAdjustment(heading + ahrs.getYaw());
+      ahrs.setAngleAdjustment(ccwHeading ? (360.0 - heading) + ahrs.getYaw() : heading + ahrs.getYaw());
     }
     if (pigeon != null) {
-      pigeon.setYaw(heading);
+      pigeon.setYaw(ccwHeading ? heading : 360.0 - heading);
     }
     simHeading += heading;
   }
@@ -69,30 +78,25 @@ public class DriveGyro {
     if (ahrs != null) {
       int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
       SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
-      angle.set(heading);
-    } else if (pigeon != null) {
-      pigeon.setYaw(heading);
-    } else {
-      simHeading = heading;
+      angle.set(ccwHeading ? 360.0 - heading : heading);
     }
+    if (pigeon != null) {
+      pigeon.setYaw(ccwHeading ? heading : 360.0 - heading);
+    }
+    simHeading = heading;
   }
 
   public double getHeadingDegrees() {
     if (ahrs != null) {
-      return ahrs.getAngle();
+      return ccwHeading ? 360.0 - ahrs.getAngle() : ahrs.getAngle();
     } else if (pigeon != null) {
-      return pigeon.getAngle();
+      return ccwHeading ? pigeon.getAngle() : 360 - pigeon.getAngle();
     }
     return simHeading;
   }
 
   public Rotation2d getHeading() {
-    if (ahrs != null) {
-      return ahrs.getRotation2d();
-    } else if (pigeon != null) {
-      return pigeon.getRotation2d();
-    }
-    return Rotation2d.fromDegrees(simHeading);
+    return Rotation2d.fromDegrees(getHeadingDegrees());
   }
 
   /**
@@ -104,9 +108,9 @@ public class DriveGyro {
     if (ahrs != null) {
       return -ahrs.getRate();
     } else if (pigeon != null) {
-      return -pigeon.getRate();
+      return pigeon.getRate();
     }
-    return -simRate;
+    return simRate;
   }
 
   public void logPeriodic() {
@@ -184,7 +188,7 @@ public class DriveGyro {
       //          SmartDashboard.putNumber(  "IMU_Update_Count",     ahrs.getUpdateCount());
       //          SmartDashboard.putNumber(  "IMU_Byte_Count",       ahrs.getByteCount());
     }
-    else if (pigeon != null) {
+    if (pigeon != null) {
       SmartDashboard.putNumber("IMU_Yaw", pigeon.getYaw());
       SmartDashboard.putNumber("IMU_Pitch", pigeon.getPitch());
       SmartDashboard.putNumber("IMU_Roll", pigeon.getRoll());

@@ -7,11 +7,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 
-import javax.sql.PooledConnection;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
-//import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 
@@ -60,7 +57,7 @@ public class TeleopSwerve extends CommandBase {
                 updateScale = true;
             }
         }
-        scaleFactor = MathUtil.clamp(scaleFactor, 0.05, 1.0);
+        scaleFactor = MathUtil.clamp(scaleFactor, 0.1, 1.0);
 
         /* Drive */
         s_Swerve.drive(
