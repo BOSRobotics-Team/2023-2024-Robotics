@@ -2,7 +2,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -18,6 +21,8 @@ import frc.robot.subsystems.*;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  SendableChooser<Command> chooser = new SendableChooser<>();
+
   /* Controllers */
   private final Joystick driver = new Joystick(0);
 
@@ -33,6 +38,9 @@ public class RobotContainer {
   /* Subsystems */
   private final Swerve s_Swerve = new Swerve();
 
+// Camera
+  // public UsbCamera cam0;
+  // public UsbCamera cam1;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -49,6 +57,31 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+        // Add commands to Autonomous Sendable Chooser
+    chooser.setDefaultOption("Autonomous Command", new exampleAuto(s_Swerve));
+    // chooser.addOption("AutoDriveStraight Command", m_autoDriveStraightCommand);
+    // chooser.addOption("AutoDriveTurn Command", m_autoDriveTurnCommand);
+
+   // SmartDashboard Buttons
+    SmartDashboard.putData("Auto mode", chooser);
+    SmartDashboard.putData("Autonomous Command", new exampleAuto(s_Swerve));
+    // SmartDashboard.putData("Autonomous AutoDriveStraight", m_autoDriveStraightCommand);
+    // SmartDashboard.putData("Autonomous AutoDriveTurn", m_autoDriveTurnCommand);
+    // SmartDashboard.putData("CommandDriveTrain", m_cmdDriveTrainCommand);
+
+    if (RobotBase.isReal()) {
+      // cam0 = CameraServer.startAutomaticCapture(0);
+      // cam1 = CameraServer.startAutomaticCapture(1);
+
+      // cam0.setConnectVerbose(0);
+      // cam1.setConnectVerbose(0);
+    }
+  }
+
+  public void logPeriodic() {
+    // driveTrain.logPeriodic();
+    // climber.logPeriodic();
   }
 
   /**
@@ -69,6 +102,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new exampleAuto(s_Swerve);
+    return chooser.getSelected();
   }
 }
