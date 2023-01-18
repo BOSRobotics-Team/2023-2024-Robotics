@@ -47,6 +47,10 @@ public class DriveGyro {
     ccwHeading = (direction == DRIVEGYRO_CCW);
   }
 
+  public int getGyroDirection() {
+    return ccwHeading ? DRIVEGYRO_CCW : DRIVEGYRO_CW;
+  }
+
   /**
    * Set the robot's heading.
    *

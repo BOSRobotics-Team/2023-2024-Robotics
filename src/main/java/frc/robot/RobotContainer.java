@@ -1,5 +1,9 @@
 package frc.robot;
 
+import java.util.Map;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -23,13 +27,18 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
   SendableChooser<Command> chooser = new SendableChooser<>();
 
+  private final boolean useXBoxController = true;
+
   /* Controllers */
   private final Joystick driver = new Joystick(0);
 
   /* Drive Controls */
-  private final int translationAxis = XboxController.Axis.kLeftY.value;
-  private final int strafeAxis = XboxController.Axis.kLeftX.value;
-  private final int rotationAxis = XboxController.Axis.kRightX.value;
+  private int translationAxis = Joystick.AxisType.kY.value;
+  private int strafeAxis = Joystick.AxisType.kX.value;
+  private int rotationAxis = Joystick.AxisType.kTwist.value;
+
+  private double scaleFactor = 0.5;
+  private boolean updateScale = false;
 
   /* Driver Buttons */
   private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
@@ -44,16 +53,22 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-        s_Swerve.setDefaultCommand(
-            new TeleopSwerve(
-                s_Swerve, 
-                () -> driver.getRawAxis(translationAxis), 
-                () -> driver.getRawAxis(strafeAxis), 
-                () -> driver.getRawAxis(rotationAxis), 
-                () -> robotCentric.getAsBoolean(),
-                () -> driver.getPOV()
-            )
-        );
+    if (useXBoxController) {
+      translationAxis = XboxController.Axis.kLeftY.value; 
+      strafeAxis = XboxController.Axis.kLeftX.value;
+      rotationAxis = XboxController.Axis.kRightX.value;
+    }
+  
+    s_Swerve.setDefaultCommand(
+        new TeleopSwerve(
+            s_Swerve, 
+            () -> driver.getRawAxis(translationAxis), 
+            () -> driver.getRawAxis(strafeAxis), 
+            () -> driver.getRawAxis(rotationAxis), 
+            () -> robotCentric.getAsBoolean(),
+            () -> this.getScalingFactor()
+        )
+    );
 
     // Configure the button bindings
     configureButtonBindings();
@@ -63,12 +78,17 @@ public class RobotContainer {
     // chooser.addOption("AutoDriveStraight Command", m_autoDriveStraightCommand);
     // chooser.addOption("AutoDriveTurn Command", m_autoDriveTurnCommand);
 
-   // SmartDashboard Buttons
+    // SmartDashboard Buttons
     SmartDashboard.putData("Auto mode", chooser);
     SmartDashboard.putData("Autonomous Command", new exampleAuto(s_Swerve));
     // SmartDashboard.putData("Autonomous AutoDriveStraight", m_autoDriveStraightCommand);
     // SmartDashboard.putData("Autonomous AutoDriveTurn", m_autoDriveTurnCommand);
     // SmartDashboard.putData("CommandDriveTrain", m_cmdDriveTrainCommand);
+
+    for (Map.Entry<String, Trajectory> entry : Robot.trajectoryList.entrySet()) {
+      chooser.addOption(entry.getKey(), new driveToTrajectory(s_Swerve, entry.getValue()));
+      SmartDashboard.putData(entry.getKey(), new driveToTrajectory(s_Swerve, entry.getValue()));
+    }
 
     if (RobotBase.isReal()) {
       // cam0 = CameraServer.startAutomaticCapture(0);
@@ -80,8 +100,7 @@ public class RobotContainer {
   }
 
   public void logPeriodic() {
-    // driveTrain.logPeriodic();
-    // climber.logPeriodic();
+    s_Swerve.logPeriodic();
   }
 
   /**
@@ -101,7 +120,30 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
     return chooser.getSelected();
+  }
+
+  public double getScalingFactor() {
+    if (useXBoxController) {
+      int povVal = driver.getPOV();
+
+      if (updateScale && povVal == -1) {
+          updateScale = false;
+      }
+      if (!updateScale && povVal == 0) {
+        scaleFactor += 0.05;
+        System.out.println("Setting scaleFactor to " + scaleFactor);
+        updateScale = true;
+      } else if (!updateScale && povVal == 180) {
+        scaleFactor -= 0.05;
+        System.out.println("Setting scaleFactor to " + scaleFactor);
+        updateScale = true;
+      }
+    } else {
+      scaleFactor = driver.getThrottle();
+    }
+    scaleFactor = MathUtil.clamp(scaleFactor, 0.1, 1.0);
+
+    return scaleFactor;
   }
 }

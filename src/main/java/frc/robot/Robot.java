@@ -6,8 +6,11 @@ package frc.robot;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
@@ -26,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
+  public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
 
   private Command m_autonomousCommand;
 
@@ -45,12 +49,6 @@ public class Robot extends TimedRobot {
   public static final Path RESOURCES_PATH =
       RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
 
-  public static ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
-  private static final String[] trajectoryJSON = { 
-    "paths/Red1toPad1.wpilib.json", 
-    "paths/Red2toPad2.wpilib.json",
-    "paths/Red3toPad3.wpilib.json" };
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -58,11 +56,14 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     try {
-      for (String path : trajectoryJSON) {
-        trajectoryList.add(TrajectoryUtil.fromPathweaverJson(RESOURCES_PATH.resolve(path)));
+      DirectoryStream<Path> stream = Files.newDirectoryStream(RESOURCES_PATH.resolve("paths"));
+      for (Path file : stream) {
+        if (!Files.isDirectory(file)) {
+          trajectoryList.put(file.getFileName().toString().replaceFirst("[.][^.]+$", ""), TrajectoryUtil.fromPathweaverJson(file));
+        }
       }
     }  catch (IOException ex) {
-      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+      DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());
    }
 
     ctreConfigs = new CTREConfigs();

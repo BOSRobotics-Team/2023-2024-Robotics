@@ -23,6 +23,7 @@ public class Swerve extends SubsystemBase {
 
     public Swerve() {
         gyro = new DriveGyro(Constants.Swerve.gyroID, Constants.Swerve.gyroCANBus);
+        gyro.setGyroDirection(DriveGyro.DRIVEGYRO_CCW);
         zeroGyro();
         
         mSwerveMods = new SwerveModule[] {
@@ -100,6 +101,10 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic(){
         swerveOdometry.update(getYaw(), getModulePositions());  
+    }
+
+    public void logPeriodic() {
+        gyro.logPeriodic();
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
