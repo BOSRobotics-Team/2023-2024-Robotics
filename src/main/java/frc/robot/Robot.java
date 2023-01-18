@@ -4,6 +4,14 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -27,16 +35,21 @@ public class Robot extends TimedRobot {
    * The absolute filepath to the resources folder containing the config files when the robot is
    * real.
    */
-  public static final String RESOURCES_PATH_REAL =
-      Filesystem.getDeployDirectory().getAbsolutePath();
+  public static final Path RESOURCES_PATH_REAL = Filesystem.getDeployDirectory().toPath();
   /**
    * The relative filepath to the resources folder containing the config files when the robot is
    * simulated.
    */
-  public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
+  public static final Path RESOURCES_PATH_SIMULATED = new File("./src/main/deploy/").toPath();
   /** The filepath to the resources folder containing the config files. */
-  public static final String RESOURCES_PATH =
+  public static final Path RESOURCES_PATH =
       RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
+
+  public static ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
+  private static final String[] trajectoryJSON = { 
+    "paths/Red1toPad1.wpilib.json", 
+    "paths/Red2toPad2.wpilib.json",
+    "paths/Red3toPad3.wpilib.json" };
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -44,6 +57,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    try {
+      for (String path : trajectoryJSON) {
+        trajectoryList.add(TrajectoryUtil.fromPathweaverJson(RESOURCES_PATH.resolve(path)));
+      }
+    }  catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+   }
+
     ctreConfigs = new CTREConfigs();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
