@@ -2,20 +2,21 @@ package frc.robot;
 
 import java.util.Map;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.autos.*;
 import frc.robot.commands.*;
+import frc.robot.operator_interface.*;
 import frc.robot.subsystems.*;
 
 /**
@@ -27,80 +28,69 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
   SendableChooser<Command> chooser = new SendableChooser<>();
 
-  private final boolean useXBoxController = true;
-
-  /* Controllers */
-  private final Joystick driver = new Joystick(0);
-
-  /* Drive Controls */
-  private int translationAxis = Joystick.AxisType.kY.value;
-  private int strafeAxis = Joystick.AxisType.kX.value;
-  private int rotationAxis = Joystick.AxisType.kTwist.value;
-
-  private double scaleFactor = 0.5;
-  private boolean updateScale = false;
-
-  /* Driver Buttons */
-  private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-  private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+  /* Operator Interface */
+  private OperatorInterface oi = new OperatorInterface() {};
 
   /* Subsystems */
-  private final Swerve s_Swerve = new Swerve();
+  private final SwerveDriveTrain driveTrain = new SwerveDriveTrain();
 
-// Camera
+  /* Cameras */
   // public UsbCamera cam0;
   // public UsbCamera cam1;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if (useXBoxController) {
-      translationAxis = XboxController.Axis.kLeftY.value; 
-      strafeAxis = XboxController.Axis.kLeftX.value;
-      rotationAxis = XboxController.Axis.kRightX.value;
-    }
-  
-    s_Swerve.setDefaultCommand(
-        new TeleopSwerve(
-            s_Swerve, 
-            () -> driver.getRawAxis(translationAxis), 
-            () -> driver.getRawAxis(strafeAxis), 
-            () -> driver.getRawAxis(rotationAxis), 
-            () -> robotCentric.getAsBoolean(),
-            () -> this.getScalingFactor()
-        )
-    );
-
-    // Configure the button bindings
-    configureButtonBindings();
-
-        // Add commands to Autonomous Sendable Chooser
-    chooser.setDefaultOption("Autonomous Command", new exampleAuto(s_Swerve));
-    // chooser.addOption("AutoDriveStraight Command", m_autoDriveStraightCommand);
-    // chooser.addOption("AutoDriveTurn Command", m_autoDriveTurnCommand);
-
-    // SmartDashboard Buttons
-    SmartDashboard.putData("Auto mode", chooser);
-    SmartDashboard.putData("Autonomous Command", new exampleAuto(s_Swerve));
-    // SmartDashboard.putData("Autonomous AutoDriveStraight", m_autoDriveStraightCommand);
-    // SmartDashboard.putData("Autonomous AutoDriveTurn", m_autoDriveTurnCommand);
-    // SmartDashboard.putData("CommandDriveTrain", m_cmdDriveTrainCommand);
-
-    for (Map.Entry<String, Trajectory> entry : Robot.trajectoryList.entrySet()) {
-      chooser.addOption(entry.getKey(), new driveToTrajectory(s_Swerve, entry.getValue()));
-      SmartDashboard.putData(entry.getKey(), new driveToTrajectory(s_Swerve, entry.getValue()));
-    }
-
-    if (RobotBase.isReal()) {
+   if (RobotBase.isReal()) {
       // cam0 = CameraServer.startAutomaticCapture(0);
       // cam1 = CameraServer.startAutomaticCapture(1);
 
       // cam0.setConnectVerbose(0);
       // cam1.setConnectVerbose(0);
     }
+
+    updateOI();
+
+    configureAutoCommands();
   }
 
   public void logPeriodic() {
-    s_Swerve.logPeriodic();
+    driveTrain.logPeriodic();
+  }
+
+  /**
+   * This method scans for any changes to the connected joystick. If anything changed, it creates
+   * new OI objects and binds all of the buttons to commands.
+   */
+  public void updateOI() {
+    if (!OISelector.didJoysticksChange()) {
+      return;
+    }
+
+    CommandScheduler.getInstance().getActiveButtonLoop().clear();
+    oi = OISelector.findOperatorInterface();
+
+    /*
+     * Set up the default command for the drivetrain. The joysticks' values map to percentage of the
+     * maximum velocities. The velocities may be specified from either the robot's frame of
+     * reference or the field's frame of reference. In the robot's frame of reference, the positive
+     * x direction is forward; the positive y direction, left; position rotation, CCW. In the field
+     * frame of reference, the origin of the field to the lower left corner (i.e., the corner of the
+     * field to the driver's right). Zero degrees is away from the driver and increases in the CCW
+     * direction. This is why the left joystick's y axis specifies the velocity in the x direction
+     * and the left joystick's x axis specifies the velocity in the y direction.
+     */
+    driveTrain.setDefaultCommand(
+        new TeleopSwerve(
+            driveTrain, 
+            oi::getTranslateX, 
+            oi::getTranslateY, 
+            oi::getRotate, 
+            oi::getRobotRelative,
+            oi::getDriveScaling
+        )
+    );
+
+    configureButtonBindings();
   }
 
   /**
@@ -110,8 +100,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    /* Driver Buttons */
-    zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+    // reset gyro to 0 degrees
+    oi.getResetGyroButton().onTrue(Commands.runOnce(driveTrain::zeroGyro, driveTrain));
   }
 
   /**
@@ -123,27 +113,28 @@ public class RobotContainer {
     return chooser.getSelected();
   }
 
-  public double getScalingFactor() {
-    if (useXBoxController) {
-      int povVal = driver.getPOV();
+  /** Use this method to define your commands for autonomous mode. */
+  private void configureAutoCommands() {
 
-      if (updateScale && povVal == -1) {
-          updateScale = false;
-      }
-      if (!updateScale && povVal == 0) {
-        scaleFactor += 0.05;
-        System.out.println("Setting scaleFactor to " + scaleFactor);
-        updateScale = true;
-      } else if (!updateScale && povVal == 180) {
-        scaleFactor -= 0.05;
-        System.out.println("Setting scaleFactor to " + scaleFactor);
-        updateScale = true;
-      }
-    } else {
-      scaleFactor = driver.getThrottle();
+    // Add commands to Autonomous Sendable Chooser
+    chooser.setDefaultOption("Do Nothing", new InstantCommand());
+    chooser.setDefaultOption("Autonomous Command", new exampleAuto(driveTrain));
+    
+    // chooser.addOption("AutoDriveStraight Command", m_autoDriveStraightCommand);
+    // chooser.addOption("AutoDriveTurn Command", m_autoDriveTurnCommand);
+
+    // SmartDashboard Buttons
+    SmartDashboard.putData("Auto mode", chooser);
+    SmartDashboard.putData("Autonomous Command", new exampleAuto(driveTrain));
+    // SmartDashboard.putData("Autonomous AutoDriveStraight", m_autoDriveStraightCommand);
+    // SmartDashboard.putData("Autonomous AutoDriveTurn", m_autoDriveTurnCommand);
+    // SmartDashboard.putData("CommandDriveTrain", m_cmdDriveTrainCommand);
+
+    for (Map.Entry<String, Trajectory> entry : Robot.trajectoryList.entrySet()) {
+      chooser.addOption(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
+      SmartDashboard.putData(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
     }
-    scaleFactor = MathUtil.clamp(scaleFactor, 0.1, 1.0);
 
-    return scaleFactor;
+    Shuffleboard.getTab("MAIN").add(chooser);
   }
 }

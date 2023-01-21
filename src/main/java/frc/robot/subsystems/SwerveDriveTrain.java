@@ -1,7 +1,8 @@
 package frc.robot.subsystems;
 
 import frc.lib.util.DriveGyro;
-import frc.robot.SwerveModule;
+import frc.lib.util.SwerveModule;
+import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -13,25 +14,62 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Swerve extends SubsystemBase {
+public class SwerveDriveTrain extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public DriveGyro gyro;
 
-    public Swerve() {
-        gyro = new DriveGyro(Constants.Swerve.gyroID, Constants.Swerve.gyroCANBus);
-        gyro.setGyroDirection(DriveGyro.DRIVEGYRO_CCW);
+    /* Swerve Kinematics 
+     * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
+    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
+        new Translation2d(Constants.wheelBase / 2.0, Constants.trackWidth / 2.0),
+        new Translation2d(Constants.wheelBase / 2.0, -Constants.trackWidth / 2.0),
+        new Translation2d(-Constants.wheelBase / 2.0, Constants.trackWidth / 2.0),
+        new Translation2d(-Constants.wheelBase / 2.0, -Constants.trackWidth / 2.0));
+
+    public static final TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
+        Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+        Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+            .setKinematics(swerveKinematics);
+
+        /* Constraint for the motion profilied robot angle controller */
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+        new TrapezoidProfile.Constraints(
+            Constants.AutoConstants.kMaxAngularSpeedRadiansPerSecond, 
+            Constants.AutoConstants.kMaxAngularSpeedRadiansPerSecondSquared);
+
+    public SwerveDriveTrain() {
+        gyro = new DriveGyro(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+        gyro.setGyroDirection(Constants.GYRO_DIRECTION);
         zeroGyro();
         
         mSwerveMods = new SwerveModule[] {
-            new SwerveModule(0, Constants.Swerve.Mod0.constants),
-            new SwerveModule(1, Constants.Swerve.Mod1.constants),
-            new SwerveModule(2, Constants.Swerve.Mod2.constants),
-            new SwerveModule(3, Constants.Swerve.Mod3.constants)
+            new SwerveModule(0, new SwerveModuleConstants(Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR, 
+                                                                        Constants.FRONT_LEFT_MODULE_STEER_MOTOR, 
+                                                                        Constants.FRONT_LEFT_MODULE_STEER_ENCODER, 
+                                                                        Constants.SWERVE_CAN_BUS,
+                                                                        Constants.FRONT_LEFT_MODULE_STEER_OFFSET)),
+            new SwerveModule(1, new SwerveModuleConstants(Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR, 
+                                                                        Constants.FRONT_RIGHT_MODULE_STEER_MOTOR, 
+                                                                        Constants.FRONT_RIGHT_MODULE_STEER_ENCODER, 
+                                                                        Constants.SWERVE_CAN_BUS,
+                                                                        Constants.FRONT_RIGHT_MODULE_STEER_OFFSET)),
+            new SwerveModule(2, new SwerveModuleConstants(Constants.BACK_LEFT_MODULE_DRIVE_MOTOR, 
+                                                                        Constants.BACK_LEFT_MODULE_STEER_MOTOR, 
+                                                                        Constants.BACK_LEFT_MODULE_STEER_ENCODER, 
+                                                                        Constants.SWERVE_CAN_BUS,
+                                                                        Constants.BACK_LEFT_MODULE_STEER_OFFSET)),
+            new SwerveModule(3, new SwerveModuleConstants(Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR, 
+                                                                        Constants.BACK_RIGHT_MODULE_STEER_MOTOR, 
+                                                                        Constants.BACK_RIGHT_MODULE_STEER_ENCODER, 
+                                                                        Constants.SWERVE_CAN_BUS,
+                                                                        Constants.BACK_RIGHT_MODULE_STEER_OFFSET)),
         };
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
@@ -40,12 +78,12 @@ public class Swerve extends SubsystemBase {
         Timer.delay(1.0);
         resetModulesToAbsolute();
 
-        swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions());
+        swerveOdometry = new SwerveDriveOdometry(SwerveDriveTrain.swerveKinematics, getYaw(), getModulePositions());
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
-            Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+            SwerveDriveTrain.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                     translation.getX(), 
                                     translation.getY(), 

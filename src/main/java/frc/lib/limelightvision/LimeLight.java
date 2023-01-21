@@ -1,8 +1,8 @@
-package frc.lib.limelightvision.limelight.frc;
+package frc.lib.limelightvision;
 
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Notifier;
-import frc.lib.limelightvision.limelight.frc.ControlMode.*;
+import frc.lib.limelightvision.ControlMode.*;
 
 /**
  * Lime Light Class was started by Corey Applegate of Team 3244 Granite City Gearheads. We Hope you

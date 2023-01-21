@@ -1,4 +1,4 @@
-package frc.lib.limelightvision.limelight.frc;
+package frc.lib.limelightvision;
 
 import java.util.HashMap;
 import java.util.Map;
