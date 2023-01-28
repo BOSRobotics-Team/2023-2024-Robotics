@@ -43,7 +43,7 @@ public class OISelector {
     Integer xbox1 = null;
 
     for (int port = 0; port < DriverStation.kJoystickPorts; port++) {
-      if (DriverStation.getJoystickName(port).toLowerCase().contains("xbox")) {
+      if (DriverStation.getJoystickIsXbox(port)) {
         if (xbox0 == null) {
           xbox0 = port;
         } else if (xbox1 == null) {

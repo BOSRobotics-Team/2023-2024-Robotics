@@ -55,7 +55,10 @@ public class RobotContainer {
     configureAutoCommands();
   }
 
+
   public void logPeriodic() {
+    updateOI();
+
     driveTrain.logPeriodic();
     arm.logPeriodic();
   }
@@ -95,6 +98,7 @@ public class RobotContainer {
     arm.setDefaultCommand(
       new TeleopArm(arm, oi::getArmLift, oi::getArmExtend)
     );
+
     configureButtonBindings();
   }
 
@@ -108,13 +112,12 @@ public class RobotContainer {
     // reset gyro to 0 degrees
     oi.getResetGyroButton().onTrue(Commands.runOnce(driveTrain::zeroGyro, driveTrain));
     // Robot relative navigation
-    oi.getRobotRelative().onTrue(Commands.runOnce(driveTrain::enableFieldRelative, driveTrain));
-    oi.getRobotRelative().onFalse(Commands.runOnce(driveTrain::disableFieldRelative, driveTrain));
+    oi.getRobotRelative().onTrue(Commands.runOnce(driveTrain::disableFieldRelative, driveTrain));
+    oi.getRobotRelative().onFalse(Commands.runOnce(driveTrain::enableFieldRelative, driveTrain));
 
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance, driveTrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance, driveTrain));
-
   }
 
   /**

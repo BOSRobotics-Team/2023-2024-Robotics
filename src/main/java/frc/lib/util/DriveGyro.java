@@ -125,7 +125,7 @@ public class DriveGyro {
     if (ahrs != null) {
       heading = ccwHeading ? 360.0 - ahrs.getAngle() : ahrs.getAngle();
     } else if (pigeon != null) {
-      heading = ccwHeading ? pigeon.getAngle() : 360 - pigeon.getAngle();
+      heading = ccwHeading ? 360 - pigeon.getAngle() : pigeon.getAngle();
     }
     return heading + headingOffset;
   }
