@@ -16,18 +16,18 @@ public class SwerveModuleConstants {
      * @param canCoderID
      * @param angleOffset
      */
-    public SwerveModuleConstants(int driveMotorID, int angleMotorID, int canCoderID, Rotation2d angleOffset) {
-        this.driveMotorID = driveMotorID;
-        this.angleMotorID = angleMotorID;
-        this.cancoderID = canCoderID;
+    public SwerveModuleConstants(int driveMotorID, int angleMotorID, int canCoderID, double angleOffset) {
         this.canBus = "";
-        this.angleOffset = angleOffset;
-    }
-    public SwerveModuleConstants(int driveMotorID, int angleMotorID, int canCoderID, String canBus, Rotation2d angleOffset) {
         this.driveMotorID = driveMotorID;
         this.angleMotorID = angleMotorID;
         this.cancoderID = canCoderID;
+        this.angleOffset = Rotation2d.fromDegrees(angleOffset);
+    }
+    public SwerveModuleConstants(String canBus, int driveMotorID, int angleMotorID, int canCoderID, double angleOffset) {
         this.canBus = canBus;
-        this.angleOffset = angleOffset;
+        this.driveMotorID = driveMotorID;
+        this.angleMotorID = angleMotorID;
+        this.cancoderID = canCoderID;
+        this.angleOffset = Rotation2d.fromDegrees(angleOffset);
     }
 }

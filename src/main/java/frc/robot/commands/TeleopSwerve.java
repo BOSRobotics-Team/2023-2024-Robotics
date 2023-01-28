@@ -1,9 +1,8 @@
 package frc.robot.commands;
 
-import frc.robot.Constants;
-import frc.robot.subsystems.Swerve;
+import frc.robot.RobotPreferences;
+import frc.robot.subsystems.SwerveDriveTrain;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -12,36 +11,34 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 
 public class TeleopSwerve extends CommandBase {
-    private Swerve s_Swerve;
+    private SwerveDriveTrain driveTrain;
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
-    private BooleanSupplier robotCentricSup;
     private DoubleSupplier scaleFactorSup;
 
-    public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, DoubleSupplier scaleFactorSup ) {
-        this.s_Swerve = s_Swerve;
-        addRequirements(s_Swerve);
+    public TeleopSwerve(SwerveDriveTrain driveTrain, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, DoubleSupplier scaleFactorSup ) {
+        this.driveTrain = driveTrain;
+        addRequirements(driveTrain);
 
         this.translationSup = translationSup;
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
-        this.robotCentricSup = robotCentricSup;
         this.scaleFactorSup = scaleFactorSup;
     }
 
     @Override
     public void execute() {
         /* Get Values, Deadband*/
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
-        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+        double deadBand = RobotPreferences.stickDeadband();
+        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), deadBand);
+        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), deadBand);
+        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(),deadBand);
 
         /* Drive */
-        s_Swerve.drive(
-            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed * scaleFactorSup.getAsDouble()), 
-            rotationVal * Constants.Swerve.maxAngularVelocity, 
-            !robotCentricSup.getAsBoolean(), 
+        driveTrain.drive(
+            new Translation2d(translationVal, strafeVal).times(RobotPreferences.Swerve.maxSpeed() * scaleFactorSup.getAsDouble()), 
+            rotationVal * RobotPreferences.Swerve.maxAngularVelocity(), 
             true
         );
     }

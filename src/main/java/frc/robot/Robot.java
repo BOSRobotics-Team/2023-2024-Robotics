@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static CTREConfigs ctreConfigs;
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
 
   private Command m_autonomousCommand;
@@ -66,7 +65,6 @@ public class Robot extends TimedRobot {
       DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());
    }
 
-    ctreConfigs = new CTREConfigs();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();

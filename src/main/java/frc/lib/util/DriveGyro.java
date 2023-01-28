@@ -1,5 +1,6 @@
 package frc.lib.util;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.SimDouble;
@@ -20,6 +21,7 @@ public class DriveGyro {
   private double simRate = 0.0;
   private double simHeading = 0.0;
   private boolean ccwHeading = false;
+  private double headingOffset = 0.0;
 
   public DriveGyro(int gyroId, String canBus) {
     if (gyroId == DRIVEGYRO_NAVX) {
@@ -30,6 +32,14 @@ public class DriveGyro {
       pigeon.configFactoryDefault();
       ccwHeading = true;
     }
+    simHeading = 0.0;
+    simRate = 0.0;
+    headingOffset = 0.0;
+  }
+
+  public boolean isConnected() {
+    return (((ahrs != null) && ahrs.isConnected()) || 
+            ((pigeon != null) && pigeon.getLastError().equals(ErrorCode.OK)));
   }
 
   /** Zero the robot's heading. */
@@ -41,6 +51,8 @@ public class DriveGyro {
       pigeon.reset();
     }
     simHeading = 0.0;
+    simRate = 0.0;
+    headingOffset = 0.0;
   }
 
   public void setGyroDirection(int direction) {
@@ -49,6 +61,24 @@ public class DriveGyro {
 
   public int getGyroDirection() {
     return ccwHeading ? DRIVEGYRO_CCW : DRIVEGYRO_CW;
+  }
+
+  /**
+   * Set the robot's heading offset.
+   *
+   * @param offsetDegrees The offset to set to, in degrees on [-180, 180].
+   */
+  public void setHeadingOffset(final double offsetDegrees) {
+    headingOffset = offsetDegrees;
+  }
+
+  /**
+   * Get the robot's heading offset.
+   *
+   * @return The offset to set to, in degrees on [-180, 180].
+   */
+  public double getHeadingOffset() {
+    return headingOffset;
   }
 
   /**
@@ -91,12 +121,13 @@ public class DriveGyro {
   }
 
   public double getHeadingDegrees() {
+    double heading = simHeading;
     if (ahrs != null) {
-      return ccwHeading ? 360.0 - ahrs.getAngle() : ahrs.getAngle();
+      heading = ccwHeading ? 360.0 - ahrs.getAngle() : ahrs.getAngle();
     } else if (pigeon != null) {
-      return ccwHeading ? pigeon.getAngle() : 360 - pigeon.getAngle();
+      heading = ccwHeading ? pigeon.getAngle() : 360 - pigeon.getAngle();
     }
-    return simHeading;
+    return heading + headingOffset;
   }
 
   public Rotation2d getHeading() {
