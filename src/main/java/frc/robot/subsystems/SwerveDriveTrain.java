@@ -5,7 +5,7 @@ import frc.lib.util.RobotOdometry;
 import frc.lib.util.SwerveModule;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
-
+import frc.robot.RobotPreferences;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -55,30 +55,34 @@ public class SwerveDriveTrain extends SubsystemBase {
     /* Swerve Kinematics 
      * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-        new Translation2d(Constants.wheelBase / 2.0, Constants.trackWidth / 2.0),
-        new Translation2d(Constants.wheelBase / 2.0, -Constants.trackWidth / 2.0),
-        new Translation2d(-Constants.wheelBase / 2.0, Constants.trackWidth / 2.0),
-        new Translation2d(-Constants.wheelBase / 2.0, -Constants.trackWidth / 2.0));
+        new Translation2d(RobotPreferences.wheelBase() / 2.0, RobotPreferences.trackWidth() / 2.0),
+        new Translation2d(RobotPreferences.wheelBase() / 2.0, -RobotPreferences.trackWidth() / 2.0),
+        new Translation2d(-RobotPreferences.wheelBase() / 2.0, RobotPreferences.trackWidth() / 2.0),
+        new Translation2d(-RobotPreferences.wheelBase() / 2.0, -RobotPreferences.trackWidth() / 2.0));
 
     public static final TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-        Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-        Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        RobotPreferences.AutoConstants.maxSpeedMetersPerSecond(),
+        RobotPreferences.AutoConstants.maxAccelerationMetersPerSecondSquared())
             .setKinematics(swerveKinematics);
 
     /* Constraint for the motion profilied robot angle controller */
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
         new TrapezoidProfile.Constraints(
-            Constants.AutoConstants.kMaxAngularSpeedRadiansPerSecond, 
-            Constants.AutoConstants.kMaxAngularSpeedRadiansPerSecondSquared);
+            RobotPreferences.AutoConstants.maxAngularSpeedRadiansPerSecond(), 
+            RobotPreferences.AutoConstants.maxAngularSpeedRadiansPerSecondSquared());
 
     private final PIDController autoXController =
-        new PIDController(Constants.AutoConstants.kPXController, Constants.AutoConstants.kIXController, Constants.AutoConstants.kDXController);
+        new PIDController(RobotPreferences.AutoConstants.pXController(), 
+            RobotPreferences.AutoConstants.iXController(), 
+            RobotPreferences.AutoConstants.dXController());
     private final PIDController autoYController =
-        new PIDController(Constants.AutoConstants.kPYController, Constants.AutoConstants.kIYController, Constants.AutoConstants.kDYController);
+        new PIDController(RobotPreferences.AutoConstants.pYController(), 
+            RobotPreferences.AutoConstants.iYController(), 
+            RobotPreferences.AutoConstants.dYController());
     private final ProfiledPIDController autoThetaController =
-        new ProfiledPIDController(Constants.AutoConstants.kPThetaController, 
-            Constants.AutoConstants.kIThetaController, 
-            Constants.AutoConstants.kDThetaController,
+        new ProfiledPIDController(RobotPreferences.AutoConstants.pThetaController(), 
+            RobotPreferences.AutoConstants.iThetaController(), 
+            RobotPreferences.AutoConstants.dThetaController(),
             SwerveDriveTrain.kThetaControllerConstraints);
       
     public SwerveDriveTrain(DriveGyro gyro) {
@@ -97,26 +101,26 @@ public class SwerveDriveTrain extends SubsystemBase {
         this.centerGravity = new Translation2d();
         
         this.swerveModules = new SwerveModule[] {
-            new SwerveModule(0, new SwerveModuleConstants(Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR, 
-                                                                        Constants.FRONT_LEFT_MODULE_STEER_MOTOR, 
-                                                                        Constants.FRONT_LEFT_MODULE_STEER_ENCODER, 
-                                                                        Constants.SWERVE_CAN_BUS,
-                                                                        Constants.FRONT_LEFT_MODULE_STEER_OFFSET)),
-            new SwerveModule(1, new SwerveModuleConstants(Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR, 
-                                                                        Constants.FRONT_RIGHT_MODULE_STEER_MOTOR, 
-                                                                        Constants.FRONT_RIGHT_MODULE_STEER_ENCODER, 
-                                                                        Constants.SWERVE_CAN_BUS,
-                                                                        Constants.FRONT_RIGHT_MODULE_STEER_OFFSET)),
-            new SwerveModule(2, new SwerveModuleConstants(Constants.BACK_LEFT_MODULE_DRIVE_MOTOR, 
-                                                                        Constants.BACK_LEFT_MODULE_STEER_MOTOR, 
-                                                                        Constants.BACK_LEFT_MODULE_STEER_ENCODER, 
-                                                                        Constants.SWERVE_CAN_BUS,
-                                                                        Constants.BACK_LEFT_MODULE_STEER_OFFSET)),
-            new SwerveModule(3, new SwerveModuleConstants(Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR, 
-                                                                        Constants.BACK_RIGHT_MODULE_STEER_MOTOR, 
-                                                                        Constants.BACK_RIGHT_MODULE_STEER_ENCODER, 
-                                                                        Constants.SWERVE_CAN_BUS,
-                                                                        Constants.BACK_RIGHT_MODULE_STEER_OFFSET)),
+            new SwerveModule(Constants.FRONT_LEFT_MODULE, new SwerveModuleConstants(Constants.SWERVE_CAN_BUS,
+                                                                        Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID, 
+                                                                        Constants.FRONT_LEFT_MODULE_ANGLE_MOTOR_ID, 
+                                                                        Constants.FRONT_LEFT_MODULE_ANGLE_ENCODER_ID, 
+                                                                        RobotPreferences.frontLeftModule_AngleOffset())),
+            new SwerveModule(Constants.FRONT_RIGHT_MODULE, new SwerveModuleConstants(Constants.SWERVE_CAN_BUS,
+                                                                        Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID, 
+                                                                        Constants.FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID, 
+                                                                        Constants.FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID, 
+                                                                        RobotPreferences.frontRightModule_AngleOffset())),
+            new SwerveModule(Constants.BACK_LEFT_MODULE, new SwerveModuleConstants(Constants.SWERVE_CAN_BUS,
+                                                                        Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID, 
+                                                                        Constants.BACK_LEFT_MODULE_ANGLE_MOTOR_ID, 
+                                                                        Constants.BACK_LEFT_MODULE_ANGLE_ENCODER_ID, 
+                                                                        RobotPreferences.backLeftModule_AngleOffset())),
+            new SwerveModule(Constants.BACK_RIGHT_MODULE, new SwerveModuleConstants(Constants.SWERVE_CAN_BUS,
+                                                                        Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID, 
+                                                                        Constants.BACK_RIGHT_MODULE_ANGLE_MOTOR_ID, 
+                                                                        Constants.BACK_RIGHT_MODULE_ANGLE_ENCODER_ID, 
+                                                                        RobotPreferences.backRightModule_AngleOffset())),
         };
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
@@ -197,16 +201,16 @@ public class SwerveDriveTrain extends SubsystemBase {
         this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         SwerveModuleState[] states = swerveKinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
 
-        states[0].angle = new Rotation2d(Math.PI / 2 - Math.atan(Constants.trackWidth / Constants.wheelBase));
-        states[1].angle = new Rotation2d(Math.PI / 2 + Math.atan(Constants.trackWidth / Constants.wheelBase));
-        states[2].angle = new Rotation2d(Math.PI / 2 + Math.atan(Constants.trackWidth / Constants.wheelBase));
-        states[3].angle = new Rotation2d(3.0 / 2.0 * Math.PI - Math.atan(Constants.trackWidth / Constants.wheelBase));
+        states[0].angle = new Rotation2d(Math.PI / 2 - Math.atan(RobotPreferences.trackWidth() / RobotPreferences.wheelBase()));
+        states[1].angle = new Rotation2d(Math.PI / 2 + Math.atan(RobotPreferences.trackWidth() / RobotPreferences.wheelBase()));
+        states[2].angle = new Rotation2d(Math.PI / 2 + Math.atan(RobotPreferences.trackWidth() / RobotPreferences.wheelBase()));
+        states[3].angle = new Rotation2d(3.0 / 2.0 * Math.PI - Math.atan(RobotPreferences.trackWidth() / RobotPreferences.wheelBase()));
         setModuleStates(states, true);
     }
     
     /* Used by SwerveControllerCommand */
     public void setModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, RobotPreferences.Swerve.maxSpeed());
         for(SwerveModule mod : this.swerveModules){
             mod.setDesiredState(desiredStates[mod.moduleNumber], isOpenLoop);
         }
@@ -311,7 +315,7 @@ public class SwerveDriveTrain extends SubsystemBase {
         } else {
             boolean stillMoving = false;
             for (SwerveModule mod : swerveModules) {
-                if (Math.abs(mod.getState().speedMetersPerSecond) > Constants.Swerve.maxCoastVelocity_MPS) {
+                if (Math.abs(mod.getState().speedMetersPerSecond) > RobotPreferences.Swerve.maxCoastVelocity_MPS()) {
                     stillMoving = true;
                 }
             }

@@ -36,4 +36,12 @@ public interface OperatorInterface {
   public default Trigger getXStanceButton() {
     return new Trigger(() -> false);
   }
+
+  public default double getArmLift() {
+    return 0.0;
+  }
+
+  public default double getArmExtend() {
+    return 0.0;
+  }
 }

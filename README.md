@@ -10,7 +10,7 @@ This code was designed with Swerve Drive Specialties MK3, MK4, and MK4i style mo
 The following things must be adjusted to your robot and module's specific constants in the Constants.java file (all distance units must be in meters, and rotation units in radians):</br>
 These instructions are mostly followable from Step 
 1. Gyro Settings: ```pigeonID``` and ```invertGyro``` (ensure that the gyro rotation is CCW+ (Counter Clockwise Positive)
-2. ```chosenModule```: 
+2. ```swerveModuleType```: 
 <br>If you are using a COTS SDS Module (more modules will be added in the future), set the module and drive ratio you are using here. 
 <br>This will automatically set certain constants for the specific module required to function properly. 
 <br><b><u>If you are not using a COTS supported module, you should delete this variable, and fix all the errors that pop up with correct values for the module you are using</b></u>

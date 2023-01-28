@@ -34,6 +34,7 @@ public class RobotContainer {
   /* Subsystems */
   private final DriveGyro gyro = new DriveGyro(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
   private final SwerveDriveTrain driveTrain = new SwerveDriveTrain(gyro);
+  private final Arm arm = new Arm();
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -56,6 +57,7 @@ public class RobotContainer {
 
   public void logPeriodic() {
     driveTrain.logPeriodic();
+    arm.logPeriodic();
   }
 
   /**
@@ -90,6 +92,9 @@ public class RobotContainer {
         )
     );
 
+    arm.setDefaultCommand(
+      new TeleopArm(arm, oi::getArmLift, oi::getArmExtend)
+    );
     configureButtonBindings();
   }
 
@@ -109,6 +114,7 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance, driveTrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance, driveTrain));
+
   }
 
   /**
@@ -125,23 +131,19 @@ public class RobotContainer {
 
     // Add commands to Autonomous Sendable Chooser
     chooser.setDefaultOption("Do Nothing", new InstantCommand());
-    chooser.setDefaultOption("Autonomous Command", new exampleAuto(driveTrain));
-    
-    // chooser.addOption("AutoDriveStraight Command", m_autoDriveStraightCommand);
-    // chooser.addOption("AutoDriveTurn Command", m_autoDriveTurnCommand);
-
-    // SmartDashboard Buttons
-    SmartDashboard.putData("Auto mode", chooser);
-    SmartDashboard.putData("Autonomous Command", new exampleAuto(driveTrain));
-    // SmartDashboard.putData("Autonomous AutoDriveStraight", m_autoDriveStraightCommand);
-    // SmartDashboard.putData("Autonomous AutoDriveTurn", m_autoDriveTurnCommand);
-    // SmartDashboard.putData("CommandDriveTrain", m_cmdDriveTrainCommand);
-
+    chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
     for (Map.Entry<String, Trajectory> entry : Robot.trajectoryList.entrySet()) {
       chooser.addOption(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
-      SmartDashboard.putData(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
     }
-
+    
+    // SmartDashboard Buttons
+    SmartDashboard.putData("Auto mode", chooser);
+    SmartDashboard.putData("RaiseArm 0.0", new RaiseArm(arm, 0.0));
+    SmartDashboard.putData("RaiseArm 1.0", new RaiseArm(arm, 1.0));
+    SmartDashboard.putData("RaiseArm 2.0", new RaiseArm(arm, 2.0));
+    SmartDashboard.putData("ExtendArm 0.0", new ExtendArm(arm, 0.0));
+    SmartDashboard.putData("ExtendArm 1.0", new ExtendArm(arm, 1.0));
+    SmartDashboard.putData("ExtendArm 2.0", new ExtendArm(arm, 2.0));
     Shuffleboard.getTab("MAIN").add(chooser);
   }
 }
