@@ -8,58 +8,60 @@ import frc.lib.util.DriveGyro;
 
 public final class Constants {
 
-    public static final String SWERVE_CAN_BUS = "Swerve";
-
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 5;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 4;
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = 8.262;
-  
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 2;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 12;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 45.439;
-  
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 16;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = 96.592;
-  
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 1;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 0;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 10;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = 13.799;
-
-    public static final String GYRO_CAN_BUS = "";
-    public static final int GYRO_ID = DriveGyro.DRIVEGYRO_NAVX;
+    public static final String GYRO_CAN_BUS = "Swerve";
+    public static final int GYRO_ID = 20; //DriveGyro.DRIVEGYRO_NAVX;
     public static final int GYRO_DIRECTION = DriveGyro.DRIVEGYRO_CCW; // Always ensure Gyro is CCW+ CW-
 
-    public static final int ARM_LIFT_MOTOR = 0;
-    public static final int ARM_EXTEND_MOTOR = 1;
+    public static final String SWERVE_CAN_BUS = "Swerve";
 
+    public static final int FRONT_LEFT_MODULE = 0;
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR_ID = 3;
+    public static final int FRONT_LEFT_MODULE_ANGLE_MOTOR_ID = 2;
+    public static final int FRONT_LEFT_MODULE_ANGLE_ENCODER_ID = 12;
+    public static final double FRONT_LEFT_MODULE_ANGLE_OFFSET = 57.920;
+  
+    public static final int FRONT_RIGHT_MODULE = 1;
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID = 1;
+    public static final int FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID = 0;
+    public static final int FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID = 10;
+    public static final double FRONT_RIGHT_MODULE_ANGLE_OFFSET = 344.180;
+  
+    public static final int BACK_LEFT_MODULE = 2;
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR_ID = 5;
+    public static final int BACK_LEFT_MODULE_ANGLE_MOTOR_ID = 4;
+    public static final int BACK_LEFT_MODULE_ANGLE_ENCODER_ID = 14;
+    public static final double BACK_LEFT_MODULE_ANGLE_OFFSET = 350.332;
+  
+    public static final int BACK_RIGHT_MODULE = 3;
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR_ID = 7;
+    public static final int BACK_RIGHT_MODULE_ANGLE_MOTOR_ID = 6;
+    public static final int BACK_RIGHT_MODULE_ANGLE_ENCODER_ID = 16;
+    public static final double BACK_RIGHT_MODULE_ANGLE_OFFSET = 42.539;
+
+    public static final int ARM_LIFT_MOTOR_ID = 30;
+    public static final int ARM_EXTEND_MOTOR_ID = 31;
 
     public static final double stickDeadband = 0.1;
 
-    public static final COTSFalconSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
+    public static final COTSFalconSwerveConstants swerveModuleType =
         COTSFalconSwerveConstants.SDSMK4(COTSFalconSwerveConstants.driveGearRatios.SDSMK4_L2);
 
-    /* Drivetrain Constants */
-    public static final double trackWidth = Units.inchesToMeters(10.75 /*21.73*/); //TODO: This must be tuned to specific robot
-    public static final double wheelBase = Units.inchesToMeters(13.0 /*21.73*/); //TODO: This must be tuned to specific robot
+    public static final double trackWidth = Units.inchesToMeters(17.5); //TODO: This must be tuned to specific robot
+    public static final double wheelBase = Units.inchesToMeters(25.5); //TODO: This must be tuned to specific robot
 
     public static final class Swerve {
-        public static final double wheelCircumference = chosenModule.wheelCircumference;
+        public static final double wheelCircumference = swerveModuleType.wheelCircumference;
 
         /* Module Gear Ratios */
-        public static final double driveGearRatio = chosenModule.driveGearRatio;
-        public static final double angleGearRatio = chosenModule.angleGearRatio;
+        public static final double driveGearRatio = swerveModuleType.driveGearRatio;
+        public static final double angleGearRatio = swerveModuleType.angleGearRatio;
 
         /* Motor Inverts */
-        public static final boolean angleMotorInvert = chosenModule.angleMotorInvert;
-        public static final boolean driveMotorInvert = chosenModule.driveMotorInvert;
+        public static final boolean angleMotorInvert = swerveModuleType.angleMotorInvert;
+        public static final boolean driveMotorInvert = swerveModuleType.driveMotorInvert;
 
         /* Angle Encoder Invert */
-        public static final boolean canCoderInvert = chosenModule.canCoderInvert;
+        public static final boolean canCoderInvert = swerveModuleType.canCoderInvert;
 
         /* Swerve Current Limiting */
         public static final int driveContinuousCurrentLimit = 35;
@@ -84,10 +86,10 @@ public final class Constants {
         public static final double driveKF = 0.0;
 
         /* Angle Motor PID Values */
-        public static final double angleKP = chosenModule.angleKP;
-        public static final double angleKI = chosenModule.angleKI;
-        public static final double angleKD = chosenModule.angleKD;
-        public static final double angleKF = chosenModule.angleKF;
+        public static final double angleKP = swerveModuleType.angleKP;
+        public static final double angleKI = swerveModuleType.angleKI;
+        public static final double angleKD = swerveModuleType.angleKD;
+        public static final double angleKF = swerveModuleType.angleKF;
 
         /* Drive Motor Characterization Values 
          * Divide SYSID values by 12 to convert from volts to percent output for CTRE */
