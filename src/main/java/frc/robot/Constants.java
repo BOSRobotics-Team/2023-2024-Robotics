@@ -104,6 +104,8 @@ public final class Constants {
         /* Neutral Modes */
         public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
         public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
+
+        public static final double maxCoastVelocity_MPS = 6380.0 / 60.0 / driveGearRatio * wheelCircumference;
     }
 
     public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot
@@ -113,8 +115,14 @@ public final class Constants {
         public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
     
         public static final double kPXController = 1;
+        public static final double kIXController = 0;
+        public static final double kDXController = 0;
         public static final double kPYController = 1;
+        public static final double kIYController = 0;
+        public static final double kDYController = 0;
         public static final double kPThetaController = 1;    
+        public static final double kIThetaController = 0;    
+        public static final double kDThetaController = 0;    
     }
 
     public static final class ArmConstants {
@@ -133,5 +141,13 @@ public final class Constants {
         public static final double armMinVel = 50.0; 
         public static final double armMaxAcc = 1500.0; 
         public static final double armAllowedErr = 0.0;
+        public static final double armLiftGearRatio = 1.0;
+        public static final double armLiftMetersPerRotation = 0.1;
+        public static final double armExtendGearRatio = 1.0;
+        public static final double armExtendMetersPerRotation = 0.1;
+        public static final double armLiftMinHeight = 0.0;
+        public static final double armLiftMaxHeight = 2.0;
+        public static final double armExtendMinLength = 0.0;
+        public static final double armExtendMaxLength = 2.0;
     }
 }

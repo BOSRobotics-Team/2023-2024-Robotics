@@ -12,7 +12,7 @@ public class LimeLight {
 
   private NetworkTable m_table;
   private String m_tableName = "limelight";
-  private Boolean isConnected = false;
+  private boolean m_isConnected = false;
   private double _hearBeatPeriod = 0.1;
 
   class PeriodicRunnable implements java.lang.Runnable {
@@ -24,9 +24,9 @@ public class LimeLight {
         e.printStackTrace();
       }
       if (getPipelineLatency() == 0.0) {
-        isConnected = false;
+        m_isConnected = false;
       } else {
-        isConnected = true;
+        m_isConnected = true;
       }
     }
   }
@@ -53,8 +53,8 @@ public class LimeLight {
   }
 
   // This is a test
-  public boolean isConnected() {
-    return isConnected;
+  public boolean isM_isConnected() {
+    return m_isConnected;
   }
 
   /**

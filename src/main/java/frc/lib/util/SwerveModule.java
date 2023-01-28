@@ -10,6 +10,7 @@ import frc.robot.Constants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
@@ -117,4 +118,26 @@ public class SwerveModule {
             getAngle()
         );
     }
+
+    public void setAngleBrakeMode(boolean enable) {
+        mAngleMotor.setNeutralMode(enable ? NeutralMode.Brake : NeutralMode.Coast);
+    }
+
+    public void setDriveBrakeMode(boolean enable) {
+        mDriveMotor.setNeutralMode(enable ? NeutralMode.Brake : NeutralMode.Coast);
+    }
+
+    /**
+     * Set the drive motor to the specified voltage. This is only used for characterization via the
+     * FeedForwardCharacterization command. The module will be set to 0 degrees throughout the
+     * characterization; as a result, the wheels don't need to be clamped to hold them straight.
+     *
+     * @param voltage the specified voltage for the drive motor
+     */
+    public void setVoltageForCharacterization(double voltage) {
+        mAngleMotor.set(ControlMode.Position, Conversions.degreesToFalcon(0.0, Constants.Swerve.angleGearRatio));
+        lastAngle = new Rotation2d();
+        mDriveMotor.set(ControlMode.PercentOutput, voltage / 12.0);
+    }
+
 }

@@ -71,8 +71,8 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public boolean getRobotRelative() {
-    return controller.getLeftBumper();
+  public Trigger getRobotRelative() {
+    return new Trigger(controller::getLeftBumper);
   }
 
   @Override

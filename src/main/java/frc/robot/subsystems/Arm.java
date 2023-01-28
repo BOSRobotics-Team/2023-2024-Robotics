@@ -15,66 +15,75 @@ import frc.robot.Constants;
 
 /** */
 public class Arm extends SubsystemBase {
-  private Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-  private DoubleSolenoid gripper = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, 0, 1);
+  private Compressor m_compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+  private DoubleSolenoid m_gripper = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, 0, 1);
 
-  private CANSparkMax armLift = new CANSparkMax(Constants.ARM_LIFT_MOTOR, MotorType.kBrushless);
-  private CANSparkMax armExtend = new CANSparkMax(Constants.ARM_EXTEND_MOTOR, MotorType.kBrushless);
+  private CANSparkMax m_armLiftMotor = new CANSparkMax(Constants.ARM_LIFT_MOTOR, MotorType.kBrushless);
+  private CANSparkMax m_armExtendMotor = new CANSparkMax(Constants.ARM_EXTEND_MOTOR, MotorType.kBrushless);
 
-  private SparkMaxPIDController m_pidLiftController;
-  private RelativeEncoder m_LiftEncoder;
+  private SparkMaxPIDController m_armLiftController;
+  private RelativeEncoder m_armLiftEncoder;
 
-  private SparkMaxPIDController m_pidExtendController;
-  private RelativeEncoder m_ExtendEncoder;
+  private SparkMaxPIDController m_armExtendController;
+  private RelativeEncoder m_armExtendEncoder;
+
+  private double m_armLiftSetpoint = 0;
+  private double m_armExtendSetpoint = 0;
   
   public Arm() {
 
-    armLift.restoreFactoryDefaults();
+    m_armLiftMotor.restoreFactoryDefaults();
     // initialze PID controller and encoder objects
-    m_pidLiftController = armLift.getPIDController();
-    m_LiftEncoder = armLift.getEncoder();
+    m_armLiftController = m_armLiftMotor.getPIDController();
+    m_armLiftEncoder = m_armLiftMotor.getEncoder();
 
     // set PID coefficients
-    m_pidLiftController.setP(Constants.ArmConstants.armKP);
-    m_pidLiftController.setI(Constants.ArmConstants.armKI);
-    m_pidLiftController.setD(Constants.ArmConstants.armKD);
-    m_pidLiftController.setIZone(Constants.ArmConstants.armKIZ);
-    m_pidLiftController.setFF(Constants.ArmConstants.armKFF);
-    m_pidLiftController.setOutputRange(Constants.ArmConstants.armMinOutput, Constants.ArmConstants.armMaxOutput);
+    m_armLiftController.setP(Constants.ArmConstants.armKP);
+    m_armLiftController.setI(Constants.ArmConstants.armKI);
+    m_armLiftController.setD(Constants.ArmConstants.armKD);
+    m_armLiftController.setIZone(Constants.ArmConstants.armKIZ);
+    m_armLiftController.setFF(Constants.ArmConstants.armKFF);
+    m_armLiftController.setOutputRange(Constants.ArmConstants.armMinOutput, Constants.ArmConstants.armMaxOutput);
 
     int smartMotionSlot = 0;
-    m_pidLiftController.setSmartMotionMaxVelocity(Constants.ArmConstants.armMaxVel, smartMotionSlot);
-    m_pidLiftController.setSmartMotionMinOutputVelocity(Constants.ArmConstants.armMinVel, smartMotionSlot);
-    m_pidLiftController.setSmartMotionMaxAccel(Constants.ArmConstants.armMaxAcc, smartMotionSlot);
-    m_pidLiftController.setSmartMotionAllowedClosedLoopError(Constants.ArmConstants.armAllowedErr, smartMotionSlot);
+    m_armLiftController.setSmartMotionMaxVelocity(Constants.ArmConstants.armMaxVel, smartMotionSlot);
+    m_armLiftController.setSmartMotionMinOutputVelocity(Constants.ArmConstants.armMinVel, smartMotionSlot);
+    m_armLiftController.setSmartMotionMaxAccel(Constants.ArmConstants.armMaxAcc, smartMotionSlot);
+    m_armLiftController.setSmartMotionAllowedClosedLoopError(Constants.ArmConstants.armAllowedErr, smartMotionSlot);
 
-    armExtend.restoreFactoryDefaults();
+    m_armLiftEncoder.setPositionConversionFactor(Constants.ArmConstants.armLiftGearRatio * Constants.ArmConstants.armLiftMetersPerRotation);
+    m_armLiftSetpoint = m_armLiftEncoder.getPosition();
+
+    m_armExtendMotor.restoreFactoryDefaults();
     // initialze PID controller and encoder objects
-    m_pidExtendController = armExtend.getPIDController();
-    m_ExtendEncoder = armExtend.getEncoder();
+    m_armExtendController = m_armExtendMotor.getPIDController();
+    m_armExtendEncoder = m_armExtendMotor.getEncoder();
 
     // set PID coefficients
-    m_pidExtendController.setP(Constants.ArmConstants.armKP);
-    m_pidExtendController.setI(Constants.ArmConstants.armKI);
-    m_pidExtendController.setD(Constants.ArmConstants.armKD);
-    m_pidExtendController.setIZone(Constants.ArmConstants.armKIZ);
-    m_pidExtendController.setFF(Constants.ArmConstants.armKFF);
-    m_pidExtendController.setOutputRange(Constants.ArmConstants.armMinOutput, Constants.ArmConstants.armMaxOutput);
+    m_armExtendController.setP(Constants.ArmConstants.armKP);
+    m_armExtendController.setI(Constants.ArmConstants.armKI);
+    m_armExtendController.setD(Constants.ArmConstants.armKD);
+    m_armExtendController.setIZone(Constants.ArmConstants.armKIZ);
+    m_armExtendController.setFF(Constants.ArmConstants.armKFF);
+    m_armExtendController.setOutputRange(Constants.ArmConstants.armMinOutput, Constants.ArmConstants.armMaxOutput);
 
-    m_pidExtendController.setSmartMotionMaxVelocity(Constants.ArmConstants.armMaxVel, smartMotionSlot);
-    m_pidExtendController.setSmartMotionMinOutputVelocity(Constants.ArmConstants.armMinVel, smartMotionSlot);
-    m_pidExtendController.setSmartMotionMaxAccel(Constants.ArmConstants.armMaxAcc, smartMotionSlot);
-    m_pidExtendController.setSmartMotionAllowedClosedLoopError(Constants.ArmConstants.armAllowedErr, smartMotionSlot);
+    m_armExtendController.setSmartMotionMaxVelocity(Constants.ArmConstants.armMaxVel, smartMotionSlot);
+    m_armExtendController.setSmartMotionMinOutputVelocity(Constants.ArmConstants.armMinVel, smartMotionSlot);
+    m_armExtendController.setSmartMotionMaxAccel(Constants.ArmConstants.armMaxAcc, smartMotionSlot);
+    m_armExtendController.setSmartMotionAllowedClosedLoopError(Constants.ArmConstants.armAllowedErr, smartMotionSlot);
 
-    addChild("Compressor", compressor);
+    m_armExtendEncoder.setPositionConversionFactor(Constants.ArmConstants.armExtendGearRatio * Constants.ArmConstants.armExtendMetersPerRotation);
+    m_armExtendSetpoint = m_armExtendEncoder.getPosition();
+
+    addChild("Compressor", m_compressor);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Lift Process Variable", m_LiftEncoder.getPosition());
-    SmartDashboard.putNumber("Extend Process Variable", m_ExtendEncoder.getPosition());
-    SmartDashboard.putNumber("Lift Output", armLift.getAppliedOutput());
-    SmartDashboard.putNumber("Extend Output", armExtend.getAppliedOutput());
+    SmartDashboard.putNumber("Lift Process Variable", m_armLiftEncoder.getPosition());
+    SmartDashboard.putNumber("Extend Process Variable", m_armExtendEncoder.getPosition());
+    SmartDashboard.putNumber("Lift Output", m_armLiftMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Extend Output", m_armExtendMotor.getAppliedOutput());
   }
 
   @Override
@@ -84,27 +93,54 @@ public class Arm extends SubsystemBase {
   }
 
   public void raiseArm(double height) {
-    double setPoint = height;
-    m_pidLiftController.setReference(setPoint, CANSparkMax.ControlType.kSmartMotion);
-    SmartDashboard.putNumber("Lift SetPoint", setPoint);
+    m_armLiftSetpoint = Math.min(Math.max(height, Constants.ArmConstants.armLiftMaxHeight), Constants.ArmConstants.armLiftMinHeight);
+    m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kSmartMotion);
+    SmartDashboard.putNumber("Arm Lift SetPoint", m_armLiftSetpoint);
+  }
 
+  public void raiseArm() {
+    raiseArm(m_armLiftSetpoint + 0.1);
+  }
+
+  public void lowerArm() {
+    raiseArm(m_armLiftSetpoint - 0.1);
+  }
+
+  public boolean isArmRaised() {
+    return Math.abs(getArmHeight() - m_armLiftSetpoint) < 0.01;
   }
 
   public double getArmHeight() {
-    return m_LiftEncoder.getPosition();
+    return m_armLiftEncoder.getPosition();
   }
 
   public void extendArm(double length) {
-    double setPoint = length;
-    m_pidExtendController.setReference(length, CANSparkMax.ControlType.kSmartMotion);
-    SmartDashboard.putNumber("Extend SetPoint", setPoint);
+    m_armExtendSetpoint = Math.min(Math.max(length, Constants.ArmConstants.armExtendMaxLength), Constants.ArmConstants.armExtendMinLength);
+    m_armExtendController.setReference(length, CANSparkMax.ControlType.kSmartMotion);
+    SmartDashboard.putNumber("Arm Extend SetPoint", m_armExtendSetpoint);
+  }
+
+  public void extendArm() {
+    raiseArm(m_armExtendSetpoint + 0.1);
+  }
+
+  public void retractArm() {
+    raiseArm(m_armExtendSetpoint - 0.1);
+  }
+
+  public boolean isArmExtended() {
+    return Math.abs(getArmExtension() - m_armExtendSetpoint) < 0.01;
   }
 
   public double getArmExtension() {
-    return m_ExtendEncoder.getPosition();
+    return m_armExtendEncoder.getPosition();
   }
 
-  public void gripClaw(Boolean close) {
-    gripper.set(close ? Value.kReverse : Value.kForward);
+  public void gripClaw(boolean close) {
+    m_gripper.set(close ? Value.kReverse : Value.kForward);
+  }
+
+  public boolean isGripClawOpen() {
+    return (m_gripper.get() != Value.kReverse);
   }
 }

@@ -25,8 +25,8 @@ public interface OperatorInterface {
     return 1.0;
   }
 
-  public default boolean getRobotRelative() {
-    return false;
+  public default Trigger getRobotRelative() {
+    return new Trigger(() -> false);
   }
 
   public default Trigger getResetGyroButton() {

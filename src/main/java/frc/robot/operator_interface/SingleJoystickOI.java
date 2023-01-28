@@ -41,8 +41,8 @@ public class SingleJoystickOI implements OperatorInterface {
   }
 
   @Override
-  public boolean getRobotRelative() {
-    return joystickButtons[3].getAsBoolean();
+  public Trigger getRobotRelative() {
+    return joystickButtons[3];
   }
 
   @Override

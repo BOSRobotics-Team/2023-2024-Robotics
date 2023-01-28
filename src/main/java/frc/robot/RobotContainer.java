@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-
+import frc.lib.util.DriveGyro;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.operator_interface.*;
@@ -32,7 +32,8 @@ public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
 
   /* Subsystems */
-  private final SwerveDriveTrain driveTrain = new SwerveDriveTrain();
+  private final DriveGyro gyro = new DriveGyro(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+  private final SwerveDriveTrain driveTrain = new SwerveDriveTrain(gyro);
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -85,7 +86,6 @@ public class RobotContainer {
             oi::getTranslateX, 
             oi::getTranslateY, 
             oi::getRotate, 
-            oi::getRobotRelative,
             oi::getDriveScaling
         )
     );
@@ -102,6 +102,13 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // reset gyro to 0 degrees
     oi.getResetGyroButton().onTrue(Commands.runOnce(driveTrain::zeroGyro, driveTrain));
+    // Robot relative navigation
+    oi.getRobotRelative().onTrue(Commands.runOnce(driveTrain::enableFieldRelative, driveTrain));
+    oi.getRobotRelative().onFalse(Commands.runOnce(driveTrain::disableFieldRelative, driveTrain));
+
+    // x-stance
+    oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance, driveTrain));
+    oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance, driveTrain));
   }
 
   /**

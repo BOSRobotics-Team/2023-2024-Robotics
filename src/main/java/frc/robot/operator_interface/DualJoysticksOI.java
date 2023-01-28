@@ -51,8 +51,8 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public boolean getRobotRelative() {
-    return translateJoystickButtons[3].getAsBoolean();
+  public Trigger getRobotRelative() {
+    return translateJoystickButtons[3];
   }
 
   @Override
