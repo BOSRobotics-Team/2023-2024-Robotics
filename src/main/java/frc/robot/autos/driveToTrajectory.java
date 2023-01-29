@@ -15,7 +15,7 @@ public class driveToTrajectory extends SequentialCommandGroup {
                 SwerveDriveTrain.swerveKinematics,
                 driveTrain.getAutoXController(),
                 driveTrain.getAutoYController(),
-                driveTrain.getAutoThetaController(),
+                driveTrain.getAutoProfiledThetaController(),
                 driveTrain::setModuleStates,
                 driveTrain);
 

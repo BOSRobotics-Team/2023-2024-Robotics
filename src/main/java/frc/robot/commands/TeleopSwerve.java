@@ -6,7 +6,6 @@ import frc.robot.subsystems.SwerveDriveTrain;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 
@@ -31,15 +30,19 @@ public class TeleopSwerve extends CommandBase {
     public void execute() {
         /* Get Values, Deadband*/
         double deadBand = RobotPreferences.stickDeadband();
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), deadBand);
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), deadBand);
-        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(),deadBand);
+        double maxSpeed = RobotPreferences.Swerve.maxSpeed() * scaleFactorSup.getAsDouble();
+
+        double translationVal = this.scaleController(translationSup.getAsDouble(), deadBand) * maxSpeed;
+        double strafeVal = this.scaleController(strafeSup.getAsDouble(), deadBand) * maxSpeed;
+        double rotationVal = this.scaleController(rotationSup.getAsDouble(),deadBand) * RobotPreferences.Swerve.maxAngularVelocity();
 
         /* Drive */
-        driveTrain.drive(
-            new Translation2d(translationVal, strafeVal).times(RobotPreferences.Swerve.maxSpeed() * scaleFactorSup.getAsDouble()), 
-            rotationVal * RobotPreferences.Swerve.maxAngularVelocity(), 
-            true
-        );
+        driveTrain.drive(translationVal, strafeVal, rotationVal);
+    }
+
+    public double scaleController(double value, double deadBand) {
+        value = MathUtil.applyDeadband(value, deadBand);
+        // Square the axis - more natural for drivers
+        return Math.copySign(value * value, value);
     }
 }

@@ -5,16 +5,8 @@
 package frc.robot;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -28,8 +20,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
-
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -54,17 +44,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    try {
-      DirectoryStream<Path> stream = Files.newDirectoryStream(RESOURCES_PATH.resolve("paths"));
-      for (Path file : stream) {
-        if (!Files.isDirectory(file)) {
-          trajectoryList.put(file.getFileName().toString().replaceFirst("[.][^.]+$", ""), TrajectoryUtil.fromPathweaverJson(file));
-        }
-      }
-    }  catch (IOException ex) {
-      DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());
-   }
-
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -96,7 +75,10 @@ public class Robot extends TimedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    m_robotContainer.updateOI();
+  }
+
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override

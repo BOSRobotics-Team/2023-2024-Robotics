@@ -1,11 +1,24 @@
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+
 import frc.lib.util.DriveGyro;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
@@ -26,7 +40,7 @@ import frc.robot.subsystems.*;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  SendableChooser<Command> chooser = new SendableChooser<>();
+  private SendableChooser<Command> chooser = new SendableChooser<>();
 
   /* Operator Interface */
   private OperatorInterface oi = new OperatorInterface() {};
@@ -40,6 +54,11 @@ public class RobotContainer {
   // public UsbCamera cam0;
   // public UsbCamera cam1;
 
+  /* Auto paths */
+  public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
+  public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
+
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
    if (RobotBase.isReal()) {
@@ -50,11 +69,13 @@ public class RobotContainer {
       // cam1.setConnectVerbose(0);
     }
 
+    // disable all telemetry in the LiveWindow to reduce the processing during each iteration
+    LiveWindow.disableAllTelemetry();
+
     updateOI();
-
     configureAutoCommands();
+    configureAutoPaths();
   }
-
 
   public void logPeriodic() {
     updateOI();
@@ -134,10 +155,6 @@ public class RobotContainer {
 
     // Add commands to Autonomous Sendable Chooser
     chooser.setDefaultOption("Do Nothing", new InstantCommand());
-    chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
-    for (Map.Entry<String, Trajectory> entry : Robot.trajectoryList.entrySet()) {
-      chooser.addOption(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
-    }
     
     // SmartDashboard Buttons
     SmartDashboard.putData("Auto mode", chooser);
@@ -148,5 +165,45 @@ public class RobotContainer {
     SmartDashboard.putData("ExtendArm 1.0", new ExtendArm(arm, 1.0));
     SmartDashboard.putData("ExtendArm 2.0", new ExtendArm(arm, 2.0));
     Shuffleboard.getTab("MAIN").add(chooser);
+  }
+
+  private void configureAutoPaths() {
+    try {
+      DirectoryStream<Path> stream = Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("paths"));
+      for (Path file : stream) {
+        if (!Files.isDirectory(file)) {
+          trajectoryList.put(file.getFileName().toString().replaceFirst("[.][^.]+$", ""), TrajectoryUtil.fromPathweaverJson(file));
+        }
+      }
+    }  catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());
+   }
+   chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
+   for (Map.Entry<String, Trajectory> entry : trajectoryList.entrySet()) {
+     chooser.addOption(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
+   }
+
+    // build auto path commands
+    List<PathPlannerTrajectory> auto1Paths =
+    PathPlanner.loadPathGroup(
+      "testPaths1",
+      Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+      Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+    Command autoTest =
+      Commands.sequence(
+        new FollowPathWithEvents(
+          new FollowPath(auto1Paths.get(0), driveTrain, true),
+            auto1Paths.get(0).getMarkers(),
+            AUTO_EVENT_MAP),
+        Commands.runOnce(driveTrain::enableXstance, driveTrain),
+        Commands.waitSeconds(5.0),
+        Commands.runOnce(driveTrain::disableXstance, driveTrain),
+        new FollowPathWithEvents(
+          new FollowPath(auto1Paths.get(1), driveTrain, false),
+          auto1Paths.get(1).getMarkers(),
+          AUTO_EVENT_MAP)
+      );
+    // demonstration of PathPlanner path group with event markers
+    chooser.addOption("Test Path", autoTest);
   }
 }

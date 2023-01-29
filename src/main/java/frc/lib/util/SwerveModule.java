@@ -49,10 +49,12 @@ public class SwerveModule {
         lastAngle = getState().angle;
     }
 
-    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
-        /* This is a custom optimize function, since default WPILib optimize assumes continuous controller which CTRE and Rev onboard is not */
-        desiredState = CTREModuleState.optimize(desiredState, getState().angle); 
-        setAngle(desiredState);
+    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean forceAngle){
+        // this optimization is specific to CTRE hardware; perhaps this responsibility should be demoted
+        // to the hardware-specific classes.
+        desiredState = CTREModuleState.optimize(desiredState, getState().angle);
+
+        setAngle(desiredState, forceAngle);
         setSpeed(desiredState, isOpenLoop);
     }
 
@@ -67,11 +69,17 @@ public class SwerveModule {
         }
     }
 
-    private void setAngle(SwerveModuleState desiredState){
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (RobotPreferences.Swerve.maxSpeed() * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
-        
-        mAngleMotor.set(ControlMode.Position, Conversions.degreesToFalcon(angle.getDegrees(), Constants.Swerve.angleGearRatio));
-        lastAngle = angle;
+    private void setAngle(SwerveModuleState desiredState, boolean isForceAngle){
+        // Unless the angle is forced (e.g., X-stance), don't rotate the module if speed is less then
+        // 1%. This prevents jittering if the controller isn't tuned perfectly. Perhaps more
+        // importantly, it allows for smooth repeated movement as the wheel direction doesn't reset
+        // during pauses (e.g., multi-segmented auto paths).
+        if (!isForceAngle && Math.abs(desiredState.speedMetersPerSecond) <= (RobotPreferences.Swerve.maxSpeed() * 0.01)) {
+            mAngleMotor.set(ControlMode.Position, Conversions.degreesToFalcon(lastAngle.getDegrees(), Constants.Swerve.angleGearRatio));
+        } else {
+            mAngleMotor.set(ControlMode.Position, Conversions.degreesToFalcon(desiredState.angle.getDegrees(), Constants.Swerve.angleGearRatio));
+            lastAngle = desiredState.angle;
+        }
     }
 
     private Rotation2d getAngle(){
