@@ -1,16 +1,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.arm.Arm;
 
 public class ExtendArm extends CommandBase {
 
   private final Arm m_arm;
-  private final double m_length;
+  private final double m_pctLength;
 
-  public ExtendArm(Arm arm, double length) {
+  public ExtendArm(Arm arm, double pctLength) {
     m_arm = arm;
-    m_length = length;
+    m_pctLength = pctLength;
     addRequirements(m_arm);
 
   }
@@ -18,7 +18,7 @@ public class ExtendArm extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.extendArm(m_length);
+    m_arm.extendArm(m_pctLength);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -33,7 +33,7 @@ public class ExtendArm extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return Math.abs(m_arm.getArmExtension() - m_length) < 0.01;
+    return !m_arm.isArmExtended();
   }
 
   @Override

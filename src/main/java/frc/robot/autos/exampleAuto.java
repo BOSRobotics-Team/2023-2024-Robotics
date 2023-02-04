@@ -1,7 +1,5 @@
 package frc.robot.autos;
 
-import frc.robot.subsystems.SwerveDriveTrain;
-
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -10,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
 
 public class exampleAuto extends SequentialCommandGroup {
     public exampleAuto(SwerveDriveTrain driveTrain){

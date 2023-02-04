@@ -1,9 +1,9 @@
 package frc.robot.autos;
 
-import frc.robot.subsystems.SwerveDriveTrain;
-
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
+import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
 
 /**
  * This command, when executed, instructs the drivetrain subsystem to follow the specified

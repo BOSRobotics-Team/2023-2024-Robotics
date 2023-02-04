@@ -1,18 +1,16 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.drivetrain;
 
+import static frc.robot.Constants.*;
+
+import frc.lib.swerve.SwerveModule;
 import frc.lib.util.DriveGyro;
 import frc.lib.util.RobotOdometry;
-import frc.lib.util.SwerveModule;
-import frc.lib.util.SwerveModuleConstants;
-import frc.robot.Constants;
 import frc.robot.RobotPreferences;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -30,6 +28,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+
 public class SwerveDriveTrain extends SubsystemBase {
     private static final boolean DEBUGGING = false;
     private static final boolean TESTING = false;
@@ -41,8 +41,8 @@ public class SwerveDriveTrain extends SubsystemBase {
 
     private DriveGyro gyro;
 
+    private final SwerveModule[] swerveModules = new SwerveModule[4]; // FL, FR, BL, BR
     private SwerveDriveOdometry swerveOdometry;
-    private SwerveModule[] swerveModules;
     private ChassisSpeeds chassisSpeeds;
     private Translation2d centerGravity;
 
@@ -58,43 +58,43 @@ public class SwerveDriveTrain extends SubsystemBase {
     /* Swerve Kinematics 
      * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-        new Translation2d(RobotPreferences.wheelBase() / 2.0, RobotPreferences.trackWidth() / 2.0),
-        new Translation2d(RobotPreferences.wheelBase() / 2.0, -RobotPreferences.trackWidth() / 2.0),
-        new Translation2d(-RobotPreferences.wheelBase() / 2.0, RobotPreferences.trackWidth() / 2.0),
-        new Translation2d(-RobotPreferences.wheelBase() / 2.0, -RobotPreferences.trackWidth() / 2.0));
+        new Translation2d(RobotPreferences.wheelBase.get() / 2.0, RobotPreferences.trackWidth.get() / 2.0),
+        new Translation2d(RobotPreferences.wheelBase.get() / 2.0, -RobotPreferences.trackWidth.get() / 2.0),
+        new Translation2d(-RobotPreferences.wheelBase.get() / 2.0, RobotPreferences.trackWidth.get() / 2.0),
+        new Translation2d(-RobotPreferences.wheelBase.get() / 2.0, -RobotPreferences.trackWidth.get() / 2.0));
 
     public static final TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-        RobotPreferences.AutoConstants.maxSpeedMetersPerSecond(),
-        RobotPreferences.AutoConstants.maxAccelerationMetersPerSecondSquared())
+        RobotPreferences.Auto.maxSpeedMetersPerSecond.get(),
+        RobotPreferences.Auto.maxAccelerationMetersPerSecondSquared.get())
             .setKinematics(swerveKinematics);
 
     /* Constraint for the motion profilied robot angle controller */
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
         new TrapezoidProfile.Constraints(
-            RobotPreferences.AutoConstants.maxAngularSpeedRadiansPerSecond(), 
-            RobotPreferences.AutoConstants.maxAngularSpeedRadiansPerSecondSquared());
+            RobotPreferences.Auto.maxAngularSpeedRadiansPerSecond.get(), 
+            RobotPreferences.Auto.maxAngularSpeedRadiansPerSecondSquared.get());
 
     private final PIDController autoXController =
-        new PIDController(RobotPreferences.AutoConstants.pXController(), 
-            RobotPreferences.AutoConstants.iXController(), 
-            RobotPreferences.AutoConstants.dXController());
+        new PIDController(RobotPreferences.Auto.pXController.get(), 
+            RobotPreferences.Auto.iXController.get(), 
+            RobotPreferences.Auto.dXController.get());
     private final PIDController autoYController =
-        new PIDController(RobotPreferences.AutoConstants.pYController(), 
-            RobotPreferences.AutoConstants.iYController(), 
-            RobotPreferences.AutoConstants.dYController());
+        new PIDController(RobotPreferences.Auto.pYController.get(), 
+            RobotPreferences.Auto.iYController.get(), 
+            RobotPreferences.Auto.dYController.get());
     private final PIDController autoThetaController =
-        new PIDController(RobotPreferences.AutoConstants.pThetaController(), 
-            RobotPreferences.AutoConstants.iThetaController(), 
-            RobotPreferences.AutoConstants.dThetaController());
+        new PIDController(RobotPreferences.Auto.pThetaController.get(), 
+            RobotPreferences.Auto.iThetaController.get(), 
+            RobotPreferences.Auto.dThetaController.get());
     private final ProfiledPIDController autoProfiledThetaController =
-        new ProfiledPIDController(RobotPreferences.AutoConstants.pThetaController(), 
-            RobotPreferences.AutoConstants.iThetaController(), 
-            RobotPreferences.AutoConstants.dThetaController(),
+        new ProfiledPIDController(RobotPreferences.Auto.pThetaController.get(), 
+            RobotPreferences.Auto.iThetaController.get(), 
+            RobotPreferences.Auto.dThetaController.get(),
             SwerveDriveTrain.kThetaControllerConstraints);
           
-    public SwerveDriveTrain(DriveGyro gyro) {
+    public SwerveDriveTrain(DriveGyro gyro, SwerveModule mod0, SwerveModule mod1, SwerveModule mod2, SwerveModule mod3) {
         this.gyro = gyro;
-        gyro.setGyroDirection(Constants.GYRO_DIRECTION);
+        gyro.setGyroDirection(GYRO_DIRECTION);
         zeroGyro();
         
         this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -108,28 +108,10 @@ public class SwerveDriveTrain extends SubsystemBase {
         this.characterizationVoltage = 0.0;
         this.centerGravity = new Translation2d();
         
-        this.swerveModules = new SwerveModule[] {
-            new SwerveModule(Constants.FRONT_LEFT_MODULE, new SwerveModuleConstants(Constants.SWERVE_CAN_BUS,
-                                                                        Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID, 
-                                                                        Constants.FRONT_LEFT_MODULE_ANGLE_MOTOR_ID, 
-                                                                        Constants.FRONT_LEFT_MODULE_ANGLE_ENCODER_ID, 
-                                                                        RobotPreferences.frontLeftModule_AngleOffset())),
-            new SwerveModule(Constants.FRONT_RIGHT_MODULE, new SwerveModuleConstants(Constants.SWERVE_CAN_BUS,
-                                                                        Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID, 
-                                                                        Constants.FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID, 
-                                                                        Constants.FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID, 
-                                                                        RobotPreferences.frontRightModule_AngleOffset())),
-            new SwerveModule(Constants.BACK_LEFT_MODULE, new SwerveModuleConstants(Constants.SWERVE_CAN_BUS,
-                                                                        Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID, 
-                                                                        Constants.BACK_LEFT_MODULE_ANGLE_MOTOR_ID, 
-                                                                        Constants.BACK_LEFT_MODULE_ANGLE_ENCODER_ID, 
-                                                                        RobotPreferences.backLeftModule_AngleOffset())),
-            new SwerveModule(Constants.BACK_RIGHT_MODULE, new SwerveModuleConstants(Constants.SWERVE_CAN_BUS,
-                                                                        Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID, 
-                                                                        Constants.BACK_RIGHT_MODULE_ANGLE_MOTOR_ID, 
-                                                                        Constants.BACK_RIGHT_MODULE_ANGLE_ENCODER_ID, 
-                                                                        RobotPreferences.backRightModule_AngleOffset())),
-        };
+        this.swerveModules[0] = mod0;
+        this.swerveModules[1] = mod1;
+        this.swerveModules[2] = mod2;
+        this.swerveModules[3] = mod3;
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
          * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
@@ -208,26 +190,26 @@ public class SwerveDriveTrain extends SubsystemBase {
         this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         SwerveModuleState[] states = swerveKinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
 
-        states[0].angle = new Rotation2d(Math.PI / 2 - Math.atan(RobotPreferences.trackWidth() / RobotPreferences.wheelBase()));
-        states[1].angle = new Rotation2d(Math.PI / 2 + Math.atan(RobotPreferences.trackWidth() / RobotPreferences.wheelBase()));
-        states[2].angle = new Rotation2d(Math.PI / 2 + Math.atan(RobotPreferences.trackWidth() / RobotPreferences.wheelBase()));
-        states[3].angle = new Rotation2d(3.0 / 2.0 * Math.PI - Math.atan(RobotPreferences.trackWidth() / RobotPreferences.wheelBase()));
+        states[0].angle = new Rotation2d(Math.PI / 2 - Math.atan(RobotPreferences.trackWidth.get() / RobotPreferences.wheelBase.get()));
+        states[1].angle = new Rotation2d(Math.PI / 2 + Math.atan(RobotPreferences.trackWidth.get() / RobotPreferences.wheelBase.get()));
+        states[2].angle = new Rotation2d(Math.PI / 2 + Math.atan(RobotPreferences.trackWidth.get() / RobotPreferences.wheelBase.get()));
+        states[3].angle = new Rotation2d(3.0 / 2.0 * Math.PI - Math.atan(RobotPreferences.trackWidth.get() / RobotPreferences.wheelBase.get()));
         setModuleStates(states, true, true);
     }
     
     /* Used by SwerveControllerCommand */
     public void setModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop, boolean isForceAngle) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, RobotPreferences.Swerve.maxSpeed());
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, RobotPreferences.Swerve.maxSpeed.get());
         for(SwerveModule mod : this.swerveModules){
-            mod.setDesiredState(desiredStates[mod.moduleNumber], isOpenLoop, isForceAngle);
+            mod.setDesiredState(desiredStates[mod.getModuleNumber()], isOpenLoop, isForceAngle);
         }
     }    
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, RobotPreferences.Swerve.maxSpeed());
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, RobotPreferences.Swerve.maxSpeed.get());
         for(SwerveModule mod : this.swerveModules){
-            mod.setDesiredState(desiredStates[mod.moduleNumber], false, false);
+            mod.setDesiredState(desiredStates[mod.getModuleNumber()], false, false);
         }
     }
 
@@ -262,7 +244,7 @@ public class SwerveDriveTrain extends SubsystemBase {
     public SwerveModuleState[] getModuleStates(){
         SwerveModuleState[] states = new SwerveModuleState[4];
         for(SwerveModule mod : this.swerveModules){
-            states[mod.moduleNumber] = mod.getState();
+            states[mod.getModuleNumber()] = mod.getState();
         }
         return states;
     }
@@ -270,7 +252,7 @@ public class SwerveDriveTrain extends SubsystemBase {
     public SwerveModulePosition[] getModulePositions(){
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
         for(SwerveModule mod : this.swerveModules){
-            positions[mod.moduleNumber] = mod.getPosition();
+            positions[mod.getModuleNumber()] = mod.getPosition();
         }
         return positions;
     }
@@ -344,7 +326,7 @@ public class SwerveDriveTrain extends SubsystemBase {
         } else {
             boolean stillMoving = false;
             for (SwerveModule mod : swerveModules) {
-                if (Math.abs(mod.getState().speedMetersPerSecond) > RobotPreferences.Swerve.maxCoastVelocity_MPS()) {
+                if (Math.abs(mod.getState().speedMetersPerSecond) > RobotPreferences.Swerve.maxCoastVelocity_MPS.get()) {
                     stillMoving = true;
                 }
             }
@@ -493,9 +475,9 @@ public class SwerveDriveTrain extends SubsystemBase {
         gyro.logPeriodic();
 
         for(SwerveModule mod : this.swerveModules){
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
+            // SmartDashboard.putNumber("Mod " + mod.getModuleNumber() + " Cancoder", mod.getCanCoder().getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.getModuleNumber() + " Integrated", mod.getPosition().angle.getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.getModuleNumber() + " Velocity", mod.getState().speedMetersPerSecond);    
         }
     }
 }

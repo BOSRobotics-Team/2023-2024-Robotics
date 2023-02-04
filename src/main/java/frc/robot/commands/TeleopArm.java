@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import frc.robot.RobotPreferences;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.arm.Arm;
 
 import java.util.function.DoubleSupplier;
 
@@ -25,12 +25,12 @@ public class TeleopArm extends CommandBase {
     @Override
     public void execute() {
         /* Get Values, Deadband*/
-        double deadBand = RobotPreferences.stickDeadband();
+        double deadBand = RobotPreferences.stickDeadband.get();
         double liftVal = MathUtil.applyDeadband(liftSup.getAsDouble(), deadBand);
         double extendVal = MathUtil.applyDeadband(extendSup.getAsDouble(), deadBand);
 
         /* Drive */
-        arm.raiseArm(liftVal * RobotPreferences.ArmConstants.armLiftMaxHeight());
-        arm.extendArm(extendVal * RobotPreferences.ArmConstants.armExtendMaxLength());
+        arm.raiseArm(liftVal);
+        arm.extendArm(extendVal);
     }
 }

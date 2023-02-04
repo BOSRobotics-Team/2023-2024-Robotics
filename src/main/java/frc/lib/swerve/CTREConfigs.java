@@ -1,6 +1,6 @@
-package frc.lib.util;
+package frc.lib.swerve;
 
-import frc.robot.Constants;
+import frc.robot.subsystems.drivetrain.*;
 import frc.robot.RobotPreferences;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -22,35 +22,35 @@ public final class CTREConfigs {
 
         /* Swerve Angle Motor Configurations */
         SupplyCurrentLimitConfiguration angleSupplyLimit = new SupplyCurrentLimitConfiguration(
-            RobotPreferences.Swerve.angleEnableCurrentLimit(), 
-            RobotPreferences.Swerve.angleContinuousCurrentLimit(), 
-            RobotPreferences.Swerve.anglePeakCurrentLimit(),
-            RobotPreferences.Swerve.anglePeakCurrentDuration());
+            DriveTrainConstants.angleEnableCurrentLimit, 
+            RobotPreferences.Swerve.angleContinuousCurrentLimit.get(), 
+            RobotPreferences.Swerve.anglePeakCurrentLimit.get(),
+            RobotPreferences.Swerve.anglePeakCurrentDuration.get());
 
-        swerveAngleFXConfig.slot0.kP = RobotPreferences.Swerve.angleKP();
-        swerveAngleFXConfig.slot0.kI = RobotPreferences.Swerve.angleKI();
-        swerveAngleFXConfig.slot0.kD = RobotPreferences.Swerve.angleKD();
-        swerveAngleFXConfig.slot0.kF = RobotPreferences.Swerve.angleKF();
+        swerveAngleFXConfig.slot0.kP = RobotPreferences.Swerve.angleKP.get();
+        swerveAngleFXConfig.slot0.kI = RobotPreferences.Swerve.angleKI.get();
+        swerveAngleFXConfig.slot0.kD = RobotPreferences.Swerve.angleKD.get();
+        swerveAngleFXConfig.slot0.kF = RobotPreferences.Swerve.angleKF.get();
         swerveAngleFXConfig.supplyCurrLimit = angleSupplyLimit;
 
         /* Swerve Drive Motor Configuration */
         SupplyCurrentLimitConfiguration driveSupplyLimit = new SupplyCurrentLimitConfiguration(
-            RobotPreferences.Swerve.driveEnableCurrentLimit(), 
-            RobotPreferences.Swerve.driveContinuousCurrentLimit(), 
-            RobotPreferences.Swerve.drivePeakCurrentLimit(), 
-            RobotPreferences.Swerve.drivePeakCurrentDuration());
+            DriveTrainConstants.driveEnableCurrentLimit, 
+            RobotPreferences.Swerve.driveContinuousCurrentLimit.get(), 
+            RobotPreferences.Swerve.drivePeakCurrentLimit.get(), 
+            RobotPreferences.Swerve.drivePeakCurrentDuration.get());
 
-        swerveDriveFXConfig.slot0.kP = RobotPreferences.Swerve.driveKP();
-        swerveDriveFXConfig.slot0.kI = RobotPreferences.Swerve.driveKI();
-        swerveDriveFXConfig.slot0.kD = RobotPreferences.Swerve.driveKD();
-        swerveDriveFXConfig.slot0.kF = RobotPreferences.Swerve.driveKF();        
+        swerveDriveFXConfig.slot0.kP = RobotPreferences.Swerve.driveKP.get();
+        swerveDriveFXConfig.slot0.kI = RobotPreferences.Swerve.driveKI.get();
+        swerveDriveFXConfig.slot0.kD = RobotPreferences.Swerve.driveKD.get();
+        swerveDriveFXConfig.slot0.kF = RobotPreferences.Swerve.driveKF.get();        
         swerveDriveFXConfig.supplyCurrLimit = driveSupplyLimit;
-        swerveDriveFXConfig.openloopRamp = RobotPreferences.Swerve.openLoopRamp();
-        swerveDriveFXConfig.closedloopRamp = RobotPreferences.Swerve.closedLoopRamp();
+        swerveDriveFXConfig.openloopRamp = RobotPreferences.Swerve.openLoopRamp.get();
+        swerveDriveFXConfig.closedloopRamp = RobotPreferences.Swerve.closedLoopRamp.get();
 
         /* Swerve CANCoder Configuration */
         swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        swerveCanCoderConfig.sensorDirection = Constants.Swerve.canCoderInvert;
+        swerveCanCoderConfig.sensorDirection = DriveTrainConstants.canCoderInvert;
         swerveCanCoderConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
         swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
     }

@@ -1,16 +1,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.arm.Arm;
 
 public class RaiseArm extends CommandBase {
 
   private final Arm m_arm;
-  private final double m_height;
+  private final double m_pctHeight;
 
-  public RaiseArm(Arm arm, double height) {
+  public RaiseArm(Arm arm, double pctHeight) {
     m_arm = arm;
-    m_height = height;
+    m_pctHeight = pctHeight;
     addRequirements(m_arm);
 
   }
@@ -18,7 +18,7 @@ public class RaiseArm extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.raiseArm(m_height);
+    m_arm.raiseArm(m_pctHeight);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -33,7 +33,7 @@ public class RaiseArm extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return Math.abs(m_arm.getArmHeight() - m_height) < 0.01;
+    return !m_arm.isArmRaised();
   }
 
   @Override

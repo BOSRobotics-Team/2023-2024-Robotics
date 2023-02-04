@@ -1,10 +1,10 @@
 package frc.robot.autos;
 
-import frc.robot.subsystems.SwerveDriveTrain;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
 
 public class driveToTrajectory extends SequentialCommandGroup {
     public driveToTrajectory(SwerveDriveTrain driveTrain, Trajectory trajectory){

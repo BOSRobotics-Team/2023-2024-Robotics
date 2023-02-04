@@ -27,11 +27,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
+import frc.lib.swerve.SwerveModule;
+import frc.lib.swerve.SwerveModuleIOSim;
+import frc.lib.swerve.SwerveModuleIOTalonFX;
 import frc.lib.util.DriveGyro;
+
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.operator_interface.*;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.arm.*;
+import frc.robot.subsystems.drivetrain.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,8 +52,8 @@ public class RobotContainer {
 
   /* Subsystems */
   private final DriveGyro gyro = new DriveGyro(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
-  private final SwerveDriveTrain driveTrain = new SwerveDriveTrain(gyro);
-  private final Arm arm = new Arm();
+  private final SwerveDriveTrain driveTrain;
+  private final Arm arm;
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -67,7 +72,23 @@ public class RobotContainer {
 
       // cam0.setConnectVerbose(0);
       // cam1.setConnectVerbose(0);
-    }
+
+      SwerveModule flModule = new SwerveModule(new SwerveModuleIOTalonFX(DriveTrainConstants.mod0));
+      SwerveModule frModule = new SwerveModule(new SwerveModuleIOTalonFX(DriveTrainConstants.mod1));
+      SwerveModule blModule = new SwerveModule(new SwerveModuleIOTalonFX(DriveTrainConstants.mod2));
+      SwerveModule brModule = new SwerveModule(new SwerveModuleIOTalonFX(DriveTrainConstants.mod3));
+
+      driveTrain = new SwerveDriveTrain(gyro, flModule, frModule, blModule, brModule);
+      arm = new Arm();
+   } else {
+      SwerveModule flModule = new SwerveModule(new SwerveModuleIOSim(0));
+      SwerveModule frModule = new SwerveModule(new SwerveModuleIOSim(1));
+      SwerveModule blModule = new SwerveModule(new SwerveModuleIOSim(2));
+      SwerveModule brModule = new SwerveModule(new SwerveModuleIOSim(3));
+
+      driveTrain = new SwerveDriveTrain(gyro, flModule, frModule, blModule, brModule);
+      arm = new Arm(); // use ArmSim later
+   }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -187,8 +208,8 @@ public class RobotContainer {
     List<PathPlannerTrajectory> auto1Paths =
     PathPlanner.loadPathGroup(
       "testPaths1",
-      Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-      Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+      AutoConstants.kMaxSpeedMetersPerSecond,
+      AutoConstants.kMaxAccelerationMetersPerSecondSquared);
     Command autoTest =
       Commands.sequence(
         new FollowPathWithEvents(

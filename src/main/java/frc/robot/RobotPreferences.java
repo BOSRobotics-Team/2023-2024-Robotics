@@ -1,208 +1,173 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Preferences;
+import frc.robot.subsystems.drivetrain.DriveTrainConstants;
+import frc.robot.subsystems.arm.ArmConstants;
+import frc.lib.util.DashboardNumber;
 
 public final class RobotPreferences {
 
-    public static double frontLeftModule_AngleOffset() { 
-        return Preferences.getDouble("frontLeftModule_AngleOffset", Constants.FRONT_LEFT_MODULE_ANGLE_OFFSET); 
+    public static void setTuningMode(boolean isEnabled) {
+        DashboardNumber.setActiveMode(isEnabled);
     }
-    public static double frontRightModule_AngleOffset() { 
-        return Preferences.getDouble("frontRightModule_AngleOffset", Constants.FRONT_RIGHT_MODULE_ANGLE_OFFSET); 
-    }
-    public static double backLeftModule_AngleOffset() { 
-        return Preferences.getDouble("backLeftModule_AngleOffset", Constants.BACK_LEFT_MODULE_ANGLE_OFFSET); 
-    }
-    public static double backRightModule_AngleOffset() { 
-        return Preferences.getDouble("backRightModule_AngleOffset", Constants.BACK_RIGHT_MODULE_ANGLE_OFFSET); 
-    }
-    public static double stickDeadband() { 
-        return Preferences.getDouble("stickDeadband", Constants.stickDeadband); 
-    }
-    public static double trackWidth() { 
-        return Preferences.getDouble("trackWidth", Constants.trackWidth); 
-    }
-    public static double wheelBase() { 
-        return Preferences.getDouble("wheelBase", Constants.wheelBase); 
-    }
+
+    public static DashboardNumber stickDeadband = 
+       new DashboardNumber("stickDeadband", Constants.STICK_DEADBAND);
+    public static DashboardNumber trackWidth = 
+       new DashboardNumber("trackWidth", Constants.TRACKWIDTH);
+    public static DashboardNumber wheelBase = 
+       new DashboardNumber("wheelBase", Constants.WHEELBASE);
 
     public static final class Swerve {
-        public static int driveContinuousCurrentLimit() { 
-            return Preferences.getInt("driveContinuousCurrentLimit", Constants.Swerve.driveContinuousCurrentLimit); 
-        }
-        public static int drivePeakCurrentLimit() { 
-            return Preferences.getInt("drivePeakCurrentLimit", Constants.Swerve.drivePeakCurrentLimit); 
-        }
-        public static double drivePeakCurrentDuration() { 
-            return Preferences.getDouble("drivePeakCurrentDuration", Constants.Swerve.drivePeakCurrentDuration); 
-        }
-        public static Boolean driveEnableCurrentLimit() { 
-            return Preferences.getBoolean("driveEnableCurrentLimit", Constants.Swerve.driveEnableCurrentLimit); 
-        }
-        public static int angleContinuousCurrentLimit() { 
-            return Preferences.getInt("angleContinuousCurrentLimit", Constants.Swerve.angleContinuousCurrentLimit); 
-        }
-        public static int anglePeakCurrentLimit() { 
-            return Preferences.getInt("anglePeakCurrentLimit", Constants.Swerve.anglePeakCurrentLimit); 
-        }
-        public static double anglePeakCurrentDuration() { 
-            return Preferences.getDouble("anglePeakCurrentDuration", Constants.Swerve.anglePeakCurrentDuration); 
-        }
-        public static Boolean angleEnableCurrentLimit() { 
-            return Preferences.getBoolean("angleEnableCurrentLimit", Constants.Swerve.angleEnableCurrentLimit); 
-        }
-        public static double openLoopRamp() { 
-            return Preferences.getDouble("openLoopRamp", Constants.Swerve.openLoopRamp); 
-        }
-        public static double closedLoopRamp() { 
-            return Preferences.getDouble("closedLoopRamp", Constants.Swerve.closedLoopRamp); 
-        }
-        public static double driveKP() { 
-            return Preferences.getDouble("driveKP", Constants.Swerve.driveKP); 
-        }
-        public static double driveKI() { 
-            return Preferences.getDouble("driveKI", Constants.Swerve.driveKI); 
-        }
-        public static double driveKD() { 
-            return Preferences.getDouble("driveKD", Constants.Swerve.driveKD); 
-        }
-        public static double driveKF() { 
-            return Preferences.getDouble("driveKF", Constants.Swerve.driveKF); 
-        }
-        public static double angleKP() { 
-            return Preferences.getDouble("angleKP", Constants.swerveModuleType.angleKP); 
-        }
-        public static double angleKI() { 
-            return Preferences.getDouble("angleKI", Constants.swerveModuleType.angleKI); 
-        }
-        public static double angleKD() { 
-            return Preferences.getDouble("angleKD", Constants.swerveModuleType.angleKD); 
-        }
-        public static double angleKF() { 
-            return Preferences.getDouble("angleKF", Constants.swerveModuleType.angleKF); 
-        }
-        public static double driveKS() { 
-            return Preferences.getDouble("driveKS", Constants.Swerve.driveKS); 
-        }
-        public static double driveKV() { 
-            return Preferences.getDouble("driveKV", Constants.Swerve.driveKV); 
-        }
-        public static double driveKA() { 
-            return Preferences.getDouble("driveKA", Constants.Swerve.driveKA); 
-        }
-        public static double maxSpeed() { 
-            return Preferences.getDouble("maxSpeed", Constants.Swerve.maxSpeed); 
-        }
-        public static double maxAngularVelocity() { 
-            return Preferences.getDouble("maxAngularVelocity", Constants.Swerve.maxAngularVelocity); 
-        }
-        public static double maxCoastVelocity_MPS() { 
-            return Preferences.getDouble("maxCoastVelocity_MPS", Constants.Swerve.maxCoastVelocity_MPS); 
-        }
+        public static DashboardNumber driveContinuousCurrentLimit = 
+        new DashboardNumber("swerve/driveContinuousCurrentLimit", DriveTrainConstants.driveContinuousCurrentLimit); 
+        public static DashboardNumber drivePeakCurrentLimit = 
+        new DashboardNumber("swerve/drivePeakCurrentLimit", DriveTrainConstants.drivePeakCurrentLimit); 
+        public static DashboardNumber drivePeakCurrentDuration = 
+           new DashboardNumber("swerve/drivePeakCurrentDuration", DriveTrainConstants.drivePeakCurrentDuration); 
+        public static DashboardNumber angleContinuousCurrentLimit = 
+            new DashboardNumber("swerve/angleContinuousCurrentLimit", DriveTrainConstants.angleContinuousCurrentLimit); 
+        public static DashboardNumber anglePeakCurrentLimit = 
+            new DashboardNumber("swerve/anglePeakCurrentLimit", DriveTrainConstants.anglePeakCurrentLimit);
+        public static DashboardNumber anglePeakCurrentDuration = 
+           new DashboardNumber("swerve/anglePeakCurrentDuration", DriveTrainConstants.anglePeakCurrentDuration);
+        public static DashboardNumber openLoopRamp = 
+           new DashboardNumber("swerve/openLoopRamp", DriveTrainConstants.openLoopRamp);
+        public static DashboardNumber closedLoopRamp = 
+           new DashboardNumber("swerve/closedLoopRamp", DriveTrainConstants.closedLoopRamp);
+        public static DashboardNumber driveKP = 
+           new DashboardNumber("swerve/driveKP", DriveTrainConstants.driveKP);
+        public static DashboardNumber driveKI = 
+           new DashboardNumber("swerve/driveKI", DriveTrainConstants.driveKI);
+        public static DashboardNumber driveKD = 
+           new DashboardNumber("swerve/driveKD", DriveTrainConstants.driveKD);
+        public static DashboardNumber driveKF = 
+           new DashboardNumber("swerve/driveKF", DriveTrainConstants.driveKF);
+        public static DashboardNumber angleKP = 
+           new DashboardNumber("swerve/angleKP", DriveTrainConstants.moduleType.angleKP);
+        public static DashboardNumber angleKI = 
+           new DashboardNumber("swerve/angleKI", DriveTrainConstants.moduleType.angleKI);
+        public static DashboardNumber angleKD = 
+           new DashboardNumber("swerve/angleKD", DriveTrainConstants.moduleType.angleKD);
+        public static DashboardNumber angleKF = 
+           new DashboardNumber("swerve/angleKF", DriveTrainConstants.moduleType.angleKF);
+        public static DashboardNumber driveKS = 
+           new DashboardNumber("swerve/driveKS", DriveTrainConstants.driveKS);
+        public static DashboardNumber driveKV = 
+           new DashboardNumber("swerve/driveKV", DriveTrainConstants.driveKV);
+        public static DashboardNumber driveKA = 
+           new DashboardNumber("swerve/driveKA", DriveTrainConstants.driveKA);
+        public static DashboardNumber maxSpeed = 
+           new DashboardNumber("swerve/maxSpeed", DriveTrainConstants.maxSpeed);
+        public static DashboardNumber maxAngularVelocity = 
+           new DashboardNumber("swerve/maxAngularVelocity", DriveTrainConstants.maxAngularVelocity);
+        public static DashboardNumber maxCoastVelocity_MPS = 
+           new DashboardNumber("swerve/maxCoastVelocity_MPS", DriveTrainConstants.maxCoastVelocity_MPS);
     }
 
-    public static final class AutoConstants {
-        public static double maxSpeedMetersPerSecond() { 
-            return Preferences.getDouble("maxSpeedMetersPerSecond", Constants.AutoConstants.kMaxSpeedMetersPerSecond); 
-        }
-        public static double maxAccelerationMetersPerSecondSquared() { 
-            return Preferences.getDouble("maxAccelerationMetersPerSecondSquared", Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared); 
-        }
-        public static double maxAngularSpeedRadiansPerSecond() { 
-            return Preferences.getDouble("maxAngularSpeedRadiansPerSecond", Constants.AutoConstants.kMaxAngularSpeedRadiansPerSecond); 
-        }
-        public static double maxAngularSpeedRadiansPerSecondSquared() { 
-            return Preferences.getDouble("maxAngularSpeedRadiansPerSecondSquared", Constants.AutoConstants.kMaxAngularSpeedRadiansPerSecondSquared); 
-        }
-        public static double pXController() { 
-            return Preferences.getDouble("pXController", Constants.AutoConstants.kPXController); 
-        }
-        public static double iXController() { 
-            return Preferences.getDouble("iXController", Constants.AutoConstants.kIXController); 
-        }
-        public static double dXController() { 
-            return Preferences.getDouble("dXController", Constants.AutoConstants.kDXController); 
-        }
-        public static double pYController() { 
-            return Preferences.getDouble("pYController", Constants.AutoConstants.kPYController); 
-        }
-        public static double iYController() { 
-            return Preferences.getDouble("iYController", Constants.AutoConstants.kIYController); 
-        }
-        public static double dYController() { 
-            return Preferences.getDouble("dYController", Constants.AutoConstants.kDYController); 
-        }
-        public static double pThetaController() { 
-            return Preferences.getDouble("pThetaController", Constants.AutoConstants.kPThetaController); 
-        }
-        public static double iThetaController() { 
-            return Preferences.getDouble("iThetaController", Constants.AutoConstants.kIThetaController); 
-        }
-        public static double dThetaController() { 
-            return Preferences.getDouble("dThetaController", Constants.AutoConstants.kDThetaController); 
-        }
+    public static final class Auto {
+        public static DashboardNumber maxSpeedMetersPerSecond = 
+           new DashboardNumber("auto/maxSpeedMetersPerSecond", AutoConstants.kMaxSpeedMetersPerSecond);
+        public static DashboardNumber maxAccelerationMetersPerSecondSquared = 
+           new DashboardNumber("auto/maxAccelerationMetersPerSecondSquared", AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+        public static DashboardNumber maxAngularSpeedRadiansPerSecond = 
+           new DashboardNumber("auto/maxAngularSpeedRadiansPerSecond", AutoConstants.kMaxAngularSpeedRadiansPerSecond);
+        public static DashboardNumber maxAngularSpeedRadiansPerSecondSquared = 
+           new DashboardNumber("auto/maxAngularSpeedRadiansPerSecondSquared", AutoConstants.kMaxAngularSpeedRadiansPerSecondSquared);
+        public static DashboardNumber pXController = 
+           new DashboardNumber("auto/pXController", AutoConstants.kPXController);
+        public static DashboardNumber iXController = 
+           new DashboardNumber("auto/iXController", AutoConstants.kIXController);
+        public static DashboardNumber dXController = 
+           new DashboardNumber("auto/dXController", AutoConstants.kDXController);
+        public static DashboardNumber pYController = 
+           new DashboardNumber("auto/pYController", AutoConstants.kPYController);
+        public static DashboardNumber iYController = 
+           new DashboardNumber("auto/iYController", AutoConstants.kIYController);
+        public static DashboardNumber dYController = 
+           new DashboardNumber("auto/dYController", AutoConstants.kDYController);
+        public static DashboardNumber pThetaController = 
+           new DashboardNumber("auto/pThetaController", AutoConstants.kPThetaController);
+        public static DashboardNumber iThetaController = 
+           new DashboardNumber("auto/iThetaController", AutoConstants.kIThetaController);
+        public static DashboardNumber dThetaController = 
+           new DashboardNumber("auto/dThetaController", AutoConstants.kDThetaController);
     }
 
-    public static final class ArmConstants {
-        public static double armKP() { 
-            return Preferences.getDouble("armKP", Constants.ArmConstants.armKP); 
-        }
-        public static double armKI() { 
-            return Preferences.getDouble("armKI", Constants.ArmConstants.armKI); 
-        }
-        public static double armKD() { 
-            return Preferences.getDouble("armKD", Constants.ArmConstants.armKD); 
-        }
-        public static double armKIZ() { 
-            return Preferences.getDouble("armKIZ", Constants.ArmConstants.armKIZ); 
-        }
-        public static double armKFF() { 
-            return Preferences.getDouble("armKFF", Constants.ArmConstants.armKFF); 
-        }
-        public static double armMaxOutput() { 
-            return Preferences.getDouble("armMaxOutput", Constants.ArmConstants.armMaxOutput); 
-        }
-        public static double armMinOutput() { 
-            return Preferences.getDouble("armMinOutput", Constants.ArmConstants.armMinOutput); 
-        }
-        public static double armMaxRPM() { 
-            return Preferences.getDouble("armMaxRPM", Constants.ArmConstants.armMaxRPM); 
-        }
-        public static double armMaxVel() { 
-            return Preferences.getDouble("armMaxVel", Constants.ArmConstants.armMaxVel); 
-        }
-        public static double armMinVel() { 
-            return Preferences.getDouble("armMinVel", Constants.ArmConstants.armMinVel); 
-        }
-        public static double armMaxAcc() { 
-            return Preferences.getDouble("armMaxAcc", Constants.ArmConstants.armMaxAcc); 
-        }
-        public static double armAllowedErr() { 
-            return Preferences.getDouble("armAllowedErr", Constants.ArmConstants.armAllowedErr); 
-        }
-        public static double armLiftGearRatio() { 
-            return Preferences.getDouble("armLiftGearRatio", Constants.ArmConstants.armLiftGearRatio); 
-        }
-        public static double armLiftMetersPerRotation() { 
-            return Preferences.getDouble("armLiftMetersPerRotation", Constants.ArmConstants.armLiftMetersPerRotation); 
-        }
-        public static double armExtendGearRatio() { 
-            return Preferences.getDouble("armExtendGearRatio", Constants.ArmConstants.armExtendGearRatio); 
-        }
-        public static double armExtendMetersPerRotation() { 
-            return Preferences.getDouble("armExtendMetersPerRotation", Constants.ArmConstants.armExtendMetersPerRotation); 
-        }
-        public static double armLiftMinHeight() { 
-            return Preferences.getDouble("armLiftMinHeight", Constants.ArmConstants.armLiftMinHeight); 
-        }
-        public static double armLiftMaxHeight() { 
-            return Preferences.getDouble("armLiftMaxHeight", Constants.ArmConstants.armLiftMaxHeight); 
-        }
-        public static double armExtendMinLength() { 
-            return Preferences.getDouble("armExtendMinLength", Constants.ArmConstants.armExtendMinLength); 
-        }
-        public static double armExtendMaxLength() { 
-            return Preferences.getDouble("armExtendMaxLength", Constants.ArmConstants.armExtendMaxLength); 
-        }
+    public static final class ArmLift {
+        public static DashboardNumber armKP = 
+           new DashboardNumber("armLift/armKP", ArmConstants.armLiftKP);
+        public static DashboardNumber armKI = 
+           new DashboardNumber("armLift/armKI", ArmConstants.armLiftKI);
+        public static DashboardNumber armKD = 
+           new DashboardNumber("armLift/armKD", ArmConstants.armLiftKD);
+        public static DashboardNumber armKIZ = 
+           new DashboardNumber("armLift/armKIZ", ArmConstants.armLiftKIZ);
+        public static DashboardNumber armKFF = 
+           new DashboardNumber("armLift/armKFF", ArmConstants.armLiftKFF);
+        public static DashboardNumber armMaxOutput = 
+           new DashboardNumber("armLift/armMaxOutput", ArmConstants.armLiftMaxOutput);
+        public static DashboardNumber armMinOutput = 
+           new DashboardNumber("armLift/armMinOutput", ArmConstants.armLiftMinOutput);
+        public static DashboardNumber armMaxRPM = 
+           new DashboardNumber("armLift/armMaxRPM", ArmConstants.armLiftMaxRPM);
+        public static DashboardNumber armMinPosition = 
+           new DashboardNumber("armLift/armMinPosition", ArmConstants.armLiftMinPosition);
+        public static DashboardNumber armMaxPosition = 
+           new DashboardNumber("armLift/armMaxPosition", ArmConstants.armLiftMaxPosition);
+
+      //   public static DashboardNumber armMaxVel = 
+      //      new DashboardNumber("armLift/armMaxVel", ArmConstants.armLiftMaxVel);
+      //   public static DashboardNumber armMinVel = 
+      //      new DashboardNumber("armLift/armMinVel", ArmConstants.armLiftMinVel);
+      //   public static DashboardNumber armMaxAcc = 
+      //      new DashboardNumber("armLift/armMaxAcc", ArmConstants.armLiftMaxAcc);
+      //   public static DashboardNumber armAllowedErr = 
+      //      new DashboardNumber("armLift/armAllowedErr", ArmConstants.armLiftAllowedErr);
+      //   public static DashboardNumber armGearRatio = 
+      //      new DashboardNumber("armLift/armLiftGearRatio", ArmConstants.armLiftGearRatio);
+      //   public static DashboardNumber armMetersPerRotation = 
+      //      new DashboardNumber("armLift/armLiftMetersPerRotation", ArmConstants.armLiftMetersPerRotation);
+      //   public static DashboardNumber armMinHeight = 
+      //      new DashboardNumber("armLift/armLiftMinHeight", ArmConstants.armLiftMinHeight);
+      //   public static DashboardNumber armMaxHeight = 
+      //      new DashboardNumber("armLift/armLiftMaxHeight", ArmConstants.armLiftMaxHeight);
     }
+    public static final class ArmExtend {
+      public static DashboardNumber armKP = 
+         new DashboardNumber("armExtend/armKP", ArmConstants.armExtendKP);
+      public static DashboardNumber armKI = 
+         new DashboardNumber("armExtend/armKI", ArmConstants.armExtendKI);
+      public static DashboardNumber armKD = 
+         new DashboardNumber("armExtend/armKD", ArmConstants.armExtendKD);
+      public static DashboardNumber armKIZ = 
+         new DashboardNumber("armExtend/armKIZ", ArmConstants.armExtendKIZ);
+      public static DashboardNumber armKFF = 
+         new DashboardNumber("armExtend/armKFF", ArmConstants.armExtendKFF);
+      public static DashboardNumber armMaxOutput = 
+         new DashboardNumber("armExtend/armMaxOutput", ArmConstants.armExtendMaxOutput);
+      public static DashboardNumber armMinOutput = 
+         new DashboardNumber("armExtend/armMinOutput", ArmConstants.armExtendMinOutput);
+      public static DashboardNumber armMaxRPM = 
+         new DashboardNumber("armExtend/armMaxRPM", ArmConstants.armExtendMaxRPM);
+      public static DashboardNumber armMinPosition = 
+         new DashboardNumber("armExtend/armMinPosition", ArmConstants.armExtendMinPosition);
+      public static DashboardNumber armMaxPosition = 
+         new DashboardNumber("armExtend/armMaxPosition", ArmConstants.armExtendMaxPosition);
+      // public static DashboardNumber armMaxVel = 
+      //    new DashboardNumber("armExtend/armMaxVel", ArmConstants.armExtendMaxVel);
+      // public static DashboardNumber armMinVel = 
+      //    new DashboardNumber("armExtend/armMinVel", ArmConstants.armExtendMinVel);
+      // public static DashboardNumber armMaxAcc = 
+      //    new DashboardNumber("armExtend/armMaxAcc", ArmConstants.armExtendMaxAcc);
+      // public static DashboardNumber armAllowedErr = 
+      //    new DashboardNumber("armExtend/armAllowedErr", ArmConstants.armExtendAllowedErr);
+      // public static DashboardNumber armGearRatio = 
+      //    new DashboardNumber("armExtend/armExtendGearRatio", ArmConstants.armExtendGearRatio);
+      // public static DashboardNumber armMetersPerRotation = 
+      //    new DashboardNumber("armExtend/armExtendMetersPerRotation", ArmConstants.armExtendMetersPerRotation);
+      // public static DashboardNumber armMinLength = 
+      //    new DashboardNumber("armExtend/armExtendMinLength", ArmConstants.armExtendMinLength);
+      // public static DashboardNumber armMaxLength = 
+      //    new DashboardNumber("armExtend/armExtendMaxLength", ArmConstants.armExtendMaxLength);
+  }
 }
