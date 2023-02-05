@@ -13,6 +13,8 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import frc.lib.math.Conversions;
 import frc.robot.subsystems.drivetrain.*;
 import frc.robot.RobotPreferences;
@@ -59,6 +61,10 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
   configAngleEncoder(canCoderID, canBusID);
   configAngleMotor(angleMotorID, canBusID);
   configDriveMotor(driveMotorID, canBusID);
+
+  SendableRegistry.setName((Sendable) mDriveMotor, "SwerveModule " + moduleNumber, "Drive Motor");
+  SendableRegistry.setName((Sendable) mAngleMotor, "SwerveModule " + moduleNumber, "Angle Motor");
+  SendableRegistry.setName((Sendable) angleEncoder, "SwerveModule " + moduleNumber, "Angle Encoder");
 }
 
 public SwerveModuleIOTalonFX( COTSFalconSwerveConstants.moduleIDS modID ) {

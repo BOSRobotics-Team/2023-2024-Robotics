@@ -14,7 +14,6 @@ import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
 public class TestChecklist {
 
     private final ShuffleboardTab tabMain = Shuffleboard.getTab("Checklist");
-    private GenericEntry testModule[] = {null, null, null, null};
 
     private final PowerDistribution power = new PowerDistribution();
     private final CANDeviceFinder canFinder = new CANDeviceFinder();
@@ -22,11 +21,17 @@ public class TestChecklist {
     private final DriveGyro gyro;
     private final SwerveDriveTrain driveTrain;
 
-    public final DashboardNumber voltageThreshold = new DashboardNumber("Checklist/VoltageThreshold", 12.0);
+    private final DashboardNumber voltageThreshold = new DashboardNumber("Checklist/VoltageThreshold", 12.0);
 
-    public String checkBatteryStr = "";
-    public String checkDevicesStr = "";
-    public int checkSwerveModule[] = {0, 0, 0, 0};
+    private String checkBatteryStr = "";
+    private String checkDevicesStr = "";
+
+    private int checkSwerveModule[] = {0, 0, 0, 0};
+    private GenericEntry testModule[] = {null, null, null, null};
+
+    private int checkGyroState = 0;
+    private GenericEntry testGyro;
+
 
     public TestChecklist(DriveGyro gyro, SwerveDriveTrain driveTrain) {
         this.gyro = gyro;
@@ -34,18 +39,38 @@ public class TestChecklist {
 
         // tabMain.addNumber("Gyroscope Angle", this::getRotationDegrees);
         // tabMain.addBoolean("X-Stance On?", this::isXstance);
-        tabMain.addBoolean("1. Battery Test", this::checkBattery).withPosition(0, 0).withSize(2, 1);
-        tabMain.addString("Voltage | Threshold ", () -> this.checkBatteryStr).withPosition(2, 0).withSize(2, 1);
+        tabMain.addBoolean("1. Battery Test", this::checkBattery)
+            .withPosition(0, 0)
+            .withSize(2, 1);
+        tabMain.addString("Voltage | Threshold ", () -> this.checkBatteryStr)
+            .withPosition(2, 0)
+            .withSize(2, 1);
 
-        tabMain.addBoolean("2. All Devices Available", this::checkDevices).withPosition(0, 1).withSize(2, 1);
-        tabMain.addString("Device List ", () -> this.checkDevicesStr).withPosition(2, 1).withSize(5, 1);
+        tabMain.addBoolean("2. All Devices Available", this::checkDevices)
+            .withPosition(0, 1)
+            .withSize(2, 1);
+        tabMain.addString("Device List ", () -> this.checkDevicesStr)
+            .withPosition(2, 1)
+            .withSize(5, 1);
 
-        tabMain.addBoolean("3. Test Swerve Modules", this::checkSwerveModules).withPosition(0, 2).withSize(2, 1);
-
+        tabMain.addBoolean("3. Test Swerve Modules", this::checkSwerveModules)
+            .withPosition(0, 2)
+            .withSize(2, 1);
         for (int mod = 0; mod < 4; mod++) {
-            testModule[mod] = tabMain.add("Test Swerve Module " + mod, checkSwerveModule[mod] == 1).withWidget(BuiltInWidgets.kToggleSwitch).withPosition(2 + mod, 2).withSize(1, 1).getEntry();
+            testModule[mod] = tabMain.add("Test Swerve Module " + mod, checkSwerveModule[mod] == 1)
+                .withWidget(BuiltInWidgets.kToggleSwitch)
+                .withPosition(2 + mod, 2)
+                .withSize(1, 1).getEntry();
         }
-    }
+
+        tabMain.addBoolean("4. Test Gyro", this::checkGyro)
+            .withPosition(0, 3)
+            .withSize(2, 1);
+        testGyro = tabMain.add("Test Gyro", checkGyroState == 1)
+            .withWidget(BuiltInWidgets.kToggleSwitch)
+            .withPosition(2, 3)
+            .withSize(1, 1).getEntry();
+}
 
     public boolean checkBattery() {
         checkBatteryStr = power.getVoltage() + " | " + voltageThreshold.get();
@@ -142,8 +167,18 @@ public class TestChecklist {
                 checkSwerveModule[mod] = 2;
             }
         }
+        if ((checkGyroState == 0) && testGyro.getBoolean(false)) {
+            gyro.reset();
+            checkGyroState = 1;
+        } else if ((checkGyroState == 1) && (gyro.getHeadingDegrees() >= 90.0)) {
+            checkGyroState = 2;
+        }
+
     }
     public boolean checkSwerveModules() {
         return (checkSwerveModule[0] == 2) && (checkSwerveModule[1] == 2) && (checkSwerveModule[2] == 2) && (checkSwerveModule[3] == 2);
+    }
+    public boolean checkGyro() {
+        return (checkGyroState == 2);
     }
 }
