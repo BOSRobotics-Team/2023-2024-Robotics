@@ -55,6 +55,8 @@ public class RobotContainer {
   private final SwerveDriveTrain driveTrain;
   private final Arm arm;
 
+  private final TestChecklist test;
+
   /* Cameras */
   // public UsbCamera cam0;
   // public UsbCamera cam1;
@@ -89,6 +91,7 @@ public class RobotContainer {
       driveTrain = new SwerveDriveTrain(gyro, flModule, frModule, blModule, brModule);
       arm = new Arm(); // use ArmSim later
    }
+   test = new TestChecklist(gyro, driveTrain);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -99,8 +102,6 @@ public class RobotContainer {
   }
 
   public void logPeriodic() {
-    updateOI();
-
     driveTrain.logPeriodic();
     arm.logPeriodic();
   }
@@ -226,5 +227,17 @@ public class RobotContainer {
       );
     // demonstration of PathPlanner path group with event markers
     chooser.addOption("Test Path", autoTest);
+  }
+
+  public void initTestChecklist() {
+    // this.test = new TestChecklist(gyro, driveTrain);
+  }
+
+  public void updateTestChecklist() {
+    this.test.update();
+   }
+ 
+  public void exitTestChecklist() {
+  //  this.test = null;
   }
 }

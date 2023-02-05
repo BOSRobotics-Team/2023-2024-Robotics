@@ -207,10 +207,7 @@ public class SwerveDriveTrain extends SubsystemBase {
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, RobotPreferences.Swerve.maxSpeed.get());
-        for(SwerveModule mod : this.swerveModules){
-            mod.setDesiredState(desiredStates[mod.getModuleNumber()], false, false);
-        }
+        this.setModuleStates(desiredStates, false, false);
     }
 
     public Pose2d getPose() {
@@ -463,6 +460,14 @@ public class SwerveDriveTrain extends SubsystemBase {
             driveVelocityAverage += swerveModule.getState().speedMetersPerSecond;
         }
         return driveVelocityAverage / 4.0;
+    }
+
+    public void testModule(int moduleNumber, double drive, double angle) {
+        for (SwerveModule swerveModule : swerveModules) {
+            if (moduleNumber == swerveModule.getModuleNumber()) {
+                swerveModule.setDesiredState(new SwerveModuleState(drive, Rotation2d.fromDegrees(angle)), true, true);
+            }
+          }
     }
 
     @Override
