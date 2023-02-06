@@ -17,7 +17,7 @@ import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
 public class TestChecklist {
     private class ChecklistItem {
         public final String Title;
-        public final Supplier<Boolean> isComplete;
+        public final Supplier<Boolean> runTest;
         public final int column;
         public final int row;
         
@@ -25,9 +25,9 @@ public class TestChecklist {
         public Boolean complete;
         public String status;
 
-        public ChecklistItem( String title, Supplier<Boolean> compl, int col, int row) {
+        public ChecklistItem( String title, Supplier<Boolean> test, int col, int row) {
             this.Title = title;
-            this.isComplete = compl;
+            this.runTest = test;
             this.column = col;
             this.row = row;
             this.widget = null;
@@ -59,9 +59,9 @@ public class TestChecklist {
     private int BATTERY_TEST = 0;
     private int DEVICES_TEST = 1;
     private int SWERVE_MOD_0 = 2;
-    private int SWERVE_MOD_1 = 3;
-    private int SWERVE_MOD_2 = 4;
-    private int SWERVE_MOD_3 = 5;
+    // private int SWERVE_MOD_1 = 3;
+    // private int SWERVE_MOD_2 = 4;
+    // private int SWERVE_MOD_3 = 5;
     private int SWERVE_MODULES = 6;
     private int GYRO_TEST = 7;
     private int TESTS_COMPLETE = 8;
@@ -70,10 +70,10 @@ public class TestChecklist {
     private List<ChecklistItem> checkListSteps = List.of( 
         new ChecklistItem("1. Battery Test", this::checkBattery, 0, 1),
         new ChecklistItem("2. All Devices Available", this::checkDevices, 0, 2),
-        new ChecklistItem("3a. Test Swerve Module 0", this::checkSwerveModule0, 2, 3),
-        new ChecklistItem("3b. Test Swerve Module 1", this::checkSwerveModule1, 4, 3),
-        new ChecklistItem("3c. Test Swerve Module 2", this::checkSwerveModule2, 6, 3),
-        new ChecklistItem("3d. Test Swerve Module 3", this::checkSwerveModule3, 8, 3),
+        new ChecklistItem("3a. Swerve Module 0", this::checkSwerveModule0, 2, 3),
+        new ChecklistItem("3b. Swerve Module 1", this::checkSwerveModule1, 4, 3),
+        new ChecklistItem("3c. Swerve Module 2", this::checkSwerveModule2, 6, 3),
+        new ChecklistItem("3d. Swerve Module 3", this::checkSwerveModule3, 8, 3),
         new ChecklistItem("3. Swerve Modules", this::checkSwerveModules, 0, 3),
         new ChecklistItem("4. Test Gyro", this::checkGyro, 0, 4),
         new ChecklistItem("Tests Complete", this::allTestsComplete, 6, 0));
@@ -168,7 +168,7 @@ public class TestChecklist {
             }
 
             if (checklistStep < checkListSteps.size()) {
-                if (checkListSteps.get(checklistStep).isComplete.get()) {
+                if (checkListSteps.get(checklistStep).runTest.get()) {
                     if (checklistStep < TESTS_COMPLETE) {
                         checklistStep += 1;
                     }
@@ -263,10 +263,10 @@ public class TestChecklist {
             allPresent = false;
             status += "SparkMax(" + Constants.ARM_EXTEND_MOTOR_ID + ") ";
         }
-        checkListSteps.get(1).complete = true;//allPresent;
+        checkListSteps.get(1).complete = allPresent;
         checkListSteps.get(1).status = status;
         
-        return true; //allPresent;
+        return allPresent;
     }
 
     public boolean testSwerveModule(int mod) {
