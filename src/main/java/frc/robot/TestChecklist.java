@@ -12,6 +12,7 @@ import frc.lib.gyro.GyroIO;
 import frc.lib.util.CANDeviceFinder;
 import frc.lib.util.DashboardNumber;
 import frc.lib.util.CANDeviceId.CANDeviceType;
+import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
 
 public class TestChecklist {
@@ -43,6 +44,8 @@ public class TestChecklist {
 
     private final GyroIO gyro;
     private final SwerveDriveTrain driveTrain;
+    private final Arm arm;
+    
 
     private final DashboardNumber voltageThreshold = new DashboardNumber("Checklist/VoltageThreshold", 12.0);
 
@@ -51,8 +54,11 @@ public class TestChecklist {
     private int checkSwerveModule[] = {0, 0, 0, 0};
     private GenericEntry testModule[] = {null, null, null, null};
 
-    private int checkGyroState = 0;
-    private GenericEntry testGyro;
+    private int checkGyroState[] = {0, 0};
+    private GenericEntry testGyro[] = {null, null};
+
+    private int checkLimitSwitchState[] = {0, 0};
+
 
     private boolean m_enableCheckList = false;
 
@@ -63,8 +69,14 @@ public class TestChecklist {
     // private int SWERVE_MOD_2 = 4;
     // private int SWERVE_MOD_3 = 5;
     private int SWERVE_MODULES = 6;
-    private int GYRO_TEST = 7;
-    private int TESTS_COMPLETE = 8;
+    private int GYRO_YAWTEST = 7;
+    private int GYRO_PITCHTEST = 8;
+    private int GYRO_TEST = 9;
+    private int LIMITSWITCH_ARMEXTENDTEST = 10;
+    private int LIMITSWITCH_ARMLIFTTEST = 11;
+    private int LIMITSWITCH_TEST = 12;
+    
+    private int TESTS_COMPLETE = 13;
 
     private int checklistStep = 0;
     private List<ChecklistItem> checkListSteps = List.of( 
@@ -75,12 +87,18 @@ public class TestChecklist {
         new ChecklistItem("3c. Swerve Module 2", this::checkSwerveModule2, 6, 3),
         new ChecklistItem("3d. Swerve Module 3", this::checkSwerveModule3, 8, 3),
         new ChecklistItem("3. Swerve Modules", this::checkSwerveModules, 0, 3),
+        new ChecklistItem("4a. Test Yaw", this::checkGyroYaw, 2, 4),
+        new ChecklistItem("4b. Test Pitch", this::checkGyroPitch, 5, 4),
         new ChecklistItem("4. Test Gyro", this::checkGyro, 0, 4),
+        new ChecklistItem("5a. ArmExtend Switch", this::checkArmExtendSwitch, 2, 5),
+        new ChecklistItem("5b. ArmLift Switch", this::checkArmLiftSwitch, 4, 5),
+        new ChecklistItem("5. Limit Switches", this::checkLimitSwitches, 0, 5),
         new ChecklistItem("Tests Complete", this::allTestsComplete, 6, 0));
 
-    public TestChecklist(GyroIO gyro, SwerveDriveTrain driveTrain) {
+    public TestChecklist(GyroIO gyro, SwerveDriveTrain driveTrain, Arm arm) {
         this.gyro = gyro;
         this.driveTrain = driveTrain;
+        this.arm = arm;
 
         tabMain.addString("Current Step", this::getCurrentStep)
             .withPosition(0, 0).withSize(2, 1);
@@ -110,13 +128,17 @@ public class TestChecklist {
         for (int mod = 0; mod < 4; mod++) {
             testModule[mod] = tabMain.add("Test Module " + mod, false)
                 .withWidget(BuiltInWidgets.kToggleSwitch)
-                .withPosition(checkListSteps.get(SWERVE_MOD_0).column + 2 + mod, checkListSteps.get(SWERVE_MOD_0 + mod).row + 1)
+                .withPosition(10 + mod, checkListSteps.get(SWERVE_MOD_0 + mod).row)
                 .withSize(1, 1).getEntry();
         }
 
-        testGyro = tabMain.add("Test Gyro", false)
+        testGyro[0] = tabMain.add("Test Yaw", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
-            .withPosition(checkListSteps.get(GYRO_TEST).column + 2, checkListSteps.get(GYRO_TEST).row)
+            .withPosition(checkListSteps.get(GYRO_YAWTEST).column + 2, checkListSteps.get(GYRO_YAWTEST).row)
+            .withSize(1, 1).getEntry();
+        testGyro[1] = tabMain.add("Test Pitch", false)
+            .withWidget(BuiltInWidgets.kToggleSwitch)
+            .withPosition(checkListSteps.get(GYRO_PITCHTEST).column + 2, checkListSteps.get(GYRO_PITCHTEST).row)
             .withSize(1, 1).getEntry();
     }
 
@@ -152,7 +174,13 @@ public class TestChecklist {
             checkSwerveModule[mod] = 0;
             testModule[mod].setBoolean(false);
         }    
-        checkGyroState = 0;    
+        for (int i = 0; i < 2; ++i) {
+            checkGyroState[i] = 0; 
+            testGyro[i].setBoolean(false);
+        }
+        for (int i = 0; i < 2; ++i) {
+            checkLimitSwitchState[i] = 0;
+        }
         checklistStep = 0;
         resetTests.setBoolean(false);
     }
@@ -309,32 +337,100 @@ public class TestChecklist {
             result = result && checkListSteps.get(SWERVE_MOD_0 + mod).complete;
         }
         checkListSteps.get(SWERVE_MODULES).complete = result;
+        checkListSteps.get(SWERVE_MODULES).status = "Module Tests complete";
+
         return result;
     }
-    public boolean testGyro() {
-        boolean toggle = testGyro.getBoolean(false);
-
-        if (checkGyroState == 0) {
+    
+    public boolean checkGyroYaw() {
+        boolean toggle = testGyro[0].getBoolean(false);
+        if (checkGyroState[0] == 0) {
             if (!toggle) {
-                checkListSteps.get(GYRO_TEST).status = "Click Toggle to Start Gyro Test";
+                checkListSteps.get(GYRO_YAWTEST).status = "Click Toggle to Start Gyro Yaw Test";
             } else {
                 gyro.reset();
-                checkGyroState = 1;
-                checkListSteps.get(GYRO_TEST).status = "Rotate robot 90 degrees";
+                checkGyroState[0] = 1;
+                checkListSteps.get(GYRO_YAWTEST).status = "Rotate robot 90 degrees";
             }
-        } else if (checkGyroState == 1) {
+        } else if (checkGyroState[0] == 1) {
             if (Math.abs(gyro.getAngle() - 90.0) < 0.1) {
-                checkGyroState = 2;    
-                checkListSteps.get(GYRO_TEST).status = "Gyro test complete";
-                checkListSteps.get(GYRO_TEST).complete = true;
-                testGyro.setBoolean(false);
+                checkGyroState[0] = 2;    
+                checkListSteps.get(GYRO_YAWTEST).status = "Gyro test complete";
+                checkListSteps.get(GYRO_YAWTEST).complete = true;
+                testGyro[0].setBoolean(false);
             }
         }
-        return checkGyroState == 2;
+        return checkGyroState[0] == 2;
+    }
+    public boolean checkGyroPitch() {
+        boolean toggle = testGyro[1].getBoolean(false);
+        if (checkGyroState[1] == 0) {
+            if (!toggle) {
+                checkListSteps.get(GYRO_PITCHTEST).status = "Click Toggle to Start Gyro Pitch Test";
+            } else {
+                gyro.reset();
+                checkGyroState[1] = 1;
+                checkListSteps.get(GYRO_PITCHTEST).status = "Lift robot 30 degrees";
+            }
+        } else if (checkGyroState[1] == 1) {
+            if (Math.abs(gyro.getPitch() - 30.0) < 0.1) {
+                checkGyroState[1] = 2;    
+                checkListSteps.get(GYRO_PITCHTEST).status = "Gyro test complete";
+                checkListSteps.get(GYRO_PITCHTEST).complete = true;
+                testGyro[1].setBoolean(false);
+            }
+        }
+        return checkGyroState[1] == 2;
     }
     public boolean checkGyro() {
-        return testGyro() && checkListSteps.get(GYRO_TEST).complete;
+        boolean result = 
+            checkListSteps.get(GYRO_YAWTEST).complete &&
+            checkListSteps.get(GYRO_PITCHTEST).complete;
+
+        checkListSteps.get(GYRO_TEST).complete = result;
+        checkListSteps.get(GYRO_TEST).status = "Gyro test complete";
+        return result;
     }
+    public boolean checkArmExtendSwitch() {
+        if (checkLimitSwitchState[0] == 0) {
+            if (!arm.isArmExtendMinLimitSwitch()) {
+                checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST).status = "Click Arm Extend Limit Switch";
+            } else {
+                checkLimitSwitchState[0] = 1;
+                checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST).status = "Release Arm Extend Limit Switch";
+            }
+        } else if ((checkLimitSwitchState[0] == 1) && !arm.isArmExtendMinLimitSwitch()) {
+            checkLimitSwitchState[0] = 2;
+            checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST).status = "Arm Extend Limit Switch complete";
+            checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST).complete = true;
+        }
+        return checkLimitSwitchState[0] == 2;
+    }
+    public boolean checkArmLiftSwitch() {
+        if (checkLimitSwitchState[1] == 0) {
+            if (!arm.isArmLiftMinLimitSwitch()) {
+                checkListSteps.get(LIMITSWITCH_ARMLIFTTEST).status = "Click Arm Lift Limit Switch";
+            } else {
+                checkLimitSwitchState[1] = 1;
+                checkListSteps.get(LIMITSWITCH_ARMLIFTTEST).status = "Release Arm Lift Limit Switch";
+            }
+        } else if ((checkLimitSwitchState[1] == 1) && !arm.isArmExtendMinLimitSwitch()) {
+            checkLimitSwitchState[1] = 2;
+            checkListSteps.get(LIMITSWITCH_ARMLIFTTEST).status = "Arm Lift Limit Switch complete";
+            checkListSteps.get(LIMITSWITCH_ARMLIFTTEST).complete = true;
+        }
+        return checkLimitSwitchState[1] == 2;
+    }
+    public boolean checkLimitSwitches() {
+        boolean result = 
+            checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST).complete &&
+            checkListSteps.get(LIMITSWITCH_ARMLIFTTEST).complete;
+
+        checkListSteps.get(LIMITSWITCH_TEST).complete = result;
+        checkListSteps.get(LIMITSWITCH_TEST).status = "Arm Limit Switches complete";
+        return result;
+    }
+
     public boolean allTestsComplete() {
         boolean result = true;
         for (int i = BATTERY_TEST; i < TESTS_COMPLETE; ++i) {

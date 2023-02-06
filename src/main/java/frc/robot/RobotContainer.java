@@ -89,7 +89,7 @@ public class RobotContainer {
       driveTrain = new SwerveDriveTrain(gyro, flModule, frModule, blModule, brModule);
       arm = new Arm(); // use ArmSim later
    }
-   test = new TestChecklist(gyro, driveTrain);
+   test = new TestChecklist(gyro, driveTrain, arm);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();

@@ -200,4 +200,12 @@ public class Arm extends SubsystemBase {
   public boolean isGripClawOpen() {
     return (m_gripper.get() != Value.kReverse);
   }
+
+  public boolean isArmExtendMinLimitSwitch() {
+    return m_armExtendLimit.isPressed();
+  }
+
+public boolean isArmLiftMinLimitSwitch() {
+    return m_armLiftLimit.isPressed();
+}
 }

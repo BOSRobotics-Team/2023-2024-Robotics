@@ -87,6 +87,14 @@ public class GyroIO implements Gyro {
   }
 
   public void calibrate() {};
+  
+  public void close(){
+    if (ahrs != null) {
+      ahrs.close();
+    } else if (pigeon != null) {
+      pigeon.close();
+    }
+  }
 
   /** Zero the robot's heading. */
   public void reset() {
@@ -122,12 +130,22 @@ public class GyroIO implements Gyro {
     return Rotation2d.fromDegrees(getAngle());
   }
 
-  public void close(){
+  public double getPitch() {
     if (ahrs != null) {
-      ahrs.close();
+      return ahrs.getPitch();
     } else if (pigeon != null) {
-      pigeon.close();
+      return pigeon.getPitch();
     }
+    return 0.0;
+  }
+
+  public double getRoll() {
+    if (ahrs != null) {
+      return ahrs.getRoll();
+    } else if (pigeon != null) {
+      return pigeon.getRoll();
+    }
+    return 0.0;
   }
 
   public void logPeriodic() {
