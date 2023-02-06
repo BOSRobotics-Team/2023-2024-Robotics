@@ -1,6 +1,5 @@
 package frc.robot;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -16,6 +15,26 @@ import frc.lib.util.CANDeviceId.CANDeviceType;
 import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
 
 public class TestChecklist {
+    private class ChecklistItem {
+        public final String Title;
+        public final Supplier<Boolean> isComplete;
+        public final int column;
+        public final int row;
+        
+        public GenericEntry widget;
+        public Boolean complete;
+        public String status;
+
+        public ChecklistItem( String title, Supplier<Boolean> compl, int col, int row) {
+            this.Title = title;
+            this.isComplete = compl;
+            this.column = col;
+            this.row = row;
+            this.widget = null;
+            this.complete = false;
+            this.status = "";
+        }
+    }
 
     private final ShuffleboardTab tabMain = Shuffleboard.getTab("Checklist");
 
@@ -27,8 +46,7 @@ public class TestChecklist {
 
     private final DashboardNumber voltageThreshold = new DashboardNumber("Checklist/VoltageThreshold", 12.0);
 
-    private String checkBatteryStr = "";
-    private String checkDevicesStr = "";
+    private GenericEntry resetTests;
 
     private int checkSwerveModule[] = {0, 0, 0, 0};
     private GenericEntry testModule[] = {null, null, null, null};
@@ -36,24 +54,29 @@ public class TestChecklist {
     private int checkGyroState = 0;
     private GenericEntry testGyro;
 
+    private boolean m_enableCheckList = false;
 
-    private boolean m_enableCheckList = false;;
-    private String m_checklistStepStatus = "";
-
-    private List<GenericEntry> currentStepWidgets = new ArrayList<GenericEntry>();
+    private int BATTERY_TEST = 0;
+    private int DEVICES_TEST = 1;
+    private int SWERVE_MOD_0 = 2;
+    private int SWERVE_MOD_1 = 3;
+    private int SWERVE_MOD_2 = 4;
+    private int SWERVE_MOD_3 = 5;
+    private int SWERVE_MODULES = 6;
+    private int GYRO_TEST = 7;
+    private int TESTS_COMPLETE = 8;
 
     private int checklistStep = 0;
-    private List<String> checkListStepTitles = List.of( "1. Battery Test", 
-                                                 "2. All Devices Available",
-                                                 "3. Test Swerve Modules",
-                                                 "4. Test Gyro",
-                                                 "Tests Complete" );
-
-    private List<Supplier<Boolean>> checkListStepComplete = List.of( this::checkBattery,
-                                                                    this::checkDevices,
-                                                                    this::checkSwerveModules,
-                                                                    this::checkGyro,
-                                                                    this::checkGyro);
+    private List<ChecklistItem> checkListSteps = List.of( 
+        new ChecklistItem("1. Battery Test", this::checkBattery, 0, 1),
+        new ChecklistItem("2. All Devices Available", this::checkDevices, 0, 2),
+        new ChecklistItem("3a. Test Swerve Module 0", this::checkSwerveModule0, 2, 3),
+        new ChecklistItem("3b. Test Swerve Module 1", this::checkSwerveModule1, 4, 3),
+        new ChecklistItem("3c. Test Swerve Module 2", this::checkSwerveModule2, 6, 3),
+        new ChecklistItem("3d. Test Swerve Module 3", this::checkSwerveModule3, 8, 3),
+        new ChecklistItem("3. Swerve Modules", this::checkSwerveModules, 0, 3),
+        new ChecklistItem("4. Test Gyro", this::checkGyro, 0, 4),
+        new ChecklistItem("Tests Complete", this::allTestsComplete, 6, 0));
 
     public TestChecklist(GyroIO gyro, SwerveDriveTrain driveTrain) {
         this.gyro = gyro;
@@ -62,53 +85,44 @@ public class TestChecklist {
         tabMain.addString("Current Step", this::getCurrentStep)
             .withPosition(0, 0).withSize(2, 1);
         tabMain.addString("Current Step Status", this::getCurrentStepStatus)
-            .withPosition(2, 0).withSize(3, 1);
+            .withPosition(2, 0).withSize(4, 1);
+        
+        resetTests = tabMain.add("Reset", false)
+                    .withWidget(BuiltInWidgets.kToggleButton)
+                    .withPosition(8, 0)
+                    .withSize(1, 1).getEntry();
     
-        for (int i = 0; i < checkListStepTitles.size(); ++i) {
-            currentStepWidgets.add(
-                tabMain.add(checkListStepTitles.get(i), false)
+        for (var step : checkListSteps) {
+            step.widget = tabMain.add(step.Title, false)
                     .withWidget(BuiltInWidgets.kBooleanBox)
-                    .withPosition(0, 1 + i)
-                    .withSize(2, 1).getEntry());
+                    .withPosition(step.column, step.row)
+                    .withSize(2, 1).getEntry();
         }
 
-        // tabMain.addNumber("Gyroscope Angle", this::getRotationDegrees);
-        // tabMain.addBoolean("X-Stance On?", this::isXstance);
-        // tabMain.addBoolean("1. Battery Test", this::checkBattery)
-        //     .withPosition(0, 0)
-        //     .withSize(2, 1);
-        tabMain.addString("Voltage | Threshold ", () -> this.checkBatteryStr)
-            .withPosition(2, 1)
+        tabMain.addString("Voltage | Threshold ", () -> checkListSteps.get(BATTERY_TEST).status)
+            .withPosition(checkListSteps.get(BATTERY_TEST).column + 2, checkListSteps.get(BATTERY_TEST).row)
             .withSize(2, 1);
 
-        // tabMain.addBoolean("2. All Devices Available", this::checkDevices)
-        //     .withPosition(0, 1)
-        //     .withSize(2, 1);
-        tabMain.addString("Device List ", () -> this.checkDevicesStr)
-            .withPosition(2, 2)
+        tabMain.addString("Device List ", () -> checkListSteps.get(DEVICES_TEST).status)
+            .withPosition(checkListSteps.get(DEVICES_TEST).column + 2, checkListSteps.get(DEVICES_TEST).row)
             .withSize(5, 1);
 
-        // tabMain.addBoolean("3. Test Swerve Modules", this::checkSwerveModules)
-        //     .withPosition(0, 2)
-        //     .withSize(2, 1);
         for (int mod = 0; mod < 4; mod++) {
-            testModule[mod] = tabMain.add("Test Swerve Module " + mod, checkSwerveModule[mod] == 1)
+            testModule[mod] = tabMain.add("Test Module " + mod, false)
                 .withWidget(BuiltInWidgets.kToggleSwitch)
-                .withPosition(2 + mod, 3)
+                .withPosition(checkListSteps.get(SWERVE_MOD_0).column + 2 + mod, checkListSteps.get(SWERVE_MOD_0 + mod).row + 1)
                 .withSize(1, 1).getEntry();
         }
 
-        // tabMain.addBoolean("4. Test Gyro", this::checkGyro)
-        //     .withPosition(0, 3)
-        //     .withSize(2, 1);
-        testGyro = tabMain.add("Test Gyro", checkGyroState == 1)
+        testGyro = tabMain.add("Test Gyro", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
-            .withPosition(2, 4)
+            .withPosition(checkListSteps.get(GYRO_TEST).column + 2, checkListSteps.get(GYRO_TEST).row)
             .withSize(1, 1).getEntry();
     }
 
     public void enableChecklist() {
         m_enableCheckList = true;
+        resetTests();
     }
 
     public void disableChecklist() {
@@ -117,43 +131,47 @@ public class TestChecklist {
 
     public String getCurrentStep() {
         if (m_enableCheckList) {
-            return checkListStepTitles.get(checklistStep);
+            return checkListSteps.get(checklistStep).Title;
         }
         return "Disabled";
     }
     public String getCurrentStepStatus() {
         if (m_enableCheckList) {
-            return m_checklistStepStatus;
+            return checkListSteps.get(checklistStep).status;
         }
         return "Place DriverStation in Test Mode to run checklists";
     }
 
+    public void resetTests() {
+        for (var step : checkListSteps) {
+            step.complete = false;
+            step.status = "";
+            step.widget.setBoolean(false);
+        }
+        for (int mod = 0; mod < 4; ++mod) {
+            checkSwerveModule[mod] = 0;
+            testModule[mod].setBoolean(false);
+        }    
+        checkGyroState = 0;    
+        checklistStep = 0;
+        resetTests.setBoolean(false);
+    }
+
     public void update() {
         if (m_enableCheckList) {
-            if (checklistStep < checkListStepTitles.size()) {
-                if (checkListStepComplete.get(checklistStep).get()) {
-                    currentStepWidgets.get(checklistStep).setBoolean(true);
-                    checklistStep += 1;
-                }
+            if (resetTests.getBoolean(false)) {
+                resetTests();
             }
 
-            if (checklistStep == 2) {
-                for (int mod = 0; mod < 4; mod++) {
-                    if ((checkSwerveModule[mod] == 0) && testModule[mod].getBoolean(false)) {
-                        driveTrain.testModule(mod, 0.5, 90.0);
-                        checkSwerveModule[mod] = 1;
-                    } else if ((checkSwerveModule[mod] == 1) && !testModule[mod].getBoolean(false)) {
-                        driveTrain.testModule(mod, 0.0, 0.0);
-                        checkSwerveModule[mod] = 2;
-                    }
-                }
+            for (var step : checkListSteps) {
+                step.widget.setBoolean(step.complete);
             }
-            if (checklistStep == 3) {
-                if ((checkGyroState == 0) && testGyro.getBoolean(false)) {
-                    gyro.reset();
-                    checkGyroState = 1;
-                } else if ((checkGyroState == 1) && (gyro.getAngle() >= 90.0)) {
-                    checkGyroState = 2;
+
+            if (checklistStep < checkListSteps.size()) {
+                if (checkListSteps.get(checklistStep).isComplete.get()) {
+                    if (checklistStep < TESTS_COMPLETE) {
+                        checklistStep += 1;
+                    }
                 }
             }
         }
@@ -161,95 +179,170 @@ public class TestChecklist {
     }
     
     public boolean checkBattery() {
-        checkBatteryStr = power.getVoltage() + " | " + voltageThreshold.get();
-        return power.getVoltage() >= voltageThreshold.get();
+        boolean result = power.getVoltage() >= voltageThreshold.get();
+
+        checkListSteps.get(0).complete = result;
+        checkListSteps.get(0).status = power.getVoltage() + " | " + voltageThreshold.get();
+        
+        return result;
     }
     public boolean checkDevices() {
         boolean allPresent = true;
-        this.checkDevicesStr = "";
+        String status = "";
 
         if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "Falcon(" + Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID + ") ";
+            status += "Falcon(" + Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID + ") ";
         }
         if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "Falcon(" + Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID + ") ";
+            status += "Falcon(" + Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID + ") ";
         }
         if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "Falcon(" + Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID + ") ";
+            status += "Falcon(" + Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID + ") ";
         }
         if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "Falcon(" + Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID + ") ";
+            status += "Falcon(" + Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID + ") ";
         }
 
         if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_LEFT_MODULE_ANGLE_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "Falcon(" + Constants.FRONT_LEFT_MODULE_ANGLE_MOTOR_ID + ") ";
+            status += "Falcon(" + Constants.FRONT_LEFT_MODULE_ANGLE_MOTOR_ID + ") ";
         }
         if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "Falcon(" + Constants.FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID + ") ";
+            status += "Falcon(" + Constants.FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID + ") ";
         }
         if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_LEFT_MODULE_ANGLE_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "Falcon(" + Constants.BACK_LEFT_MODULE_ANGLE_MOTOR_ID + ") ";
+            status += "Falcon(" + Constants.BACK_LEFT_MODULE_ANGLE_MOTOR_ID + ") ";
         }
         if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_RIGHT_MODULE_ANGLE_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "Falcon(" + Constants.BACK_RIGHT_MODULE_ANGLE_MOTOR_ID + ") ";
+            status += "Falcon(" + Constants.BACK_RIGHT_MODULE_ANGLE_MOTOR_ID + ") ";
         }
 
         // if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_LEFT_MODULE_ANGLE_ENCODER_ID)) {
         //     allPresent = false;
-        //     this.checkDevicesStr += "Falcon(" + Constants.FRONT_LEFT_MODULE_ANGLE_ENCODER_ID + ") ";
+        //     status += "Falcon(" + Constants.FRONT_LEFT_MODULE_ANGLE_ENCODER_ID + ") ";
         // }
         // if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID)) {
         //     allPresent = false;
-        //     this.checkDevicesStr += "Falcon(" + Constants.FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID + ") ";
+        //     status += "Falcon(" + Constants.FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID + ") ";
         // }
         // if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_LEFT_MODULE_ANGLE_ENCODER_ID)) {
         //     allPresent = false;
-        //     this.checkDevicesStr += "Falcon(" + Constants.BACK_LEFT_MODULE_ANGLE_ENCODER_ID + ") ";
+        //     status += "Falcon(" + Constants.BACK_LEFT_MODULE_ANGLE_ENCODER_ID + ") ";
         // }
         // if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_RIGHT_MODULE_ANGLE_ENCODER_ID)) {
         //     allPresent = false;
-        //     this.checkDevicesStr += "Falcon(" + Constants.BACK_RIGHT_MODULE_ANGLE_ENCODER_ID + ") ";
+        //     status += "Falcon(" + Constants.BACK_RIGHT_MODULE_ANGLE_ENCODER_ID + ") ";
         // }
 
         if (!gyro.isConnected()) {
             allPresent = false;
-            this.checkDevicesStr += "Gyro(" + Constants.GYRO_ID + ") ";
+            status += "Gyro(" + Constants.GYRO_ID + ") ";
         }
 
         if (!canFinder.isDevicePresent(CANDeviceType.PCM, Constants.PNEUMATICSHUB_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "PH(" + Constants.PNEUMATICSHUB_ID + ") ";
+            status += "PH(" + Constants.PNEUMATICSHUB_ID + ") ";
         }
         if (!power.getFaults().CanWarning) {
             allPresent = false;
-            this.checkDevicesStr += "PDP(" + 0 + ") ";
+            status += "PDP(" + 0 + ") ";
         }
 
         if (!canFinder.isDevicePresent(CANDeviceType.SPARK_MAX, Constants.ARM_LIFT_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "SparkMax(" + Constants.ARM_LIFT_MOTOR_ID + ") ";
+            status += "SparkMax(" + Constants.ARM_LIFT_MOTOR_ID + ") ";
         }
         if (!canFinder.isDevicePresent(CANDeviceType.SPARK_MAX, Constants.ARM_EXTEND_MOTOR_ID)) {
             allPresent = false;
-            this.checkDevicesStr += "SparkMax(" + Constants.ARM_EXTEND_MOTOR_ID + ") ";
+            status += "SparkMax(" + Constants.ARM_EXTEND_MOTOR_ID + ") ";
         }
-
-        return allPresent;
+        checkListSteps.get(1).complete = true;//allPresent;
+        checkListSteps.get(1).status = status;
+        
+        return true; //allPresent;
     }
 
+    public boolean testSwerveModule(int mod) {
+        boolean toggle = testModule[mod].getBoolean(false);
 
+        if (checkSwerveModule[mod] == 0) {
+            if (!toggle) {
+                checkListSteps.get(SWERVE_MOD_0 + mod).status = "Click Toggle to Start Motor " + mod;
+            } else {
+                driveTrain.testModule(mod, 0.5, 90.0);
+                checkSwerveModule[mod] = 1;
+                checkListSteps.get(SWERVE_MOD_0 + mod).status = "Verify motor is moving forward, angle is 90 degrees - flip toggle when complete";
+            }
+        } else if (checkSwerveModule[mod] == 1) {
+            if (!toggle) {
+                driveTrain.testModule(mod, 0.0, 0.0);
+                checkSwerveModule[mod] = 2;    
+                checkListSteps.get(SWERVE_MOD_0 + mod).status = "Module " + mod + " complete";
+                checkListSteps.get(SWERVE_MOD_0 + mod).complete = true;
+            }
+        }
+        return checkSwerveModule[mod] == 2;
+    }
+
+    public boolean checkSwerveModule0() {
+        return testSwerveModule(0);
+    }
+    public boolean checkSwerveModule1() {
+        return testSwerveModule(1);
+    }
+    public boolean checkSwerveModule2() {
+        return testSwerveModule(2);
+    }
+    public boolean checkSwerveModule3() {
+        return testSwerveModule(3);
+    }
     public boolean checkSwerveModules() {
-        return (checkSwerveModule[0] == 2) && (checkSwerveModule[1] == 2) && (checkSwerveModule[2] == 2) && (checkSwerveModule[3] == 2);
+        boolean result = true;
+        for (int mod = 0; mod < 4; mod++) {
+            result = result && checkListSteps.get(SWERVE_MOD_0 + mod).complete;
+        }
+        checkListSteps.get(SWERVE_MODULES).complete = result;
+        return result;
+    }
+    public boolean testGyro() {
+        boolean toggle = testGyro.getBoolean(false);
+
+        if (checkGyroState == 0) {
+            if (!toggle) {
+                checkListSteps.get(GYRO_TEST).status = "Click Toggle to Start Gyro Test";
+            } else {
+                gyro.reset();
+                checkGyroState = 1;
+                checkListSteps.get(GYRO_TEST).status = "Rotate robot 90 degrees";
+            }
+        } else if (checkGyroState == 1) {
+            if (Math.abs(gyro.getAngle() - 90.0) < 0.1) {
+                checkGyroState = 2;    
+                checkListSteps.get(GYRO_TEST).status = "Gyro test complete";
+                checkListSteps.get(GYRO_TEST).complete = true;
+                testGyro.setBoolean(false);
+            }
+        }
+        return checkGyroState == 2;
     }
     public boolean checkGyro() {
-        return (checkGyroState == 2);
+        return testGyro() && checkListSteps.get(GYRO_TEST).complete;
+    }
+    public boolean allTestsComplete() {
+        boolean result = true;
+        for (int i = BATTERY_TEST; i < TESTS_COMPLETE; ++i) {
+            result = result && checkListSteps.get(i).complete;
+        }
+        checkListSteps.get(TESTS_COMPLETE).complete = result;
+        checkListSteps.get(TESTS_COMPLETE).status = "All Tests Completed";
+
+        return result;
     }
 }

@@ -227,15 +227,15 @@ public class RobotContainer {
     chooser.addOption("Test Path", autoTest);
   }
 
-  public void initTestChecklist() {
+  public void testInit() {
     this.test.enableChecklist();
   }
 
-  public void updateTestChecklist() {
+  public void testPeriodic() {
     this.test.update();
    }
  
-  public void exitTestChecklist() {
+  public void testExit() {
     this.test.disableChecklist();
   }
 }
