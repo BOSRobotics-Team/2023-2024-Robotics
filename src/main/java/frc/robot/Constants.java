@@ -1,13 +1,13 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
-import frc.lib.util.DriveGyro;
+import frc.lib.gyro.GyroIO;
 
 public final class Constants {
 
     public static final String GYRO_CAN_BUS = "Swerve";
     public static final int GYRO_ID = 20; //DriveGyro.DRIVEGYRO_NAVX;
-    public static final int GYRO_DIRECTION = DriveGyro.DRIVEGYRO_CCW; // Always ensure Gyro is CCW+ CW-
+    public static final int GYRO_DIRECTION = GyroIO.DRIVEGYRO_CCW; // Always ensure Gyro is CCW+ CW-
 
     public static final int PNEUMATICSHUB_ID = 29;
     public static final int SOLENOID_FWD_CHANNEL =0;

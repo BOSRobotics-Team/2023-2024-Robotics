@@ -2,8 +2,8 @@ package frc.robot.subsystems.drivetrain;
 
 import static frc.robot.Constants.*;
 
+import frc.lib.gyro.GyroIO;
 import frc.lib.swerve.SwerveModule;
-import frc.lib.util.DriveGyro;
 import frc.lib.util.RobotOdometry;
 import frc.robot.RobotPreferences;
 
@@ -39,7 +39,7 @@ public class SwerveDriveTrain extends SubsystemBase {
         CHARACTERIZATION
     };
 
-    private DriveGyro gyro;
+    private GyroIO gyro;
 
     private final SwerveModule[] swerveModules = new SwerveModule[4]; // FL, FR, BL, BR
     private SwerveDriveOdometry swerveOdometry;
@@ -92,7 +92,7 @@ public class SwerveDriveTrain extends SubsystemBase {
             RobotPreferences.Auto.dThetaController.get(),
             SwerveDriveTrain.kThetaControllerConstraints);
           
-    public SwerveDriveTrain(DriveGyro gyro, SwerveModule mod0, SwerveModule mod1, SwerveModule mod2, SwerveModule mod3) {
+    public SwerveDriveTrain(GyroIO gyro, SwerveModule mod0, SwerveModule mod1, SwerveModule mod2, SwerveModule mod3) {
         this.gyro = gyro;
         gyro.setGyroDirection(GYRO_DIRECTION);
         zeroGyro();
@@ -276,7 +276,7 @@ public class SwerveDriveTrain extends SubsystemBase {
 
     public Rotation2d getRotation() {
         if (gyro.isConnected()) {
-            return gyro.getHeading();
+            return gyro.getRotation2d();
         } else {
             return estimatedPoseWithoutGyro.getRotation();
         }

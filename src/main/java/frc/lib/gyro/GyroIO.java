@@ -1,4 +1,4 @@
-package frc.lib.util;
+package frc.lib.gyro;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -6,11 +6,11 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class DriveGyro {
+public class GyroIO implements Gyro {
 
-  public static final int DRIVEGYRO_SIM = -2; 
   public static final int DRIVEGYRO_NAVX = -1; // values from 0+ are for Pigeon CAN devices
   public static final int DRIVEGYRO_CCW = 0; // set gyro yaw to counter-clockwise for angle direction
   public static final int DRIVEGYRO_CW = 1; // set gyro yaw to clockwise for angle direction
@@ -18,41 +18,23 @@ public class DriveGyro {
   private AHRS ahrs = null;
   private WPI_Pigeon2 pigeon = null;
 
-  private double simRate = 0.0;
-  private double simHeading = 0.0;
   private boolean ccwHeading = false;
   private double headingOffset = 0.0;
 
-  public DriveGyro(int gyroId, String canBus) {
+  public GyroIO(int gyroId, String canBus)  {
     if (gyroId == DRIVEGYRO_NAVX) {
       ahrs = new AHRS();
       ccwHeading = false;
-    } else if (gyroId != DRIVEGYRO_SIM) {
+    } else {
       pigeon = new WPI_Pigeon2(gyroId, canBus);
       pigeon.configFactoryDefault();
       ccwHeading = true;
     }
-    simHeading = 0.0;
-    simRate = 0.0;
-    headingOffset = 0.0;
   }
 
   public boolean isConnected() {
     return (((ahrs != null) && ahrs.isConnected()) || 
             ((pigeon != null) && pigeon.getLastError().equals(ErrorCode.OK)));
-  }
-
-  /** Zero the robot's heading. */
-  public void reset() {
-    if (ahrs != null) {
-      ahrs.reset();
-    } 
-    if (pigeon != null) {
-      pigeon.reset();
-    }
-    simHeading = 0.0;
-    simRate = 0.0;
-    headingOffset = 0.0;
   }
 
   public void setGyroDirection(int direction) {
@@ -89,39 +71,36 @@ public class DriveGyro {
   public void setHeadingDegrees(final double heading) {
     if (ahrs != null) {
       ahrs.setAngleAdjustment(ccwHeading ? (360.0 - heading) + ahrs.getYaw() : heading + ahrs.getYaw());
-    }
-    if (pigeon != null) {
+    } else if (pigeon != null) {
       pigeon.setYaw(ccwHeading ? heading : 360.0 - heading);
     }
-    simHeading += heading;
   }
 
-  /*  SimValue names  -> function
-      Connected	    -> isConnected()
-      Rate	        -> getRate()
-      Yaw	            -> getYaw() or getAngle()
-      Pitch	        -> getPitch()
-      Roll	        -> getRoll()
-      CompassHeading	-> getCompassHeading()
-      FusedHeading	-> getFusedHeading()
-      LinearWorldAccelX	-> getLinearWorldAccelX()
-      LinearWorldAccelY	-> getLinearWorldAccelY()
-      LinearWorldAccelZ	-> getLinearWorldAccelZ()
-  */
   public void setRawHeadingDegrees(final double heading) {
     if (ahrs != null) {
       int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
       SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
       angle.set(ccwHeading ? 360.0 - heading : heading);
-    }
-    if (pigeon != null) {
+    } else if (pigeon != null) {
       pigeon.setYaw(ccwHeading ? heading : 360.0 - heading);
     }
-    simHeading = heading;
   }
 
-  public double getHeadingDegrees() {
-    double heading = simHeading;
+  public void calibrate() {};
+
+  /** Zero the robot's heading. */
+  public void reset() {
+    if (ahrs != null) {
+      ahrs.reset();
+    } 
+    if (pigeon != null) {
+      pigeon.reset();
+    }
+    headingOffset = 0.0;
+  }
+
+  public double getAngle() {
+    double heading = 0.0;
     if (ahrs != null) {
       heading = ccwHeading ? 360.0 - ahrs.getAngle() : ahrs.getAngle();
     } else if (pigeon != null) {
@@ -130,22 +109,25 @@ public class DriveGyro {
     return heading + headingOffset;
   }
 
-  public Rotation2d getHeading() {
-    return Rotation2d.fromDegrees(getHeadingDegrees());
-  }
-
-  /**
-   * Get the robot's angular velocity.
-   *
-   * @return Angular velocity in degrees/sec
-   */
-  public double getAngularVel() {
+  public double getRate(){
     if (ahrs != null) {
       return -ahrs.getRate();
     } else if (pigeon != null) {
       return pigeon.getRate();
     }
-    return simRate;
+    return 0.0;
+  }
+
+  public Rotation2d getRotation2d() {
+    return Rotation2d.fromDegrees(getAngle());
+  }
+
+  public void close(){
+    if (ahrs != null) {
+      ahrs.close();
+    } else if (pigeon != null) {
+      pigeon.close();
+    }
   }
 
   public void logPeriodic() {

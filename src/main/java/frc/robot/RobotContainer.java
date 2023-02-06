@@ -26,12 +26,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-
+import frc.lib.gyro.GyroIO;
 import frc.lib.swerve.SwerveModule;
 import frc.lib.swerve.SwerveModuleIOSim;
 import frc.lib.swerve.SwerveModuleIOTalonFX;
-import frc.lib.util.DriveGyro;
-
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.operator_interface.*;
@@ -51,7 +49,7 @@ public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
 
   /* Subsystems */
-  private final DriveGyro gyro = new DriveGyro(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+  private final GyroIO gyro = new GyroIO(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
   private final SwerveDriveTrain driveTrain;
   private final Arm arm;
 
@@ -230,7 +228,7 @@ public class RobotContainer {
   }
 
   public void initTestChecklist() {
-    // this.test = new TestChecklist(gyro, driveTrain);
+    this.test.enableChecklist();
   }
 
   public void updateTestChecklist() {
@@ -238,6 +236,6 @@ public class RobotContainer {
    }
  
   public void exitTestChecklist() {
-  //  this.test = null;
+    this.test.disableChecklist();
   }
 }
