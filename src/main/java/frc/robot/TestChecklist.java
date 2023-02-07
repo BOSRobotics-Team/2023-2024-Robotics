@@ -20,7 +20,6 @@ public class TestChecklist {
         public final int column;
         public final int row;
         
-        // public GenericEntry widgetEntry;
         public SimpleWidget widget;
         public String status;
         public int state;
@@ -39,14 +38,7 @@ public class TestChecklist {
                 .withWidget(BuiltInWidgets.kBooleanBox)
                 .withProperties(Map.of("Color when false", "grey"))
                 .withPosition(this.column, this.row)
-                .withSize(2, 1);                
-
-            // if (this.state == 0) {
-            //     this.toggle = tabMain.add(this.Title + " Test", false)
-            //     .withWidget(BuiltInWidgets.kToggleSwitch)
-            //     .withPosition(this.column == 0 ? 2 : this.column + 1, this.row)
-            //     .withSize(1, 1).getEntry();
-            // }
+                .withSize(2, 1);
         }
         public void reset() {
             this.state = 0;
