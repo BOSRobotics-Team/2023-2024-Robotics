@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -49,9 +50,10 @@ public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
 
   /* Subsystems */
-  private final GyroIO gyro = new GyroIO(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
-  private final SwerveDriveTrain driveTrain;
-  private final Arm arm;
+  public final PowerDistribution power = new PowerDistribution();
+  public final GyroIO gyro = new GyroIO(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+  public final SwerveDriveTrain driveTrain;
+  public final Arm arm;
 
   private final TestChecklist test;
 
@@ -89,7 +91,7 @@ public class RobotContainer {
       driveTrain = new SwerveDriveTrain(gyro, flModule, frModule, blModule, brModule);
       arm = new Arm(); // use ArmSim later
    }
-   test = new TestChecklist(gyro, driveTrain, arm);
+   test = new TestChecklist(this);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
