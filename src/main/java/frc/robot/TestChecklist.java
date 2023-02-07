@@ -45,20 +45,29 @@ public class TestChecklist {
     private final GyroIO gyro;
     private final SwerveDriveTrain driveTrain;
     private final Arm arm;
-    
 
     private final DashboardNumber voltageThreshold = new DashboardNumber("Checklist/VoltageThreshold", 12.0);
 
-    private GenericEntry resetTests;
+    private GenericEntry resetTestsWidget;
 
     private int checkSwerveModule[] = {0, 0, 0, 0};
-    private GenericEntry testModule[] = {null, null, null, null};
+    private GenericEntry testModuleWidget[] = {null, null, null, null};
 
-    private int checkGyroState[] = {0, 0};
-    private GenericEntry testGyro[] = {null, null};
+    private int checkGyroYawState = 0;
+    private GenericEntry testGyroYawWidget = null;
 
-    private int checkLimitSwitchState[] = {0, 0};
+    private int checkGyroPitchState = 0;
+    private GenericEntry testGyroPitchWidget = null;
 
+    private int checkLiftLimitSwitchState = 0;
+    private int checkExtendLimitSwitchState = 0;
+
+    private int checkArmCalibrationState = 0;
+    private GenericEntry armCalibrationWidget = null;    
+    private int checkArmLiftState = 0;
+    private GenericEntry armLiftWidget = null;
+    private int checkArmExtendState = 0;
+    private GenericEntry armExtendWidget = null;
 
     private boolean m_enableCheckList = false;
 
@@ -75,8 +84,12 @@ public class TestChecklist {
     private int LIMITSWITCH_ARMEXTENDTEST = 10;
     private int LIMITSWITCH_ARMLIFTTEST = 11;
     private int LIMITSWITCH_TEST = 12;
+    private int ARM_CALIBRATE = 13;
+    private int ARM_MAXLIFTTEST = 14;
+    private int ARM_MAXEXTENDTEST = 15;
+    private int ARM_TEST = 16;
     
-    private int TESTS_COMPLETE = 13;
+    private int TESTS_COMPLETE = 18;
 
     private int checklistStep = 0;
     private List<ChecklistItem> checkListSteps = List.of( 
@@ -93,6 +106,10 @@ public class TestChecklist {
         new ChecklistItem("5a. ArmExtend Switch", this::checkArmExtendSwitch, 2, 5),
         new ChecklistItem("5b. ArmLift Switch", this::checkArmLiftSwitch, 4, 5),
         new ChecklistItem("5. Limit Switches", this::checkLimitSwitches, 0, 5),
+        new ChecklistItem("6a. Arm Calibrate", this::checkArmCalibrate, 2, 5),
+        new ChecklistItem("6b. ArmLift Max Height", this::checkArmLiftMaxHeight, 4, 5),
+        new ChecklistItem("6c. ArmExtend Max Length", this::checkArmExtendMaxLength, 0, 5),
+        new ChecklistItem("6. Arm Reset", this::checkArm, 0, 5),
         new ChecklistItem("Tests Complete", this::allTestsComplete, 6, 0));
 
     public TestChecklist(GyroIO gyro, SwerveDriveTrain driveTrain, Arm arm) {
@@ -105,7 +122,7 @@ public class TestChecklist {
         tabMain.addString("Current Step Status", this::getCurrentStepStatus)
             .withPosition(2, 0).withSize(4, 1);
         
-        resetTests = tabMain.add("Reset", false)
+        resetTestsWidget = tabMain.add("Reset", false)
                     .withWidget(BuiltInWidgets.kToggleButton)
                     .withPosition(8, 0)
                     .withSize(1, 1).getEntry();
@@ -126,19 +143,24 @@ public class TestChecklist {
             .withSize(5, 1);
 
         for (int mod = 0; mod < 4; mod++) {
-            testModule[mod] = tabMain.add("Test Module " + mod, false)
+            testModuleWidget[mod] = tabMain.add("Test Module " + mod, false)
                 .withWidget(BuiltInWidgets.kToggleSwitch)
                 .withPosition(10 + mod, checkListSteps.get(SWERVE_MOD_0 + mod).row)
                 .withSize(1, 1).getEntry();
         }
 
-        testGyro[0] = tabMain.add("Test Yaw", false)
+        testGyroYawWidget = tabMain.add("Test Yaw", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .withPosition(checkListSteps.get(GYRO_YAWTEST).column + 2, checkListSteps.get(GYRO_YAWTEST).row)
             .withSize(1, 1).getEntry();
-        testGyro[1] = tabMain.add("Test Pitch", false)
+        testGyroPitchWidget = tabMain.add("Test Pitch", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .withPosition(checkListSteps.get(GYRO_PITCHTEST).column + 2, checkListSteps.get(GYRO_PITCHTEST).row)
+            .withSize(1, 1).getEntry();
+
+        armCalibrationWidget = tabMain.add("Arm Calibration", false)
+            .withWidget(BuiltInWidgets.kToggleSwitch)
+            .withPosition(checkListSteps.get(ARM_CALIBRATE).column + 2, checkListSteps.get(ARM_CALIBRATE).row)
             .withSize(1, 1).getEntry();
     }
 
@@ -172,22 +194,28 @@ public class TestChecklist {
         }
         for (int mod = 0; mod < 4; ++mod) {
             checkSwerveModule[mod] = 0;
-            testModule[mod].setBoolean(false);
+            testModuleWidget[mod].setBoolean(false);
         }    
-        for (int i = 0; i < 2; ++i) {
-            checkGyroState[i] = 0; 
-            testGyro[i].setBoolean(false);
-        }
-        for (int i = 0; i < 2; ++i) {
-            checkLimitSwitchState[i] = 0;
-        }
+        checkGyroYawState = checkGyroPitchState = 0; 
+        testGyroYawWidget.setBoolean(false);
+        testGyroPitchWidget.setBoolean(false);
+
+        checkLiftLimitSwitchState = checkExtendLimitSwitchState = 0;
+
+        checkArmCalibrationState = 0;
+        armCalibrationWidget.setBoolean(false);
+
+        checkArmLiftState = checkArmExtendState = 0;
+        armLiftWidget.setBoolean(false);
+        armExtendWidget.setBoolean(false);
+
         checklistStep = 0;
-        resetTests.setBoolean(false);
+        resetTestsWidget.setBoolean(false);
     }
 
     public void update() {
         if (m_enableCheckList) {
-            if (resetTests.getBoolean(false)) {
+            if (resetTestsWidget.getBoolean(false)) {
                 resetTests();
             }
 
@@ -298,7 +326,7 @@ public class TestChecklist {
     }
 
     public boolean testSwerveModule(int mod) {
-        boolean toggle = testModule[mod].getBoolean(false);
+        boolean toggle = testModuleWidget[mod].getBoolean(false);
 
         if (checkSwerveModule[mod] == 0) {
             if (!toggle) {
@@ -343,44 +371,44 @@ public class TestChecklist {
     }
     
     public boolean checkGyroYaw() {
-        boolean toggle = testGyro[0].getBoolean(false);
-        if (checkGyroState[0] == 0) {
+        boolean toggle = testGyroYawWidget.getBoolean(false);
+        if (checkGyroYawState == 0) {
             if (!toggle) {
                 checkListSteps.get(GYRO_YAWTEST).status = "Click Toggle to Start Gyro Yaw Test";
             } else {
                 gyro.reset();
-                checkGyroState[0] = 1;
+                checkGyroYawState = 1;
                 checkListSteps.get(GYRO_YAWTEST).status = "Rotate robot 90 degrees";
             }
-        } else if (checkGyroState[0] == 1) {
+        } else if (checkGyroYawState == 1) {
             if (Math.abs(gyro.getAngle() - 90.0) < 0.1) {
-                checkGyroState[0] = 2;    
+                checkGyroYawState = 2;    
                 checkListSteps.get(GYRO_YAWTEST).status = "Gyro test complete";
                 checkListSteps.get(GYRO_YAWTEST).complete = true;
-                testGyro[0].setBoolean(false);
+                testGyroYawWidget.setBoolean(false);
             }
         }
-        return checkGyroState[0] == 2;
+        return checkGyroYawState == 2;
     }
     public boolean checkGyroPitch() {
-        boolean toggle = testGyro[1].getBoolean(false);
-        if (checkGyroState[1] == 0) {
+        boolean toggle = testGyroPitchWidget.getBoolean(false);
+        if (checkGyroPitchState == 0) {
             if (!toggle) {
                 checkListSteps.get(GYRO_PITCHTEST).status = "Click Toggle to Start Gyro Pitch Test";
             } else {
                 gyro.reset();
-                checkGyroState[1] = 1;
+                checkGyroPitchState = 1;
                 checkListSteps.get(GYRO_PITCHTEST).status = "Lift robot 30 degrees";
             }
-        } else if (checkGyroState[1] == 1) {
+        } else if (checkGyroPitchState == 1) {
             if (Math.abs(gyro.getPitch() - 30.0) < 0.1) {
-                checkGyroState[1] = 2;    
+                checkGyroPitchState = 2;    
                 checkListSteps.get(GYRO_PITCHTEST).status = "Gyro test complete";
                 checkListSteps.get(GYRO_PITCHTEST).complete = true;
-                testGyro[1].setBoolean(false);
+                testGyroPitchWidget.setBoolean(false);
             }
         }
-        return checkGyroState[1] == 2;
+        return checkGyroPitchState == 2;
     }
     public boolean checkGyro() {
         boolean result = 
@@ -392,34 +420,34 @@ public class TestChecklist {
         return result;
     }
     public boolean checkArmExtendSwitch() {
-        if (checkLimitSwitchState[0] == 0) {
+        if (checkExtendLimitSwitchState == 0) {
             if (!arm.isArmExtendMinLimitSwitch()) {
                 checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST).status = "Click Arm Extend Limit Switch";
             } else {
-                checkLimitSwitchState[0] = 1;
+                checkExtendLimitSwitchState = 1;
                 checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST).status = "Release Arm Extend Limit Switch";
             }
-        } else if ((checkLimitSwitchState[0] == 1) && !arm.isArmExtendMinLimitSwitch()) {
-            checkLimitSwitchState[0] = 2;
+        } else if ((checkExtendLimitSwitchState == 1) && !arm.isArmExtendMinLimitSwitch()) {
+            checkExtendLimitSwitchState = 2;
             checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST).status = "Arm Extend Limit Switch complete";
             checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST).complete = true;
         }
-        return checkLimitSwitchState[0] == 2;
+        return checkExtendLimitSwitchState == 2;
     }
     public boolean checkArmLiftSwitch() {
-        if (checkLimitSwitchState[1] == 0) {
+        if (checkLiftLimitSwitchState == 0) {
             if (!arm.isArmLiftMinLimitSwitch()) {
                 checkListSteps.get(LIMITSWITCH_ARMLIFTTEST).status = "Click Arm Lift Limit Switch";
             } else {
-                checkLimitSwitchState[1] = 1;
+                checkLiftLimitSwitchState = 1;
                 checkListSteps.get(LIMITSWITCH_ARMLIFTTEST).status = "Release Arm Lift Limit Switch";
             }
-        } else if ((checkLimitSwitchState[1] == 1) && !arm.isArmExtendMinLimitSwitch()) {
-            checkLimitSwitchState[1] = 2;
+        } else if ((checkLiftLimitSwitchState == 1) && !arm.isArmExtendMinLimitSwitch()) {
+            checkLiftLimitSwitchState = 2;
             checkListSteps.get(LIMITSWITCH_ARMLIFTTEST).status = "Arm Lift Limit Switch complete";
             checkListSteps.get(LIMITSWITCH_ARMLIFTTEST).complete = true;
         }
-        return checkLimitSwitchState[1] == 2;
+        return checkLiftLimitSwitchState == 2;
     }
     public boolean checkLimitSwitches() {
         boolean result = 
@@ -428,6 +456,71 @@ public class TestChecklist {
 
         checkListSteps.get(LIMITSWITCH_TEST).complete = result;
         checkListSteps.get(LIMITSWITCH_TEST).status = "Arm Limit Switches complete";
+        return result;
+    }
+    public boolean checkArmCalibrate() {
+        boolean toggle = armCalibrationWidget.getBoolean(false);
+        if (checkArmCalibrationState == 0) {
+            if (!toggle) {
+                checkListSteps.get(ARM_CALIBRATE).status = "Click Toggle to Start Arm Calibration";
+            } else {
+                arm.resetArm();
+                checkArmCalibrationState = 1;
+                checkListSteps.get(ARM_CALIBRATE).status = "Calibrating Arm";
+            }
+        } else if (checkArmCalibrationState == 1) {
+            if (!arm.isResetting()) {
+                checkArmCalibrationState = 2;    
+                checkListSteps.get(ARM_CALIBRATE).status = "Arm Calibrate complete";
+                checkListSteps.get(ARM_CALIBRATE).complete = true;
+                armCalibrationWidget.setBoolean(false);
+            }
+        }
+        return checkArmCalibrationState == 2;
+    }
+    public boolean checkArmLiftMaxHeight() {
+        boolean toggle = armLiftWidget.getBoolean(false);
+        if (checkArmLiftState == 0) {
+            if (!toggle) {
+                checkListSteps.get(ARM_MAXLIFTTEST).status = "Click Toggle to Raise Arm to Max Height";
+            } else {
+                arm.raiseArm(1.0);
+                checkArmLiftState = 1;
+                checkListSteps.get(ARM_MAXLIFTTEST).status = "Raising Arm";
+            }
+        } else if ((checkArmLiftState == 1) && arm.isArmRaised()) {
+            checkArmLiftState = 2;
+            checkListSteps.get(ARM_MAXLIFTTEST).status = "Arm Raised to Max Height - Measure";
+            checkListSteps.get(ARM_MAXLIFTTEST).complete = true;
+            armLiftWidget.setBoolean(false);
+        }
+        return checkArmLiftState == 2;
+    }
+    public boolean checkArmExtendMaxLength() {
+        boolean toggle = armExtendWidget.getBoolean(false);
+        if (checkArmExtendState == 0) {
+            if (!toggle) {
+                checkListSteps.get(ARM_MAXEXTENDTEST).status = "Click Toggle to Extend Arm to Max Length";
+            } else {
+                arm.extendArm(1.0);
+                checkArmExtendState = 1;
+                checkListSteps.get(ARM_MAXEXTENDTEST).status = "Extending Arm";
+            }
+        } else if ((checkArmExtendState == 1) && arm.isArmExtended()) {
+            checkArmExtendState = 2;
+            checkListSteps.get(ARM_MAXEXTENDTEST).status = "Arm Extended to Max Length - Measure";
+            checkListSteps.get(ARM_MAXEXTENDTEST).complete = true;
+            armExtendWidget.setBoolean(false);
+        }
+        return checkArmExtendState == 2;
+    }
+    public boolean checkArm() {
+        boolean result = 
+            checkListSteps.get(ARM_MAXLIFTTEST).complete &&
+            checkListSteps.get(ARM_MAXEXTENDTEST).complete;
+
+        checkListSteps.get(ARM_TEST).complete = result;
+        checkListSteps.get(ARM_TEST).status = "Arm Tests complete";
         return result;
     }
 
