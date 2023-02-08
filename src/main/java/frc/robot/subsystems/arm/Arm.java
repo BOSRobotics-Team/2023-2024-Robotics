@@ -1,6 +1,7 @@
 package frc.robot.subsystems.arm;
 
 import static frc.robot.Constants.*;
+import frc.robot.RobotPreferences;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -9,24 +10,17 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
-// import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
-// import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotPreferences;
 
 /** */
 public class Arm extends SubsystemBase {
-  PneumaticHub m_pH = new PneumaticHub(PNEUMATICSHUB_ID);
-  DoubleSolenoid m_gripper = m_pH.makeDoubleSolenoid(SOLENOID_FWD_CHANNEL, SOLENOID_REV_CHANNEL);
-
-// private Compressor m_compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-// private DoubleSolenoid m_gripper = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, 0, 1);
+  public PneumaticHub m_pH = new PneumaticHub(PNEUMATICSHUB_ID);
+  public DoubleSolenoid m_gripper = m_pH.makeDoubleSolenoid(SOLENOID_FWD_CHANNEL, SOLENOID_REV_CHANNEL);
 
   private CANSparkMax m_armLiftMotor = new CANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
   private SparkMaxPIDController m_armLiftController;
@@ -48,7 +42,7 @@ public class Arm extends SubsystemBase {
   public Arm() {
 
     m_armLiftMotor.restoreFactoryDefaults();
-
+    // initialze PID controller and encoder objects
     m_armLiftController = m_armLiftMotor.getPIDController();
     m_armLiftEncoder = m_armLiftMotor.getEncoder();
     m_armLiftLimit = m_armLiftMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
@@ -94,18 +88,7 @@ public class Arm extends SubsystemBase {
     m_armExtendSetpoint = m_armExtendEncoder.getPosition();
     m_armExtendSetpointZero = 0;
 
-    if (DEBUGGING) {
-      ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-      tabMain.addNumber("ArmLift/Lift Process Variable", () -> m_armLiftEncoder.getPosition());
-      tabMain.addNumber("ArmLift/Lift Output", () -> m_armLiftMotor.getAppliedOutput());
-      tabMain.addNumber("ArmLift/Arm Lift SetPoint",() -> m_armLiftSetpoint);
-      tabMain.addNumber("ArmLift/Arm Lift SetPoint Zero",() -> m_armLiftSetpointZero);
-
-      tabMain.addNumber("ArmExtend/Lift Process Variable", () -> m_armExtendEncoder.getPosition());
-      tabMain.addNumber("ArmExtend/Lift Output", () -> m_armExtendMotor.getAppliedOutput());
-      tabMain.addNumber("ArmExtend/Arm Lift SetPoint",() -> m_armExtendSetpoint);
-      tabMain.addNumber("ArmExtend/Arm Lift SetPoint Zero",() -> m_armExtendSetpointZero);
-    }
+    initLogging();
   }
 
   @Override
@@ -130,16 +113,19 @@ public class Arm extends SubsystemBase {
 
   }
 
-  public void logPeriodic() {
-    SmartDashboard.putNumber("Lift Process Variable", m_armLiftEncoder.getPosition());
-    SmartDashboard.putNumber("Extend Process Variable", m_armExtendEncoder.getPosition());
-    SmartDashboard.putNumber("Lift Output", m_armLiftMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Extend Output", m_armExtendMotor.getAppliedOutput());
+  public void initLogging() {
+    if (DEBUGGING) {
+      ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
+      tabMain.addNumber("ArmLift/Lift Process Variable", () -> m_armLiftEncoder.getPosition());
+      tabMain.addNumber("ArmLift/Lift Output", () -> m_armLiftMotor.getAppliedOutput());
+      tabMain.addNumber("ArmLift/Arm Lift SetPoint",() -> m_armLiftSetpoint);
+      tabMain.addNumber("ArmLift/Arm Lift SetPoint Zero",() -> m_armLiftSetpointZero);
 
-    SmartDashboard.putNumber("Arm Lift SetPoint", m_armLiftSetpoint);
-    SmartDashboard.putNumber("Arm Extend SetPoint", m_armExtendSetpoint);
-    SmartDashboard.putNumber("Arm Lift SetPoint Zero", m_armLiftSetpointZero);
-    SmartDashboard.putNumber("Arm Extend SetPoint Zero", m_armExtendSetpointZero);
+      tabMain.addNumber("ArmExtend/Lift Process Variable", () -> m_armExtendEncoder.getPosition());
+      tabMain.addNumber("ArmExtend/Lift Output", () -> m_armExtendMotor.getAppliedOutput());
+      tabMain.addNumber("ArmExtend/Arm Lift SetPoint",() -> m_armExtendSetpoint);
+      tabMain.addNumber("ArmExtend/Arm Lift SetPoint Zero",() -> m_armExtendSetpointZero);
+    }
   }
 
   public void resetArm() {

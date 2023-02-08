@@ -88,7 +88,12 @@ public class TestChecklist {
     private int ARM_MAXEXTENDTEST = 15;
     private int ARM_TOZERO = 16;
     private int ARM_TEST = 17;
-    private int TESTS_COMPLETE = 18;
+    private int GRIP_COMPRESSOR = 18;
+    private int GRIP_LEAKSCHECK = 19;
+    private int GRIP_CLOSEOPENCLOSE = 20;
+    private int GRIP_TESTS = 21;
+
+    private int TESTS_COMPLETE = 22;
 
     private int checklistStep = 0;
     private List<ChecklistItem> checkListSteps = List.of( 
@@ -110,6 +115,10 @@ public class TestChecklist {
         new ChecklistItem("6c. Extend MaxLength", this::checkArmExtendMaxLength, 6, 6),
         new ChecklistItem("6d. Zero Arm", this::checkArmToZero, 8, 6),
         new ChecklistItem("6. Arm Tests", this::checkArm, 0, 6),
+        new ChecklistItem("7a. Compressor", this::checkCompressor, 2, 7),
+        new ChecklistItem("7b. Check for Leaks", this::checkLeaks, 4, 7),
+        new ChecklistItem("7c. Actuator Tests", this::checkGripperOpenClose, 6, 7),
+        new ChecklistItem("7. Grip Tests", this::checkGrip, 0, 7),
         new ChecklistItem("Tests Complete", this::allTestsComplete, 8, 0));
 
     public TestChecklist(RobotContainer container) {
@@ -145,11 +154,14 @@ public class TestChecklist {
 
     public void enableChecklist() {
         m_enableCheckList = true;
+        robot.arm.m_pH.disableCompressor();
+
         resetTests();
     }
 
     public void disableChecklist() {
         m_enableCheckList = false;
+        robot.arm.m_pH.enableCompressorDigital();
     }
 
     public String getCurrentStep() {
@@ -506,6 +518,75 @@ public class TestChecklist {
             checkListSteps.get(ARM_MAXEXTENDTEST).isComplete() &&
             checkListSteps.get(ARM_TOZERO).isComplete();
         item.status = "Arm Tests complete";
+
+        return item.setComplete(result);
+    }
+
+    public boolean checkCompressor() {
+        ChecklistItem item = checkListSteps.get(GRIP_COMPRESSOR);
+        if (item.state == 0) {
+            if (!getDoStep()) {
+                item.status = "Click Toggle to Start Compressor";
+            } else {
+                robot.arm.m_pH.enableCompressorDigital();
+                item.state = 1;
+                item.status = "Compressor Enabled - waiting for full pressure";
+            }
+        } else if (item.state == 1) {
+            if (!robot.arm.m_pH.getPressureSwitch()) {
+                item.state = 2;    
+                item.status = "Compressor check complete";
+                item.setComplete(true);
+                resetDoStep();
+            }
+        }
+        return item.isComplete();
+    }
+    public boolean checkLeaks() {
+        ChecklistItem item = checkListSteps.get(GRIP_LEAKSCHECK);
+        if (item.state == 0) {
+            if (!getDoStep()) {
+                item.status = "Click Toggle after checking for leaks";
+            } else {
+                item.state = 2;
+                item.status = "Arm Raised to Max Height - Measure";
+                item.setComplete(true);
+                resetDoStep();
+            }
+        }
+        return item.isComplete();
+    }
+    public boolean checkGripperOpenClose() {
+        ChecklistItem item = checkListSteps.get(GRIP_CLOSEOPENCLOSE);
+        if (item.state == 0) {
+            if (!getDoStep()) {
+                item.status = "Click Toggle to Close Gripper";
+            } else {
+                robot.arm.gripClaw(true);
+                item.state = 1;
+                item.status = "Click Toggle to Open Gripper";
+            }
+        } else if ((item.state == 1) && getDoStep()) {
+            robot.arm.gripClaw(false);
+            item.state = 2;
+            item.status = "Click Toggle to Close Gripper";
+        } else if ((item.state == 2) && getDoStep()) {
+            robot.arm.gripClaw(true);
+            item.state = 3;
+            item.status = "Actuator Test Complete";
+            item.setComplete(true);
+            resetDoStep();
+        }
+        return item.isComplete();
+    }
+
+    public boolean checkGrip() {
+        ChecklistItem item = checkListSteps.get(GRIP_TESTS);
+        boolean result = 
+            checkListSteps.get(GRIP_COMPRESSOR).isComplete() &&
+            checkListSteps.get(GRIP_LEAKSCHECK).isComplete() &&
+            checkListSteps.get(GRIP_CLOSEOPENCLOSE).isComplete();
+        item.status = "Grip Tests complete";
 
         return item.setComplete(result);
     }

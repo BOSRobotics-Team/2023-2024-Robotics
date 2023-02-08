@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -118,30 +117,7 @@ public class SwerveDriveTrain extends SubsystemBase {
         resetModulesToAbsolute();
 
         this.swerveOdometry = new SwerveDriveOdometry(SwerveDriveTrain.swerveKinematics, getRotation(), getModulePositions());
-
-        ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-        tabMain.addNumber("DriveTrain/Gyroscope Angle", this::getRotationDegrees);
-        tabMain.addBoolean("DriveTrain/X-Stance On?", this::isXstance);
-        tabMain.addBoolean("DriveTrain/Field-Relative Enabled?", this::getFieldRelative);
-
-        if (DEBUGGING) {
-          ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");
-          tab.add("DriveTrain", this);
-          tab.addNumber("vx", this::getVelocityX);
-          tab.addNumber("vy", this::getVelocityY);
-          tab.addNumber("Pose Est X", () -> poseEstimator.getEstimatedPosition().getX());
-          tab.addNumber("Pose Est Y", () -> poseEstimator.getEstimatedPosition().getY());
-          tab.addNumber(
-              "Pose Est Rot", () -> poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-          tab.addNumber("CoG X", () -> this.centerGravity.getX());
-          tab.addNumber("CoG Y", () -> this.centerGravity.getY());
-        }
-    
-        if (TESTING) {
-          ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");
-          tab.add("Enable XStance", new InstantCommand(this::enableXstance));
-          tab.add("Disable XStance", new InstantCommand(this::disableXstance));
-        }
+        initLogging();
     }
 
     public void drive(double translation, double strafe, double rotation) {
@@ -474,13 +450,34 @@ public class SwerveDriveTrain extends SubsystemBase {
         updateBrakeMode();
     }
 
-    public void logPeriodic() {
-        gyro.logPeriodic();
+    public void initLogging() {
+        ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
+        tabMain.addNumber("DriveTrain/Gyroscope Angle", this::getRotationDegrees);
+        tabMain.addBoolean("DriveTrain/X-Stance On?", this::isXstance);
+        tabMain.addBoolean("DriveTrain/Field-Relative Enabled?", this::getFieldRelative);
 
-        for(SwerveModule mod : this.swerveModules){
-            // SmartDashboard.putNumber("Mod " + mod.getModuleNumber() + " Cancoder", mod.getCanCoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.getModuleNumber() + " Integrated", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.getModuleNumber() + " Velocity", mod.getState().speedMetersPerSecond);    
+        if (DEBUGGING) {
+          ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");
+          tab.add("DriveTrain", this);
+          tab.addNumber("vx", this::getVelocityX);
+          tab.addNumber("vy", this::getVelocityY);
+          tab.addNumber("Pose Est X", () -> poseEstimator.getEstimatedPosition().getX());
+          tab.addNumber("Pose Est Y", () -> poseEstimator.getEstimatedPosition().getY());
+          tab.addNumber("Pose Est Rot", () -> poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+          tab.addNumber("CoG X", () -> this.centerGravity.getX());
+          tab.addNumber("CoG Y", () -> this.centerGravity.getY());
+
+          for(SwerveModule mod : this.swerveModules){
+            // tab.addNumber("Mod " + mod.getModuleNumber() + " Cancoder", () -> mod.getCanCoder().getDegrees());
+            tab.addNumber("Mod " + mod.getModuleNumber() + " Integrated", () -> mod.getPosition().angle.getDegrees());
+            tab.addNumber("Mod " + mod.getModuleNumber() + " Velocity", () -> mod.getState().speedMetersPerSecond);    
+          }
+        }
+    
+        if (TESTING) {
+          ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");
+          tab.add("Enable XStance", new InstantCommand(this::enableXstance));
+          tab.add("Disable XStance", new InstantCommand(this::disableXstance));
         }
     }
 }

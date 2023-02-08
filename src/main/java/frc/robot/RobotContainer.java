@@ -102,11 +102,6 @@ public class RobotContainer {
     configureAutoPaths();
   }
 
-  public void logPeriodic() {
-    driveTrain.logPeriodic();
-    arm.logPeriodic();
-  }
-
   /**
    * This method scans for any changes to the connected joystick. If anything changed, it creates
    * new OI objects and binds all of the buttons to commands.
