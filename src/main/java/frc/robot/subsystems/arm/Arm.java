@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 // import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotPreferences;
@@ -90,6 +92,19 @@ public class Arm extends SubsystemBase {
     // m_armExtendEncoder.setPositionConversionFactor(RobotPreferences.Arm.armExtendGearRatio.get() * RobotPreferences.Arm.armExtendMetersPerRotation.get());
     m_armExtendSetpoint = m_armExtendEncoder.getPosition();
     m_armExtendSetpointZero = 0;
+
+    if (DEBUGGING) {
+      ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
+      tabMain.addNumber("ArmLift/Lift Process Variable", () -> m_armLiftEncoder.getPosition());
+      tabMain.addNumber("ArmLift/Lift Output", () -> m_armLiftMotor.getAppliedOutput());
+      tabMain.addNumber("ArmLift/Arm Lift SetPoint",() -> m_armLiftSetpoint);
+      tabMain.addNumber("ArmLift/Arm Lift SetPoint Zero",() -> m_armLiftSetpointZero);
+
+      tabMain.addNumber("ArmExtend/Lift Process Variable", () -> m_armExtendEncoder.getPosition());
+      tabMain.addNumber("ArmExtend/Lift Output", () -> m_armExtendMotor.getAppliedOutput());
+      tabMain.addNumber("ArmExtend/Arm Lift SetPoint",() -> m_armExtendSetpoint);
+      tabMain.addNumber("ArmExtend/Arm Lift SetPoint Zero",() -> m_armExtendSetpointZero);
+    }
   }
 
   @Override
@@ -137,7 +152,7 @@ public class Arm extends SubsystemBase {
 
   public void setArmLiftPosition(double position) {
     if (!m_Resetting) {
-      m_armLiftSetpoint = position;
+      m_armLiftSetpoint = MathUtil.clamp(position, RobotPreferences.ArmLift.armMinPosition.get(), RobotPreferences.ArmLift.armMaxPosition.get());
       m_armLiftController.setReference(m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
     }
   }
@@ -154,17 +169,9 @@ public class Arm extends SubsystemBase {
     return Math.abs(getArmLiftPosition() - m_armLiftSetpoint) < 0.01;
   }
 
-  public void raiseArm() {
-    raiseArm(m_armLiftSetpoint + 1.0);
-  }
-
-  public void lowerArm() {
-    raiseArm(m_armLiftSetpoint - 1.0);
-  }
-
   public void setArmExtendPosition(double position) {
     if (!m_Resetting) {
-      m_armExtendSetpoint = position;
+      m_armExtendSetpoint = MathUtil.clamp(position, RobotPreferences.ArmExtend.armMinPosition.get(), RobotPreferences.ArmExtend.armMaxPosition.get());
       m_armExtendController.setReference(m_armExtendSetpoint + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
     }
   }
@@ -179,14 +186,6 @@ public class Arm extends SubsystemBase {
 
   public boolean isArmExtended() {
     return Math.abs(getArmExtendPosition() - m_armExtendSetpoint) < 0.01;
-  }
-
-  public void extendArm() {
-    raiseArm(m_armExtendSetpoint + 1.0);
-  }
-
-  public void retractArm() {
-    raiseArm(m_armExtendSetpoint - 1.0);
   }
 
   public void gripClaw(boolean close) {
@@ -205,7 +204,14 @@ public class Arm extends SubsystemBase {
     return m_armExtendLimit.isPressed();
   }
 
-public boolean isArmLiftMinLimitSwitch() {
-    return m_armLiftLimit.isPressed();
-}
+  public boolean isArmLiftMinLimitSwitch() {
+      return m_armLiftLimit.isPressed();
+  }
+
+  public void teleop(double liftVal, double extendVal) {
+    if ((liftVal > 0) || (extendVal > 0)) {
+      this.raiseArm(liftVal);
+      this.extendArm(extendVal);
+    }
+  }
 }

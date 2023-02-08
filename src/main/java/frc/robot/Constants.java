@@ -4,6 +4,8 @@ import edu.wpi.first.math.util.Units;
 import frc.lib.gyro.GyroIO;
 
 public final class Constants {
+    public static final boolean DEBUGGING = true;
+    public static final boolean TESTING = false;
 
     public static final String GYRO_CAN_BUS = "Swerve";
     public static final int GYRO_ID = 20; //DriveGyro.DRIVEGYRO_NAVX;

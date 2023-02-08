@@ -31,8 +31,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 public class SwerveDriveTrain extends SubsystemBase {
-    private static final boolean DEBUGGING = false;
-    private static final boolean TESTING = false;
     private enum DriveMode {
         NORMAL,
         X,
@@ -122,10 +120,10 @@ public class SwerveDriveTrain extends SubsystemBase {
         this.swerveOdometry = new SwerveDriveOdometry(SwerveDriveTrain.swerveKinematics, getRotation(), getModulePositions());
 
         ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-        tabMain.addNumber("Gyroscope Angle", this::getRotationDegrees);
-        tabMain.addBoolean("X-Stance On?", this::isXstance);
-        tabMain.addBoolean("Field-Relative Enabled?", this::getFieldRelative);
-    
+        tabMain.addNumber("DriveTrain/Gyroscope Angle", this::getRotationDegrees);
+        tabMain.addBoolean("DriveTrain/X-Stance On?", this::isXstance);
+        tabMain.addBoolean("DriveTrain/Field-Relative Enabled?", this::getFieldRelative);
+
         if (DEBUGGING) {
           ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");
           tab.add("DriveTrain", this);

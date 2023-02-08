@@ -1,6 +1,8 @@
 package frc.lib.util;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 
 /**
  * Gets a value from dashboard in active mode, returns default if not or value in dashboard.
@@ -8,8 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DashboardNumber {
   public static boolean isActiveMode = false;
 
-  private static final String TABLE_KEY = "DashboardNumbers/";
+  private static final String TABLE_KEY = "Preferences";
 
+  private ShuffleboardTab tab = Shuffleboard.getTab(TABLE_KEY);
+  private SimpleWidget widget = null;
   private String key = "";
   private double defaultValue = 0.0;
   private double lastHasChangedValue = defaultValue;
@@ -20,7 +24,7 @@ public class DashboardNumber {
    * @param dashboardKey Key on dashboard
    */
   public DashboardNumber(String dashboardKey) {
-    this.key = TABLE_KEY + dashboardKey;
+    this.key = dashboardKey;
   }
 
   /**
@@ -60,7 +64,7 @@ public class DashboardNumber {
   public void setDefaultValue(double defaultValue) {
     this.defaultValue = defaultValue;
     if (isActiveMode) {
-      SmartDashboard.putNumber(key, SmartDashboard.getNumber(key, defaultValue));
+      this.widget = tab.add(key, defaultValue).withSize(2, 1);
     }
   }
 
@@ -70,7 +74,21 @@ public class DashboardNumber {
    * @return The current value
    */
   public double get() {
-    return isActiveMode ? SmartDashboard.getNumber(key, defaultValue) : defaultValue;
+    if (isActiveMode) {
+      return this.widget != null ? this.widget.getEntry().getDouble(defaultValue) : defaultValue;
+    }
+    return defaultValue;
+  }
+
+  /**
+   * Get the current value, from dashboard if available and in active mode
+   *
+   * @return The current value
+   */
+  public void set(double value) {
+    if (isActiveMode) {
+      this.widget.getEntry().setDouble(value);
+    }
   }
 
   /**

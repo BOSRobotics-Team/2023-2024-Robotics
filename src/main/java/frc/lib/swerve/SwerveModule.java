@@ -1,5 +1,7 @@
 package frc.lib.swerve;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -13,8 +15,6 @@ public class SwerveModule {
     private final SwerveModuleIOInputs inputs = new SwerveModuleIOInputs();
 
     private double lastAngle;
-
-    private static final boolean DEBUGGING = false;
 
     public SwerveModule(SwerveModuleIO io){
         this.io = io;

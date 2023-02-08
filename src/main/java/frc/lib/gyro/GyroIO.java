@@ -1,5 +1,7 @@
 package frc.lib.gyro;
 
+import static frc.robot.Constants.*;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
@@ -7,6 +9,8 @@ import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GyroIO implements Gyro {
@@ -25,10 +29,41 @@ public class GyroIO implements Gyro {
     if (gyroId == DRIVEGYRO_NAVX) {
       ahrs = new AHRS();
       ccwHeading = false;
+
+      ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
+      tabMain.addBoolean("Gyro/IMU_Connected", () -> ahrs.isConnected());
+      tabMain.addNumber("Gyro/IMU_Yaw", () -> ahrs.getYaw());
+      tabMain.addNumber("Gyro/IMU_Pitch",() -> ahrs.getPitch());
+      tabMain.addNumber("Gyro/IMU_Roll",() -> ahrs.getRoll());
+
+      if (TESTING) {
+        /* Display tilt-corrected, Magnetometer-based heading (requires magnetometer calibration to be useful)                                   */
+        tabMain.addNumber("Gyro/IMU_CompassHeading",() -> ahrs.getCompassHeading());
+        /* Display 9-axis Heading (requires magnetometer calibration to be useful)  */
+        tabMain.addNumber("Gyro/IMU_FusedHeading",() -> ahrs.getFusedHeading());
+
+        /* These functions are compatible w/the WPI Gyro Class */
+        tabMain.addNumber("Gyro/IMU_TotalYaw",() -> ahrs.getAngle());
+        tabMain.addNumber("Gyro/IMU_YawRateDPS",() -> ahrs.getRate());
+      }
     } else {
       pigeon = new WPI_Pigeon2(gyroId, canBus);
       pigeon.configFactoryDefault();
       ccwHeading = true;
+
+      ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
+      tabMain.addNumber("Gyro/IMU_Yaw", () -> pigeon.getYaw());
+      tabMain.addNumber("Gyro/IMU_Pitch",() -> pigeon.getPitch());
+      tabMain.addNumber("Gyro/IMU_Roll",() -> pigeon.getRoll());
+
+      if (TESTING) {
+        /* Display tilt-corrected, Magnetometer-based heading (requires magnetometer calibration to be useful)                                   */
+        tabMain.addNumber("Gyro/IMU_CompassHeading",() -> pigeon.getCompassHeading());
+
+        /* These functions are compatible w/the WPI Gyro Class */
+        tabMain.addNumber("Gyro/IMU_TotalYaw",() -> pigeon.getAngle());
+        tabMain.addNumber("Gyro/IMU_YawRateDPS",() -> pigeon.getRate());
+      }
     }
   }
 

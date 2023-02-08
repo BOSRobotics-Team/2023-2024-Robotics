@@ -28,9 +28,11 @@
       "/Shuffleboard/MAIN/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Auto mode": "String Chooser",
       "/SmartDashboard/ExtendArm 0.0": "Command",
+      "/SmartDashboard/ExtendArm 0.5": "Command",
       "/SmartDashboard/ExtendArm 1.0": "Command",
       "/SmartDashboard/ExtendArm 2.0": "Command",
       "/SmartDashboard/RaiseArm 0.0": "Command",
+      "/SmartDashboard/RaiseArm 0.5": "Command",
       "/SmartDashboard/RaiseArm 1.0": "Command",
       "/SmartDashboard/RaiseArm 2.0": "Command"
     }

@@ -29,8 +29,6 @@ public class TeleopArm extends CommandBase {
         double liftVal = MathUtil.applyDeadband(liftSup.getAsDouble(), deadBand);
         double extendVal = MathUtil.applyDeadband(extendSup.getAsDouble(), deadBand);
 
-        /* Drive */
-        arm.raiseArm(liftVal);
-        arm.extendArm(extendVal);
+        arm.teleop(liftVal, extendVal);
     }
 }
