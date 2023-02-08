@@ -20,6 +20,11 @@ public class SwerveModule {
         this.io = io;
         this.lastAngle = getState().angle.getDegrees();
 
+        this.initLogging();
+    }
+
+    private void initLogging() {
+
         /* set DEBUGGING to true to view values in Shuffleboard. This is useful when determining the steer offset constants. */
         if (DEBUGGING) {
             ShuffleboardTab tab = Shuffleboard.getTab("Swerve");

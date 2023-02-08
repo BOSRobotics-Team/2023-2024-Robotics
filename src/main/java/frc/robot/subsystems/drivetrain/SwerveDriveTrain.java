@@ -466,12 +466,6 @@ public class SwerveDriveTrain extends SubsystemBase {
           tab.addNumber("Pose Est Rot", () -> poseEstimator.getEstimatedPosition().getRotation().getDegrees());
           tab.addNumber("CoG X", () -> this.centerGravity.getX());
           tab.addNumber("CoG Y", () -> this.centerGravity.getY());
-
-          for(SwerveModule mod : this.swerveModules){
-            // tab.addNumber("Mod " + mod.getModuleNumber() + " Cancoder", () -> mod.getCanCoder().getDegrees());
-            tab.addNumber("Mod " + mod.getModuleNumber() + " Integrated", () -> mod.getPosition().angle.getDegrees());
-            tab.addNumber("Mod " + mod.getModuleNumber() + " Velocity", () -> mod.getState().speedMetersPerSecond);    
-          }
         }
     
         if (TESTING) {
