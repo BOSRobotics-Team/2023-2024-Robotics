@@ -42,7 +42,8 @@ public class Arm extends SubsystemBase {
   private double m_armLiftSetpointZero = 0;
   private double m_armExtendSetpoint = 0;
   private double m_armExtendSetpointZero = 0;
-  private boolean m_Resetting = false;;
+  private boolean m_Resetting = false;
+  private boolean m_TeleopMode = false;
   
   public Arm() {
 
@@ -209,9 +210,14 @@ public class Arm extends SubsystemBase {
   }
 
   public void teleop(double liftVal, double extendVal) {
-    if ((liftVal > 0) || (extendVal > 0)) {
+    if ((liftVal > 0.0) || (extendVal > 0.0)) {
+      m_TeleopMode = true;
+    }
+    if (m_TeleopMode) {
       this.raiseArm(liftVal);
       this.extendArm(extendVal);
+
+      m_TeleopMode = !((liftVal == 0.0) && (extendVal == 0.0));
     }
   }
 }
