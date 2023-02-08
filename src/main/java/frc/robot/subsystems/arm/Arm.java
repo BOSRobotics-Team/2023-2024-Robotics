@@ -113,21 +113,6 @@ public class Arm extends SubsystemBase {
 
   }
 
-  public void initLogging() {
-    if (DEBUGGING) {
-      ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-      tabMain.addNumber("ArmLift/Lift Process Variable", () -> m_armLiftEncoder.getPosition());
-      tabMain.addNumber("ArmLift/Lift Output", () -> m_armLiftMotor.getAppliedOutput());
-      tabMain.addNumber("ArmLift/Arm Lift SetPoint",() -> m_armLiftSetpoint);
-      tabMain.addNumber("ArmLift/Arm Lift SetPoint Zero",() -> m_armLiftSetpointZero);
-
-      tabMain.addNumber("ArmExtend/Lift Process Variable", () -> m_armExtendEncoder.getPosition());
-      tabMain.addNumber("ArmExtend/Lift Output", () -> m_armExtendMotor.getAppliedOutput());
-      tabMain.addNumber("ArmExtend/Arm Lift SetPoint",() -> m_armExtendSetpoint);
-      tabMain.addNumber("ArmExtend/Arm Lift SetPoint Zero",() -> m_armExtendSetpointZero);
-    }
-  }
-
   public void resetArm() {
     m_Resetting = true;
     m_armExtendMotor.set(RobotPreferences.ArmExtend.armMinOutput.get());
@@ -204,6 +189,23 @@ public class Arm extends SubsystemBase {
       this.extendArm(extendVal);
 
       m_TeleopMode = !((liftVal == 0.0) && (extendVal == 0.0));
+    }
+  }
+
+  public void initLogging() {
+    if (DEBUGGING) {
+      ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
+      tabMain.addNumber("ArmLift/Lift Process Variable", m_armLiftEncoder::getPosition);
+      tabMain.addNumber("ArmLift/Lift Output", m_armLiftMotor::getAppliedOutput);
+      tabMain.addNumber("ArmLift/Arm Lift SetPoint",() -> m_armLiftSetpoint);
+      tabMain.addNumber("ArmLift/Arm Lift SetPoint Zero",() -> m_armLiftSetpointZero);
+      tabMain.addBoolean("ArmLift/Reverse LimitSwitch",this::isArmLiftMinLimitSwitch);
+
+      tabMain.addNumber("ArmExtend/Lift Process Variable", m_armExtendEncoder::getPosition);
+      tabMain.addNumber("ArmExtend/Lift Output", m_armExtendMotor::getAppliedOutput);
+      tabMain.addNumber("ArmExtend/Arm Lift SetPoint",() -> m_armExtendSetpoint);
+      tabMain.addNumber("ArmExtend/Arm Lift SetPoint Zero",() -> m_armExtendSetpointZero);
+      tabMain.addBoolean("ArmExtend/Reverse LimitSwitch",this::isArmExtendMinLimitSwitch);
     }
   }
 }
