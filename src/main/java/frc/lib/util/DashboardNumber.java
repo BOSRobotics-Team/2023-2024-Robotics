@@ -3,12 +3,13 @@ package frc.lib.util;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import frc.robot.Constants;
 
 /**
  * Gets a value from dashboard in active mode, returns default if not or value in dashboard.
  */
 public class DashboardNumber {
-  public static boolean isActiveMode = false;
+  public static boolean isActiveMode = Constants.DEBUGGING;
 
   private static final String TABLE_KEY = "Preferences";
 

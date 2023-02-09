@@ -157,6 +157,13 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance, driveTrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance, driveTrain));
+
+    oi.getGripToggle().onTrue(Commands.runOnce(arm::gripToggle, arm));
+
+    oi.getArmCalibrate().onTrue(Commands.runOnce(arm::resetArm, arm));
+    oi.getArmPosition0().onTrue(Commands.runOnce(arm::setArmPosition0, arm));
+    oi.getArmPosition1().onTrue(Commands.runOnce(arm::setArmPosition1, arm));
+    oi.getArmPosition2().onTrue(Commands.runOnce(arm::setArmPosition2, arm));
   }
 
   /**

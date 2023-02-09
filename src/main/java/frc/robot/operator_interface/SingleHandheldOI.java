@@ -94,4 +94,14 @@ public class SingleHandheldOI implements OperatorInterface {
   public double getArmExtend() {
     return controller.getRightTriggerAxis();
   }
+  @Override
+  public Trigger getGripToggle() {
+    return new Trigger(controller::getAButton);
+  }
+
+  @Override
+  public Trigger getArmCalibrate() {
+    return new Trigger(controller::getBackButton);
+  }
+
 }

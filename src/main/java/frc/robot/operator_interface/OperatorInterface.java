@@ -44,4 +44,25 @@ public interface OperatorInterface {
   public default double getArmExtend() {
     return 0.0;
   }
+
+  public default Trigger getArmCalibrate() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getGripToggle() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getArmPosition0() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getArmPosition1() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getArmPosition2() {
+    return new Trigger(() -> false);
+  }
+
 }

@@ -4,16 +4,16 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import frc.lib.math.Conversions;
 import frc.robot.subsystems.drivetrain.*;
@@ -31,9 +31,9 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
   private int moduleNumber;
   private double angleOffsetDeg;
   private SimpleMotorFeedforward feedForward;
-  private TalonFX mAngleMotor;
-  private TalonFX mDriveMotor;
-  private CANCoder angleEncoder;
+  private WPI_TalonFX mAngleMotor;
+  private WPI_TalonFX mDriveMotor;
+  private WPI_CANCoder angleEncoder;
 
   /**
    * Make a new SwerveModuleIOTalonFX object.
@@ -62,9 +62,9 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
   configAngleMotor(angleMotorID, canBusID);
   configDriveMotor(driveMotorID, canBusID);
 
-  SendableRegistry.setName((Sendable) mDriveMotor, "SwerveModule " + moduleNumber, "Drive Motor");
-  SendableRegistry.setName((Sendable) mAngleMotor, "SwerveModule " + moduleNumber, "Angle Motor");
-  SendableRegistry.setName((Sendable) angleEncoder, "SwerveModule " + moduleNumber, "Angle Encoder");
+  SendableRegistry.setName(mDriveMotor, "SwerveModule " + moduleNumber, "Drive Motor");
+  SendableRegistry.setName(mAngleMotor, "SwerveModule " + moduleNumber, "Angle Motor");
+  SendableRegistry.setName(angleEncoder, "SwerveModule " + moduleNumber, "Angle Encoder");
 }
 
 public SwerveModuleIOTalonFX( COTSFalconSwerveConstants.moduleIDS modID ) {
@@ -72,7 +72,7 @@ public SwerveModuleIOTalonFX( COTSFalconSwerveConstants.moduleIDS modID ) {
 }
 
 private void configAngleEncoder(int canCoderID, String canBusID) {
-    angleEncoder = new CANCoder(canCoderID, canBusID);
+    angleEncoder = new WPI_CANCoder(canCoderID, canBusID);
     angleEncoder.configFactoryDefault();
 
     /* Swerve CANCoder Configuration */
@@ -85,7 +85,7 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
   }
 
   private void configAngleMotor(int angleMotorID, String canBusID) {
-    mAngleMotor = new TalonFX(angleMotorID, canBusID);
+    mAngleMotor = new WPI_TalonFX(angleMotorID, canBusID);
 
     /* Swerve Angle Motor Configurations */
     SupplyCurrentLimitConfiguration angleSupplyLimit = new SupplyCurrentLimitConfiguration(
@@ -111,7 +111,7 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
   }
 
   private void configDriveMotor(int driveMotorID, String canBusID) {
-    mDriveMotor = new TalonFX(driveMotorID, canBusID);
+    mDriveMotor = new WPI_TalonFX(driveMotorID, canBusID);
 
     /* Swerve Drive Motor Configuration */
     SupplyCurrentLimitConfiguration driveSupplyLimit = new SupplyCurrentLimitConfiguration(

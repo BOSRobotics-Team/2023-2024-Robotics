@@ -11,7 +11,7 @@ public final class ArmConstants {
     public static final double armLiftMinOutput = -0.15; 
     public static final double armLiftMaxRPM = 5700.0;
     public static final double armLiftMinPosition = 0.0;
-    public static final double armLiftMaxPosition = 40.0;
+    public static final double armLiftMaxPosition = 60.0;
 
     public static final double armExtendKP = 0.2; 
     public static final double armExtendKI = 0.0;
@@ -22,7 +22,7 @@ public final class ArmConstants {
     public static final double armExtendMinOutput = -0.5; 
     public static final double armExtendMaxRPM = 5700.0;
     public static final double armExtendMinPosition = 0.0;
-    public static final double armExtendMaxPosition = 400.0;
+    public static final double armExtendMaxPosition = 485.0;
 
     // // Smart Motion Coefficients
     // public static final double armLiftMaxVel = 2000.0; 

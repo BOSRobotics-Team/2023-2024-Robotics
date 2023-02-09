@@ -45,7 +45,7 @@ public class Arm extends SubsystemBase {
     // initialze PID controller and encoder objects
     m_armLiftController = m_armLiftMotor.getPIDController();
     m_armLiftEncoder = m_armLiftMotor.getEncoder();
-    m_armLiftLimit = m_armLiftMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+    m_armLiftLimit = m_armLiftMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
     // set PID coefficients
     m_armLiftController.setP(RobotPreferences.ArmLift.armKP.get());
@@ -69,7 +69,7 @@ public class Arm extends SubsystemBase {
     // initialze PID controller and encoder objects
     m_armExtendController = m_armExtendMotor.getPIDController();
     m_armExtendEncoder = m_armExtendMotor.getEncoder();
-    m_armExtendLimit = m_armLiftMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+    m_armExtendLimit = m_armExtendMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
     // set PID coefficients
     m_armExtendController.setP(RobotPreferences.ArmExtend.armKP.get());
@@ -104,7 +104,12 @@ public class Arm extends SubsystemBase {
         m_armLiftMotor.set(0.0);
         m_Resetting = false;
       }
+    } else {
+      double ht = this.getArmLiftPosition();
+      double ln = this.getArmExtendPosition();
+      double minLn = (ht > 20) ? ln : 0;
     }
+
   }
 
   @Override
@@ -164,6 +169,18 @@ public class Arm extends SubsystemBase {
     m_gripper.set(close ? Value.kReverse : Value.kForward);
   }
 
+  public void gripOpen() {
+    this.gripClaw(false);
+  }
+
+  public void gripClose() {
+    this.gripClaw(true);
+  }
+
+  public void gripToggle() {
+    this.gripClaw(isGripClawOpen());
+  }
+
   public void gripReset(boolean close) {
     m_gripper.set(Value.kOff);
   }
@@ -190,6 +207,21 @@ public class Arm extends SubsystemBase {
 
       m_TeleopMode = !((liftVal == 0.0) && (extendVal == 0.0));
     }
+  }
+
+  public void setArmPosition0() {
+    this.setArmLiftPosition(10);
+    this.setArmExtendPosition(50);
+  }
+
+  public void setArmPosition1() {
+    this.setArmLiftPosition(40);
+    this.setArmExtendPosition(350);
+  }
+
+  public void setArmPosition2() {
+    this.setArmLiftPosition(50);
+    this.setArmExtendPosition(485);
   }
 
   public void initLogging() {
