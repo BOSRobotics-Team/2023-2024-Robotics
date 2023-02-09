@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import com.revrobotics.REVLibError;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import frc.lib.util.CANDeviceFinder;
 import frc.lib.util.DashboardNumber;
-import frc.lib.util.CANDeviceId.CANDeviceType;
 
 public class TestChecklist {
     private class ChecklistItem {
@@ -60,7 +60,6 @@ public class TestChecklist {
     }
 
     private final ShuffleboardTab tabMain = Shuffleboard.getTab("Checklist");
-    private final CANDeviceFinder canFinder = new CANDeviceFinder();
     private final RobotContainer robot;
 
     private final DashboardNumber voltageThreshold = new DashboardNumber("Checklist/VoltageThreshold", 12.0);
@@ -222,76 +221,76 @@ public class TestChecklist {
         boolean allPresent = true;
 
         item.status = "";
-        if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID)) {
+        if (!robot.driveTrain.getSwerveModule(Constants.FRONT_LEFT_MODULE).isDriveMotorConnected()) {
             allPresent = false;
-            item.status += "Falcon(" + Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID + ") ";
+            item.status += "TalonFX(" + Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID + ") ";
         }
-        if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID)) {
+        if (!robot.driveTrain.getSwerveModule(Constants.FRONT_LEFT_MODULE).isAngleMotorConnected()) {
             allPresent = false;
-            item.status += "Falcon(" + Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID + ") ";
+            item.status += "TalonFX(" + Constants.FRONT_LEFT_MODULE_ANGLE_MOTOR_ID + ") ";
         }
-        if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID)) {
+        if (!robot.driveTrain.getSwerveModule(Constants.FRONT_LEFT_MODULE).isAngleEncoderConnected()) {
             allPresent = false;
-            item.status += "Falcon(" + Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID + ") ";
+            item.status += "CANCoder(" + Constants.FRONT_LEFT_MODULE_ANGLE_ENCODER_ID + ") ";
         }
-        if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID)) {
+        if (!robot.driveTrain.getSwerveModule(Constants.FRONT_RIGHT_MODULE).isDriveMotorConnected()) {
             allPresent = false;
-            item.status += "Falcon(" + Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID + ") ";
+            item.status += "TalonFX(" + Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID + ") ";
         }
-
-        if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_LEFT_MODULE_ANGLE_MOTOR_ID)) {
+        if (!robot.driveTrain.getSwerveModule(Constants.FRONT_RIGHT_MODULE).isAngleMotorConnected()) {
             allPresent = false;
-            item.status += "Falcon(" + Constants.FRONT_LEFT_MODULE_ANGLE_MOTOR_ID + ") ";
+            item.status += "TalonFX(" + Constants.FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID + ") ";
         }
-        if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID)) {
+        if (!robot.driveTrain.getSwerveModule(Constants.FRONT_RIGHT_MODULE).isAngleEncoderConnected()) {
             allPresent = false;
-            item.status += "Falcon(" + Constants.FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID + ") ";
+            item.status += "CANCoder(" + Constants.FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID + ") ";
         }
-        if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_LEFT_MODULE_ANGLE_MOTOR_ID)) {
+        if (!robot.driveTrain.getSwerveModule(Constants.BACK_LEFT_MODULE).isDriveMotorConnected()) {
             allPresent = false;
-            item.status += "Falcon(" + Constants.BACK_LEFT_MODULE_ANGLE_MOTOR_ID + ") ";
+            item.status += "TalonFX(" + Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID + ") ";
         }
-        if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_RIGHT_MODULE_ANGLE_MOTOR_ID)) {
+        if (!robot.driveTrain.getSwerveModule(Constants.BACK_LEFT_MODULE).isAngleMotorConnected()) {
             allPresent = false;
-            item.status += "Falcon(" + Constants.BACK_RIGHT_MODULE_ANGLE_MOTOR_ID + ") ";
+            item.status += "TalonFX(" + Constants.BACK_LEFT_MODULE_ANGLE_MOTOR_ID + ") ";
         }
-
-        // if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_LEFT_MODULE_ANGLE_ENCODER_ID)) {
-        //     allPresent = false;
-        //     status += "Falcon(" + Constants.FRONT_LEFT_MODULE_ANGLE_ENCODER_ID + ") ";
-        // }
-        // if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID)) {
-        //     allPresent = false;
-        //     status += "Falcon(" + Constants.FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID + ") ";
-        // }
-        // if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_LEFT_MODULE_ANGLE_ENCODER_ID)) {
-        //     allPresent = false;
-        //     status += "Falcon(" + Constants.BACK_LEFT_MODULE_ANGLE_ENCODER_ID + ") ";
-        // }
-        // if (!canFinder.isDevicePresent(CANDeviceType.TALON, Constants.BACK_RIGHT_MODULE_ANGLE_ENCODER_ID)) {
-        //     allPresent = false;
-        //     status += "Falcon(" + Constants.BACK_RIGHT_MODULE_ANGLE_ENCODER_ID + ") ";
-        // }
+        if (!robot.driveTrain.getSwerveModule(Constants.BACK_LEFT_MODULE).isAngleEncoderConnected()) {
+            allPresent = false;
+            item.status += "CANCoder(" + Constants.BACK_LEFT_MODULE_ANGLE_ENCODER_ID + ") ";
+        }
+        if (!robot.driveTrain.getSwerveModule(Constants.BACK_RIGHT_MODULE).isDriveMotorConnected()) {
+            allPresent = false;
+            item.status += "TalonFX(" + Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID + ") ";
+        }
+        if (!robot.driveTrain.getSwerveModule(Constants.BACK_RIGHT_MODULE).isAngleMotorConnected()) {
+            allPresent = false;
+            item.status += "TalonFX(" + Constants.BACK_RIGHT_MODULE_ANGLE_MOTOR_ID + ") ";
+        }
+        if (!robot.driveTrain.getSwerveModule(Constants.BACK_RIGHT_MODULE).isAngleEncoderConnected()) {
+            allPresent = false;
+            item.status += "CANCoder(" + Constants.BACK_RIGHT_MODULE_ANGLE_ENCODER_ID + ") ";
+        }
 
         if (!robot.gyro.isConnected()) {
             allPresent = false;
             item.status += "Gyro(" + Constants.GYRO_ID + ") ";
         }
 
-        if (!canFinder.isDevicePresent(CANDeviceType.PCM, Constants.PNEUMATICSHUB_ID)) {
+        if (robot.arm.m_pH.getFaults().CanWarning) {
             allPresent = false;
-            item.status += "PH(" + Constants.PNEUMATICSHUB_ID + ") ";
-        }
-        if (!robot.power.getFaults().CanWarning) {
-            allPresent = false;
-            item.status += "PDP(" + 0 + ") ";
+            item.status += "PH(" + robot.arm.m_pH.getModuleNumber() + ") ";
         }
 
-        if (!canFinder.isDevicePresent(CANDeviceType.SPARK_MAX, Constants.ARM_LIFT_MOTOR_ID)) {
+        if (robot.power.getFaults().CanWarning) {
+            allPresent = false;
+            item.status += "PDP(" + robot.power.getModule() + ") ";
+        }
+
+
+        if (robot.arm.m_armLiftMotor.getLastError() == REVLibError.kCANDisconnected) {
             allPresent = false;
             item.status += "SparkMax(" + Constants.ARM_LIFT_MOTOR_ID + ") ";
         }
-        if (!canFinder.isDevicePresent(CANDeviceType.SPARK_MAX, Constants.ARM_EXTEND_MOTOR_ID)) {
+        if (robot.arm.m_armExtendMotor.getLastError() == REVLibError.kCANDisconnected) {
             allPresent = false;
             item.status += "SparkMax(" + Constants.ARM_EXTEND_MOTOR_ID + ") ";
         }

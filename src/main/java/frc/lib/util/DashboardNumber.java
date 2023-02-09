@@ -1,20 +1,11 @@
 package frc.lib.util;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.Preferences;
 
 /**
  * Gets a value from dashboard in active mode, returns default if not or value in dashboard.
  */
 public class DashboardNumber {
-  public static boolean isActiveMode = Constants.DEBUGGING;
-
-  private static final String TABLE_KEY = "Preferences";
-
-  private ShuffleboardTab tab = Shuffleboard.getTab(TABLE_KEY);
-  private SimpleWidget widget = null;
   private String key = "";
   private double defaultValue = 0.0;
   private double lastHasChangedValue = defaultValue;
@@ -40,15 +31,6 @@ public class DashboardNumber {
   }
 
   /**
-   * Set globale active mode on or off
-   *
-   * @param active active mode on or off
-   */
-  public static void setActiveMode(boolean active) {
-    isActiveMode = active;
-  }
-
-  /**
    * Get the default value for the number that has been set
    *
    * @return The default value
@@ -64,8 +46,8 @@ public class DashboardNumber {
    */
   public void setDefaultValue(double defaultValue) {
     this.defaultValue = defaultValue;
-    if (isActiveMode) {
-      this.widget = tab.add(key, defaultValue).withSize(2, 1);
+    if (!Preferences.containsKey(key)) {
+      Preferences.setDouble(key, defaultValue);
     }
   }
 
@@ -75,10 +57,7 @@ public class DashboardNumber {
    * @return The current value
    */
   public double get() {
-    if (isActiveMode) {
-      return this.widget != null ? this.widget.getEntry().getDouble(defaultValue) : defaultValue;
-    }
-    return defaultValue;
+    return Preferences.getDouble(key, defaultValue);
   }
 
   /**
@@ -87,9 +66,7 @@ public class DashboardNumber {
    * @return The current value
    */
   public void set(double value) {
-    if (isActiveMode) {
-      this.widget.getEntry().setDouble(value);
-    }
+    Preferences.setDouble(key, value);
   }
 
   /**

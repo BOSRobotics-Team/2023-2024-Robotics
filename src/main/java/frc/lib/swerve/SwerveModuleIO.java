@@ -37,4 +37,8 @@ public interface SwerveModuleIO {
 
   /** Enable or disable brake mode on the turn motor. */
   public default void setAngleBrakeMode(boolean enable) {}
+
+  public default boolean isDriveMotorConnected() { return false; }
+  public default boolean isAngleMotorConnected() { return false; }
+  public default boolean isAngleEncoderConnected() { return false; }
 }

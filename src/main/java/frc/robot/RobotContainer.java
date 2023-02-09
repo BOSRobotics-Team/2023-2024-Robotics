@@ -95,7 +95,6 @@ public class RobotContainer {
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
-    RobotPreferences.setTuningMode(true);
 
     updateOI();
     configureAutoCommands();
@@ -231,6 +230,14 @@ public class RobotContainer {
       );
     // demonstration of PathPlanner path group with event markers
     chooser.addOption("Test Path", autoTest);
+  }
+
+  public void simulationInit() {
+    this.arm.simulationInit();
+  }
+
+  public void simulationPeriodic() {
+    this.arm.simulationPeriodic();
   }
 
   public void testInit() {

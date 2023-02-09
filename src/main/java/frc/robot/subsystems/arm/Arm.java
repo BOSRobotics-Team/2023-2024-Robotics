@@ -1,6 +1,10 @@
 package frc.robot.subsystems.arm;
 
 import static frc.robot.Constants.*;
+
+import java.util.List;
+
+import frc.robot.Robot;
 import frc.robot.RobotPreferences;
 
 import com.revrobotics.CANSparkMax;
@@ -8,8 +12,11 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -22,12 +29,12 @@ public class Arm extends SubsystemBase {
   public PneumaticHub m_pH = new PneumaticHub(PNEUMATICSHUB_ID);
   public DoubleSolenoid m_gripper = m_pH.makeDoubleSolenoid(SOLENOID_FWD_CHANNEL, SOLENOID_REV_CHANNEL);
 
-  private CANSparkMax m_armLiftMotor = new CANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
+  public CANSparkMax m_armLiftMotor = new CANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
   private SparkMaxPIDController m_armLiftController;
   private RelativeEncoder m_armLiftEncoder;
   private SparkMaxLimitSwitch m_armLiftLimit;
 
-  private CANSparkMax m_armExtendMotor = new CANSparkMax(ARM_EXTEND_MOTOR_ID, MotorType.kBrushless);
+  public CANSparkMax m_armExtendMotor = new CANSparkMax(ARM_EXTEND_MOTOR_ID, MotorType.kBrushless);
   private SparkMaxPIDController m_armExtendController;
   private RelativeEncoder m_armExtendEncoder;
   private SparkMaxLimitSwitch m_armExtendLimit;
@@ -38,9 +45,14 @@ public class Arm extends SubsystemBase {
   private double m_armExtendSetpointZero = 0;
   private boolean m_Resetting = false;
   private boolean m_TeleopMode = false;
+  private List<Pair<Double, Double>> liftProfile = List.of(
+    new Pair<>(5.0, 20.0),
+    new Pair<>(10.0, 80.0),
+    new Pair<>(20.0, 150.0),
+    new Pair<>(25.0, 300.0)
+  );
   
   public Arm() {
-
     m_armLiftMotor.restoreFactoryDefaults();
     // initialze PID controller and encoder objects
     m_armLiftController = m_armLiftMotor.getPIDController();
@@ -106,16 +118,34 @@ public class Arm extends SubsystemBase {
       }
     } else {
       double ht = this.getArmLiftPosition();
-      double ln = this.getArmExtendPosition();
-      double minLn = (ht > 20) ? ln : 0;
-    }
+      
+      Pair<Double, Double> lastPair = new Pair<Double,Double>(0.0, 0.0);
+      for (Pair<Double, Double> pair : liftProfile) {
+        if (ht <= pair.getFirst()) {
+          Double htPct = (ht - lastPair.getFirst()) / (pair.getFirst() - lastPair.getFirst());
+          Double newLn = Math.min(MathUtil.interpolate(lastPair.getSecond(), pair.getSecond(), htPct), m_armExtendSetpoint);
 
+          if (Math.abs(newLn - this.getArmExtendPosition()) > 0.01) {
+            m_armLiftController.setReference(ht + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
+            m_armExtendController.setReference(newLn + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
+          } else if (Math.abs(ht - m_armLiftSetpoint) > 0.01) {
+            m_armLiftController.setReference(m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
+          }
+          break;
+        }
+        lastPair = pair;
+      }
+    }
   }
 
-  @Override
+  public void simulationInit() {
+    REVPhysicsSim.getInstance().addSparkMax(m_armLiftMotor, DCMotor.getNEO(1));
+    REVPhysicsSim.getInstance().addSparkMax(m_armExtendMotor, DCMotor.getNEO(1));
+  }
+
   public void simulationPeriodic() {
     // This method will be called once per scheduler run when in simulation
-
+    REVPhysicsSim.getInstance().run();
   }
 
   public void resetArm() {
@@ -130,7 +160,13 @@ public class Arm extends SubsystemBase {
   public void setArmLiftPosition(double position) {
     if (!m_Resetting) {
       m_armLiftSetpoint = MathUtil.clamp(position, RobotPreferences.ArmLift.armMinPosition.get(), RobotPreferences.ArmLift.armMaxPosition.get());
-      m_armLiftController.setReference(m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
+      if (Robot.isReal()) {
+        m_armLiftController.setReference(m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
+      } else {
+        m_armLiftMotor.set(m_armLiftSetpoint > this.getArmLiftPosition() ? 
+          RobotPreferences.ArmLift.armMaxOutput.get() :
+          RobotPreferences.ArmLift.armMinOutput.get());
+      }
     }
   }
 
@@ -149,7 +185,14 @@ public class Arm extends SubsystemBase {
   public void setArmExtendPosition(double position) {
     if (!m_Resetting) {
       m_armExtendSetpoint = MathUtil.clamp(position, RobotPreferences.ArmExtend.armMinPosition.get(), RobotPreferences.ArmExtend.armMaxPosition.get());
-      m_armExtendController.setReference(m_armExtendSetpoint + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
+      if (Robot.isReal()) {
+        m_armExtendController.setReference(m_armExtendSetpoint + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
+      } else {
+        m_armExtendMotor.set(m_armExtendSetpoint > this.getArmExtendPosition() ? 
+          RobotPreferences.ArmExtend.armMaxOutput.get() :
+          RobotPreferences.ArmExtend.armMinOutput.get());
+      }
+
     }
   }
 
@@ -210,18 +253,18 @@ public class Arm extends SubsystemBase {
   }
 
   public void setArmPosition0() {
-    this.setArmLiftPosition(10);
-    this.setArmExtendPosition(50);
+    this.setArmLiftPosition(RobotPreferences.ArmLift.armPosition0.get());
+    this.setArmExtendPosition(RobotPreferences.ArmExtend.armPosition0.get());
   }
 
   public void setArmPosition1() {
-    this.setArmLiftPosition(40);
-    this.setArmExtendPosition(350);
+    this.setArmLiftPosition(RobotPreferences.ArmLift.armPosition1.get());
+    this.setArmExtendPosition(RobotPreferences.ArmExtend.armPosition1.get());
   }
 
   public void setArmPosition2() {
-    this.setArmLiftPosition(50);
-    this.setArmExtendPosition(485);
+    this.setArmLiftPosition(RobotPreferences.ArmLift.armPosition2.get());
+    this.setArmExtendPosition(RobotPreferences.ArmExtend.armPosition2.get());
   }
 
   public void initLogging() {

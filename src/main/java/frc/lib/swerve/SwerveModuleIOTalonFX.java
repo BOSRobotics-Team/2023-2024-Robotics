@@ -1,5 +1,6 @@
 package frc.lib.swerve;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -237,5 +238,20 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
   public void setAngleBrakeMode(boolean enable) {
     // always leave the angle motor in coast mode
     mAngleMotor.setNeutralMode(NeutralMode.Coast);
+  }
+
+  @Override
+  public boolean isDriveMotorConnected() { 
+    return (mDriveMotor.getLastError() == ErrorCode.OK); 
+  }
+  
+  @Override
+  public boolean isAngleMotorConnected() { 
+    return (mAngleMotor.getLastError() == ErrorCode.OK); 
+  }
+
+  @Override
+  public boolean isAngleEncoderConnected() { 
+    return (angleEncoder.getLastError() == ErrorCode.OK); 
   }
 }

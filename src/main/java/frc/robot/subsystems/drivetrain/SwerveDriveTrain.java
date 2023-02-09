@@ -444,6 +444,10 @@ public class SwerveDriveTrain extends SubsystemBase {
           }
     }
 
+    public SwerveModule getSwerveModule(int moduleNumber) {
+        return swerveModules[moduleNumber];
+    }
+
     @Override
     public void periodic(){
         this.swerveOdometry.update(getRotation(), getModulePositions());  

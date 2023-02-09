@@ -24,7 +24,6 @@ public class SwerveModule {
     }
 
     private void initLogging() {
-
         /* set DEBUGGING to true to view values in Shuffleboard. This is useful when determining the steer offset constants. */
         if (DEBUGGING) {
             ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
@@ -112,7 +111,18 @@ public class SwerveModule {
         io.setDriveBrakeMode(enable);
     }
 
-    /**
+    public boolean isDriveMotorConnected() { 
+        return io.isDriveMotorConnected(); 
+    }
+    
+    public boolean isAngleMotorConnected() { 
+        return io.isAngleMotorConnected(); 
+    }
+  
+    public boolean isAngleEncoderConnected() { 
+        return io.isAngleEncoderConnected(); 
+    }
+      /**
      * Set the drive motor to the specified voltage. This is only used for characterization via the
      * FeedForwardCharacterization command. The module will be set to 0 degrees throughout the
      * characterization; as a result, the wheels don't need to be clamped to hold them straight.

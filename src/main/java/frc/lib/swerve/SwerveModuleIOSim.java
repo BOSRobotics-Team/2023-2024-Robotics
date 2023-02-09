@@ -155,7 +155,16 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   /** Run the turn motor to the specified angle. */
   @Override
   public void setAnglePosition(double degrees) {
-
     angleSetpointDeg = degrees;
   }
+
+  @Override
+  public boolean isDriveMotorConnected() { return true; }
+  
+  @Override
+  public boolean isAngleMotorConnected() { return true; }
+
+  @Override
+  public boolean isAngleEncoderConnected() { return true; }
+
 }

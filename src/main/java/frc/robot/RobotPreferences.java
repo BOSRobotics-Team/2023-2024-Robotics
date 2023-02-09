@@ -6,10 +6,6 @@ import frc.lib.util.DashboardNumber;
 
 public final class RobotPreferences {
 
-    public static void setTuningMode(boolean isEnabled) {
-        DashboardNumber.setActiveMode(isEnabled);
-    }
-
     public static DashboardNumber stickDeadband = 
        new DashboardNumber("stickDeadband", Constants.STICK_DEADBAND);
     public static DashboardNumber trackWidth = 
@@ -93,27 +89,33 @@ public final class RobotPreferences {
            new DashboardNumber("auto/dThetaController", AutoConstants.kDThetaController);
     }
 
-    public static final class ArmLift {
-        public static DashboardNumber armKP = 
-           new DashboardNumber("armLift/armKP", ArmConstants.armLiftKP);
-        public static DashboardNumber armKI = 
-           new DashboardNumber("armLift/armKI", ArmConstants.armLiftKI);
-        public static DashboardNumber armKD = 
-           new DashboardNumber("armLift/armKD", ArmConstants.armLiftKD);
-        public static DashboardNumber armKIZ = 
-           new DashboardNumber("armLift/armKIZ", ArmConstants.armLiftKIZ);
-        public static DashboardNumber armKFF = 
-           new DashboardNumber("armLift/armKFF", ArmConstants.armLiftKFF);
-        public static DashboardNumber armMaxOutput = 
-           new DashboardNumber("armLift/armMaxOutput", ArmConstants.armLiftMaxOutput);
-        public static DashboardNumber armMinOutput = 
-           new DashboardNumber("armLift/armMinOutput", ArmConstants.armLiftMinOutput);
-        public static DashboardNumber armMaxRPM = 
-           new DashboardNumber("armLift/armMaxRPM", ArmConstants.armLiftMaxRPM);
-        public static DashboardNumber armMinPosition = 
-           new DashboardNumber("armLift/armMinPosition", ArmConstants.armLiftMinPosition);
-        public static DashboardNumber armMaxPosition = 
-           new DashboardNumber("armLift/armMaxPosition", ArmConstants.armLiftMaxPosition);
+   public static final class ArmLift {
+      public static DashboardNumber armKP = 
+         new DashboardNumber("armLift/armKP", ArmConstants.armLiftKP);
+      public static DashboardNumber armKI = 
+         new DashboardNumber("armLift/armKI", ArmConstants.armLiftKI);
+      public static DashboardNumber armKD = 
+         new DashboardNumber("armLift/armKD", ArmConstants.armLiftKD);
+      public static DashboardNumber armKIZ = 
+         new DashboardNumber("armLift/armKIZ", ArmConstants.armLiftKIZ);
+      public static DashboardNumber armKFF = 
+         new DashboardNumber("armLift/armKFF", ArmConstants.armLiftKFF);
+      public static DashboardNumber armMaxOutput = 
+         new DashboardNumber("armLift/armMaxOutput", ArmConstants.armLiftMaxOutput);
+      public static DashboardNumber armMinOutput = 
+         new DashboardNumber("armLift/armMinOutput", ArmConstants.armLiftMinOutput);
+      public static DashboardNumber armMaxRPM = 
+         new DashboardNumber("armLift/armMaxRPM", ArmConstants.armLiftMaxRPM);
+      public static DashboardNumber armMinPosition = 
+         new DashboardNumber("armLift/armMinPosition", ArmConstants.armLiftMinPosition);
+      public static DashboardNumber armMaxPosition = 
+         new DashboardNumber("armLift/armMaxPosition", ArmConstants.armLiftMaxPosition);
+      public static DashboardNumber armPosition0 = 
+         new DashboardNumber("armLift/armPosition0", ArmConstants.armLiftPosition0);
+      public static DashboardNumber armPosition1 = 
+         new DashboardNumber("armLift/armPosition1", ArmConstants.armLiftPosition1);
+      public static DashboardNumber armPosition2 = 
+         new DashboardNumber("armLift/armPosition2", ArmConstants.armLiftPosition2);
 
       //   public static DashboardNumber armMaxVel = 
       //      new DashboardNumber("armLift/armMaxVel", ArmConstants.armLiftMaxVel);
@@ -153,6 +155,14 @@ public final class RobotPreferences {
          new DashboardNumber("armExtend/armMinPosition", ArmConstants.armExtendMinPosition);
       public static DashboardNumber armMaxPosition = 
          new DashboardNumber("armExtend/armMaxPosition", ArmConstants.armExtendMaxPosition);
+      public static DashboardNumber armPosition0 = 
+         new DashboardNumber("armExtend/armPosition0", ArmConstants.armExtendPosition0);
+      public static DashboardNumber armPosition1 = 
+         new DashboardNumber("armExtend/armPosition1", ArmConstants.armExtendPosition1);
+      public static DashboardNumber armPosition2 = 
+         new DashboardNumber("armExtend/armPosition2", ArmConstants.armExtendPosition2);
+
+
       // public static DashboardNumber armMaxVel = 
       //    new DashboardNumber("armExtend/armMaxVel", ArmConstants.armExtendMaxVel);
       // public static DashboardNumber armMinVel = 

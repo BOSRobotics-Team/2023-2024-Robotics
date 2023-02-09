@@ -470,53 +470,5 @@
     "properties": {
       "persistent": true
     }
-  },
-  {
-    "name": "/Preferences/armLift/armPosition0",
-    "type": "double",
-    "value": 10.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/armLift/armPosition1",
-    "type": "double",
-    "value": 40.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/armLift/armPosition2",
-    "type": "double",
-    "value": 50.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/armExtend/armPosition0",
-    "type": "double",
-    "value": 50.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/armExtend/armPosition1",
-    "type": "double",
-    "value": 350.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/armExtend/armPosition2",
-    "type": "double",
-    "value": 485.0,
-    "properties": {
-      "persistent": true
-    }
   }
 ]

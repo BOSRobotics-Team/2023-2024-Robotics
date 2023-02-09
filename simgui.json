@@ -25,6 +25,7 @@
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Pigeon 2 [20]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/Shuffleboard/DriveTrain/DriveTrain": "Subsystem",
       "/Shuffleboard/MAIN/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Auto mode": "String Chooser",
       "/SmartDashboard/ExtendArm 0.0": "Command",
@@ -40,6 +41,9 @@
   "NetworkTables": {
     "transitory": {
       "LiveWindow": {
+        "open": true
+      },
+      "SmartDashboard": {
         "open": true
       }
     }
