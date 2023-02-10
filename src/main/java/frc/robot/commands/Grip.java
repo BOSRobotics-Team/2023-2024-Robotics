@@ -21,7 +21,11 @@ public class Grip extends InstantCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_arm.gripClaw(m_grip);
+    if (m_grip) {
+      m_arm.gripOpen();
+    } else {
+      m_arm.gripClose();
+    }
   }
 
   // Called once the command ends or is interrupted.

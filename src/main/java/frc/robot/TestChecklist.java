@@ -595,16 +595,16 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click Toggle to Close Gripper";
       } else {
-        robot.arm.gripClaw(true);
+        robot.arm.gripClose();
         item.state = 1;
         item.status = "Click Toggle to Open Gripper";
       }
     } else if ((item.state == 1) && getDoStep()) {
-      robot.arm.gripClaw(false);
+      robot.arm.gripOpen();
       item.state = 2;
       item.status = "Click Toggle to Close Gripper";
     } else if ((item.state == 2) && getDoStep()) {
-      robot.arm.gripClaw(true);
+      robot.arm.gripClose();
       item.state = 3;
       item.status = "Actuator Test Complete";
       item.setComplete(true);
