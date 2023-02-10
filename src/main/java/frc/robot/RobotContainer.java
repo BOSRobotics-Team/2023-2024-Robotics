@@ -12,6 +12,8 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,9 +30,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.gyro.GyroIO;
-import frc.lib.swerve.SwerveModule;
-import frc.lib.swerve.SwerveModuleIOSim;
-import frc.lib.swerve.SwerveModuleIOTalonFX;
+import frc.lib.swerve.*;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.operator_interface.*;
@@ -58,8 +58,9 @@ public class RobotContainer {
   private final TestChecklist test;
 
   /* Cameras */
-  // public UsbCamera cam0;
-  // public UsbCamera cam1;
+  public UsbCamera cam0;
+  public UsbCamera cam1;
+  public UsbCamera cam2;
 
   /* Auto paths */
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
@@ -68,30 +69,37 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    SwerveModuleIO flModule;
+    SwerveModuleIO frModule;
+    SwerveModuleIO blModule;
+    SwerveModuleIO brModule;
+
    if (RobotBase.isReal()) {
-      // cam0 = CameraServer.startAutomaticCapture(0);
-      // cam1 = CameraServer.startAutomaticCapture(1);
+      cam0 = CameraServer.startAutomaticCapture(0);
+      cam1 = CameraServer.startAutomaticCapture(1);
+      cam2 = CameraServer.startAutomaticCapture(2);
 
-      // cam0.setConnectVerbose(0);
-      // cam1.setConnectVerbose(0);
+      cam0.setConnectVerbose(0);
+      cam1.setConnectVerbose(0);
+      cam2.setConnectVerbose(0);
 
-      SwerveModule flModule = new SwerveModule(new SwerveModuleIOTalonFX(DriveTrainConstants.mod0));
-      SwerveModule frModule = new SwerveModule(new SwerveModuleIOTalonFX(DriveTrainConstants.mod1));
-      SwerveModule blModule = new SwerveModule(new SwerveModuleIOTalonFX(DriveTrainConstants.mod2));
-      SwerveModule brModule = new SwerveModule(new SwerveModuleIOTalonFX(DriveTrainConstants.mod3));
-
-      driveTrain = new SwerveDriveTrain(gyro, flModule, frModule, blModule, brModule);
-      arm = new Arm();
-   } else {
-      SwerveModule flModule = new SwerveModule(new SwerveModuleIOSim(0));
-      SwerveModule frModule = new SwerveModule(new SwerveModuleIOSim(1));
-      SwerveModule blModule = new SwerveModule(new SwerveModuleIOSim(2));
-      SwerveModule brModule = new SwerveModule(new SwerveModuleIOSim(3));
-
-      driveTrain = new SwerveDriveTrain(gyro, flModule, frModule, blModule, brModule);
-      arm = new Arm(); // use ArmSim later
-   }
-   test = new TestChecklist(this);
+      flModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod0);
+      frModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod1);
+      blModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod2);
+      brModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod3);
+    } else {
+      flModule = new SwerveModuleIOSim(DriveTrainConstants.mod0.moduleNumber);
+      frModule = new SwerveModuleIOSim(DriveTrainConstants.mod1.moduleNumber);
+      blModule = new SwerveModuleIOSim(DriveTrainConstants.mod2.moduleNumber);
+      brModule = new SwerveModuleIOSim(DriveTrainConstants.mod3.moduleNumber);
+    }
+    driveTrain = new SwerveDriveTrain(gyro, 
+                                      new SwerveModule(flModule), 
+                                      new SwerveModule(frModule),
+                                      new SwerveModule(blModule), 
+                                      new SwerveModule(brModule));
+    arm = new Arm();
+    test = new TestChecklist(this);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();

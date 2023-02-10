@@ -64,12 +64,6 @@ public class Arm extends SubsystemBase {
     m_armLiftController.setFF(RobotPreferences.ArmLift.armKFF.get());
     m_armLiftController.setOutputRange(RobotPreferences.ArmLift.armMinOutput.get(), RobotPreferences.ArmLift.armMaxOutput.get());
 
-    // int smartMotionSlot = 0;
-    // m_armLiftController.setSmartMotionMaxVelocity(RobotPreferences.ArmLift.armMaxVel.get(), smartMotionSlot);
-    // m_armLiftController.setSmartMotionMinOutputVelocity(RobotPreferences.ArmLift.armMinVel.get(), smartMotionSlot);
-    // m_armLiftController.setSmartMotionMaxAccel(RobotPreferences.ArmLift.armMaxAcc.get(), smartMotionSlot);
-    // m_armLiftController.setSmartMotionAllowedClosedLoopError(RobotPreferences.ArmLift.armAllowedErr.get(), smartMotionSlot);
-
     // m_armLiftEncoder.setPositionConversionFactor(RobotPreferences.ArmLift.armGearRatio.get() * RobotPreferences.ArmLift.armMetersPerRotation.get());
     m_armLiftSetpoint = m_armLiftEncoder.getPosition();
     m_armLiftSetpointZero = 0;
@@ -87,11 +81,6 @@ public class Arm extends SubsystemBase {
     m_armExtendController.setIZone(RobotPreferences.ArmExtend.armKIZ.get());
     m_armExtendController.setFF(RobotPreferences.ArmExtend.armKFF.get());
     m_armExtendController.setOutputRange(RobotPreferences.ArmExtend.armMinOutput.get(), RobotPreferences.ArmExtend.armMaxOutput.get());
-
-    // m_armExtendController.setSmartMotionMaxVelocity(RobotPreferences.Arm.armMaxVel.get(), smartMotionSlot);
-    // m_armExtendController.setSmartMotionMinOutputVelocity(RobotPreferences.Arm.armMinVel.get(), smartMotionSlot);
-    // m_armExtendController.setSmartMotionMaxAccel(RobotPreferences.Arm.armMaxAcc.get(), smartMotionSlot);
-    // m_armExtendController.setSmartMotionAllowedClosedLoopError(RobotPreferences.Arm.armAllowedErr.get(), smartMotionSlot);
 
     // m_armExtendEncoder.setPositionConversionFactor(RobotPreferences.Arm.armExtendGearRatio.get() * RobotPreferences.Arm.armExtendMetersPerRotation.get());
     m_armExtendSetpoint = m_armExtendEncoder.getPosition();

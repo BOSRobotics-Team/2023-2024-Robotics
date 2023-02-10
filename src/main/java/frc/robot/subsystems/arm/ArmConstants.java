@@ -29,23 +29,4 @@ public final class ArmConstants {
     public static final double armExtendPosition0 = 50;
     public static final double armExtendPosition1 = 350;
     public static final double armExtendPosition2 = 485;
-
-    // // Smart Motion Coefficients
-    // public static final double armLiftMaxVel = 2000.0; 
-    // public static final double armLiftMinVel = 50.0; 
-    // public static final double armLiftMaxAcc = 1500.0;
-    // public static final double armLiftAllowedErr = 0.0;
-    // public static final double armLiftGearRatio = 0.005208333333; // 192:1
-    // public static final double armLiftMetersPerRotation = 0.1;
-    // public static final double armLiftMinHeight = 0.0;
-    // public static final double armLiftMaxHeight = 2.0;
-
-    // public static final double armExtendMaxVel = 2000.0; 
-    // public static final double armExtendMinVel = 50.0; 
-    // public static final double armExtendMaxAcc = 1500.0; 
-    // public static final double armExtendAllowedErr = 0.0;
-    // public static final double armExtendGearRatio = 0.0125; //80:1
-    // public static final double armExtendMetersPerRotation = 0.1;
-    // public static final double armExtendMinLength = 0.0;
-    // public static final double armExtendMaxLength = 2.0;
 }

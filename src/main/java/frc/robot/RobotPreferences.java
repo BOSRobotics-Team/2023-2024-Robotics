@@ -116,23 +116,6 @@ public final class RobotPreferences {
          new PreferencesValue("armLift/armPosition1", ArmConstants.armLiftPosition1);
       public static PreferencesValue armPosition2 = 
          new PreferencesValue("armLift/armPosition2", ArmConstants.armLiftPosition2);
-
-      //   public static PreferencesNumber armMaxVel = 
-      //      new PreferencesNumber("armLift/armMaxVel", ArmConstants.armLiftMaxVel);
-      //   public static PreferencesNumber armMinVel = 
-      //      new PreferencesNumber("armLift/armMinVel", ArmConstants.armLiftMinVel);
-      //   public static PreferencesNumber armMaxAcc = 
-      //      new PreferencesNumber("armLift/armMaxAcc", ArmConstants.armLiftMaxAcc);
-      //   public static PreferencesNumber armAllowedErr = 
-      //      new PreferencesNumber("armLift/armAllowedErr", ArmConstants.armLiftAllowedErr);
-      //   public static PreferencesNumber armGearRatio = 
-      //      new PreferencesNumber("armLift/armLiftGearRatio", ArmConstants.armLiftGearRatio);
-      //   public static PreferencesNumber armMetersPerRotation = 
-      //      new PreferencesNumber("armLift/armLiftMetersPerRotation", ArmConstants.armLiftMetersPerRotation);
-      //   public static PreferencesNumber armMinHeight = 
-      //      new PreferencesNumber("armLift/armLiftMinHeight", ArmConstants.armLiftMinHeight);
-      //   public static PreferencesNumber armMaxHeight = 
-      //      new PreferencesNumber("armLift/armLiftMaxHeight", ArmConstants.armLiftMaxHeight);
     }
     public static final class ArmExtend {
       public static PreferencesValue armKP = 
@@ -161,23 +144,5 @@ public final class RobotPreferences {
          new PreferencesValue("armExtend/armPosition1", ArmConstants.armExtendPosition1);
       public static PreferencesValue armPosition2 = 
          new PreferencesValue("armExtend/armPosition2", ArmConstants.armExtendPosition2);
-
-
-      // public static PreferencesNumber armMaxVel = 
-      //    new PreferencesNumber("armExtend/armMaxVel", ArmConstants.armExtendMaxVel);
-      // public static PreferencesNumber armMinVel = 
-      //    new PreferencesNumber("armExtend/armMinVel", ArmConstants.armExtendMinVel);
-      // public static PreferencesNumber armMaxAcc = 
-      //    new PreferencesNumber("armExtend/armMaxAcc", ArmConstants.armExtendMaxAcc);
-      // public static PreferencesNumber armAllowedErr = 
-      //    new PreferencesNumber("armExtend/armAllowedErr", ArmConstants.armExtendAllowedErr);
-      // public static PreferencesNumber armGearRatio = 
-      //    new PreferencesNumber("armExtend/armExtendGearRatio", ArmConstants.armExtendGearRatio);
-      // public static PreferencesNumber armMetersPerRotation = 
-      //    new PreferencesNumber("armExtend/armExtendMetersPerRotation", ArmConstants.armExtendMetersPerRotation);
-      // public static PreferencesNumber armMinLength = 
-      //    new PreferencesNumber("armExtend/armExtendMinLength", ArmConstants.armExtendMinLength);
-      // public static PreferencesNumber armMaxLength = 
-      //    new PreferencesNumber("armExtend/armExtendMaxLength", ArmConstants.armExtendMaxLength);
   }
 }
