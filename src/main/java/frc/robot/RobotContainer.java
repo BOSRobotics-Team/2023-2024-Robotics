@@ -1,17 +1,8 @@
 package frc.robot;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -36,6 +27,13 @@ import frc.robot.commands.*;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.drivetrain.*;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -66,7 +64,6 @@ public class RobotContainer {
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
   public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
 
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SwerveModuleIO flModule;
@@ -74,7 +71,7 @@ public class RobotContainer {
     SwerveModuleIO blModule;
     SwerveModuleIO brModule;
 
-   if (RobotBase.isReal()) {
+    if (RobotBase.isReal()) {
       cam0 = CameraServer.startAutomaticCapture(0);
       cam1 = CameraServer.startAutomaticCapture(1);
       cam2 = CameraServer.startAutomaticCapture(2);
@@ -93,11 +90,13 @@ public class RobotContainer {
       blModule = new SwerveModuleIOSim(DriveTrainConstants.mod2.moduleNumber);
       brModule = new SwerveModuleIOSim(DriveTrainConstants.mod3.moduleNumber);
     }
-    driveTrain = new SwerveDriveTrain(gyro, 
-                                      new SwerveModule(flModule), 
-                                      new SwerveModule(frModule),
-                                      new SwerveModule(blModule), 
-                                      new SwerveModule(brModule));
+    driveTrain =
+        new SwerveDriveTrain(
+            gyro,
+            new SwerveModule(flModule),
+            new SwerveModule(frModule),
+            new SwerveModule(blModule),
+            new SwerveModule(brModule));
     arm = new Arm();
     test = new TestChecklist(this);
 
@@ -133,17 +132,9 @@ public class RobotContainer {
      */
     driveTrain.setDefaultCommand(
         new TeleopSwerve(
-            driveTrain, 
-            oi::getTranslateX, 
-            oi::getTranslateY, 
-            oi::getRotate, 
-            oi::getDriveScaling
-        )
-    );
+            driveTrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::getDriveScaling));
 
-    arm.setDefaultCommand(
-      new TeleopArm(arm, oi::getArmLift, oi::getArmExtend)
-    );
+    arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
 
     configureButtonBindings();
   }
@@ -187,7 +178,7 @@ public class RobotContainer {
 
     // Add commands to Autonomous Sendable Chooser
     chooser.setDefaultOption("Do Nothing", new InstantCommand());
-    
+
     // SmartDashboard Buttons
     SmartDashboard.putData("Auto mode", chooser);
     SmartDashboard.putData("RaiseArm 0.0", new RaiseArm(arm, 0.0));
@@ -202,49 +193,49 @@ public class RobotContainer {
 
   private void configureAutoPaths() {
     try {
-      DirectoryStream<Path> stream = Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("paths"));
+      DirectoryStream<Path> stream =
+          Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("paths"));
       for (Path file : stream) {
         if (!Files.isDirectory(file)) {
-          trajectoryList.put(file.getFileName().toString().replaceFirst("[.][^.]+$", ""), TrajectoryUtil.fromPathweaverJson(file));
+          trajectoryList.put(
+              file.getFileName().toString().replaceFirst("[.][^.]+$", ""),
+              TrajectoryUtil.fromPathweaverJson(file));
         }
       }
-    }  catch (IOException ex) {
+    } catch (IOException ex) {
       DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());
-   }
-   chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
-   for (Map.Entry<String, Trajectory> entry : trajectoryList.entrySet()) {
-     chooser.addOption(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
-   }
+    }
+    chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
+    for (Map.Entry<String, Trajectory> entry : trajectoryList.entrySet()) {
+      chooser.addOption(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
+    }
 
     // build auto path commands
     List<PathPlannerTrajectory> auto1Paths =
-    PathPlanner.loadPathGroup(
-      "testPaths1",
-      AutoConstants.kMaxSpeedMetersPerSecond,
-      AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+        PathPlanner.loadPathGroup(
+            "testPaths1",
+            AutoConstants.kMaxSpeedMetersPerSecond,
+            AutoConstants.kMaxAccelerationMetersPerSecondSquared);
     Command autoTest =
-      Commands.sequence(
-        new FollowPathWithEvents(
-          new FollowPath(auto1Paths.get(0), driveTrain, true),
-            auto1Paths.get(0).getMarkers(),
-            AUTO_EVENT_MAP),
-        Commands.runOnce(driveTrain::enableXstance, driveTrain),
-        Commands.waitSeconds(5.0),
-        Commands.runOnce(driveTrain::disableXstance, driveTrain),
-        new FollowPathWithEvents(
-          new FollowPath(auto1Paths.get(1), driveTrain, false),
-          auto1Paths.get(1).getMarkers(),
-          AUTO_EVENT_MAP)
-      );
+        Commands.sequence(
+            new FollowPathWithEvents(
+                new FollowPath(auto1Paths.get(0), driveTrain, true),
+                auto1Paths.get(0).getMarkers(),
+                AUTO_EVENT_MAP),
+            Commands.runOnce(driveTrain::enableXstance, driveTrain),
+            Commands.waitSeconds(5.0),
+            Commands.runOnce(driveTrain::disableXstance, driveTrain),
+            new FollowPathWithEvents(
+                new FollowPath(auto1Paths.get(1), driveTrain, false),
+                auto1Paths.get(1).getMarkers(),
+                AUTO_EVENT_MAP));
     // demonstration of PathPlanner path group with event markers
     chooser.addOption("Test Path", autoTest);
   }
 
-  public void simulationInit() {
-  }
+  public void simulationInit() {}
 
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 
   public void testInit() {
     this.test.enableChecklist();
@@ -252,8 +243,8 @@ public class RobotContainer {
 
   public void testPeriodic() {
     this.test.update();
-   }
- 
+  }
+
   public void testExit() {
     this.test.disableChecklist();
   }

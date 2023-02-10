@@ -37,10 +37,11 @@ public interface PneumaticsIO {
   public default void useLowClosedLoopThresholds(boolean useLow) {}
 
   public default void enableCompressorDigital() {}
+
   public default void disableCompressorDigital() {}
 
   // public default Compressor makeCompressor() { return new Compressor(0); }
   // public default Solenoid makeSolenoid() { return Solenoid(); }
   // public default DoubleSolenoid makeDoubleSolenoid() {}
-  
+
 }

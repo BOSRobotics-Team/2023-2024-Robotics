@@ -18,7 +18,9 @@ public interface SwerveModuleIO {
     double[] angleTempCelsius = new double[] {};
   }
   /** return the module number */
-  public default int getModuleNumber() { return 0; }
+  public default int getModuleNumber() {
+    return 0;
+  }
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(SwerveModuleIOInputs inputs) {}
@@ -38,7 +40,15 @@ public interface SwerveModuleIO {
   /** Enable or disable brake mode on the turn motor. */
   public default void setAngleBrakeMode(boolean enable) {}
 
-  public default boolean isDriveMotorConnected() { return false; }
-  public default boolean isAngleMotorConnected() { return false; }
-  public default boolean isAngleEncoderConnected() { return false; }
+  public default boolean isDriveMotorConnected() {
+    return false;
+  }
+
+  public default boolean isAngleMotorConnected() {
+    return false;
+  }
+
+  public default boolean isAngleEncoderConnected() {
+    return false;
+  }
 }

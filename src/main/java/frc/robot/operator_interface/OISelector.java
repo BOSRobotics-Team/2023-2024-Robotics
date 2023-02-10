@@ -9,11 +9,13 @@ public class OISelector {
   private static String[] lastJoystickNames = new String[] {null, null, null, null, null, null};
   private static final String noOperatorInterfaceWarning = "No operator controller(s) connected.";
   private static final String singleXBoxOperatorInterfaces = "XBox operator controller connected.";
-  private static final String dualXBoxOperatorInterfaces = "Dual XBox operator controllers connected.";
+  private static final String dualXBoxOperatorInterfaces =
+      "Dual XBox operator controllers connected.";
   private static final String singleJoystickOperatorInterfaces = "Single Joystick connected.";
   private static final String dualJoystickOperatorInterfaces = "Dual Joysticks connected.";
-  private static final String dualJoystickXBoxOperatorInterfaces = "Dual Joysticks and XBox controller connected.";
- 
+  private static final String dualJoystickXBoxOperatorInterfaces =
+      "Dual Joysticks and XBox controller connected.";
+
   private OISelector() {}
 
   /**
@@ -61,13 +63,13 @@ public class OISelector {
 
     if (joy0 != null) {
       if (joy1 != null) {
-          if (xbox0 != null) {
-            System.out.println(dualJoystickXBoxOperatorInterfaces);
-            return new DualJoystickXboxOI(joy0, joy1, xbox0);
-          } else {
-            System.out.println(dualJoystickOperatorInterfaces);
-            return new DualJoysticksOI(joy0, joy1);
-          }
+        if (xbox0 != null) {
+          System.out.println(dualJoystickXBoxOperatorInterfaces);
+          return new DualJoystickXboxOI(joy0, joy1, xbox0);
+        } else {
+          System.out.println(dualJoystickOperatorInterfaces);
+          return new DualJoysticksOI(joy0, joy1);
+        }
       } else {
         System.out.println(singleJoystickOperatorInterfaces);
         return new SingleHandheldOI(joy0) {};
@@ -84,5 +86,5 @@ public class OISelector {
       DriverStation.reportWarning(noOperatorInterfaceWarning, false);
       return new OperatorInterface() {};
     }
-  }    
+  }
 }

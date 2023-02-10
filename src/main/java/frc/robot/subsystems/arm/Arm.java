@@ -2,29 +2,27 @@ package frc.robot.subsystems.arm;
 
 import static frc.robot.Constants.*;
 
-import java.util.List;
-
-import frc.robot.RobotPreferences;
-
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotPreferences;
+import java.util.List;
 
 /** */
 public class Arm extends SubsystemBase {
   public PneumaticHub m_pH = new PneumaticHub(PNEUMATICSHUB_ID);
-  public DoubleSolenoid m_gripper = m_pH.makeDoubleSolenoid(SOLENOID_FWD_CHANNEL, SOLENOID_REV_CHANNEL);
+  public DoubleSolenoid m_gripper =
+      m_pH.makeDoubleSolenoid(SOLENOID_FWD_CHANNEL, SOLENOID_REV_CHANNEL);
 
   public CANSparkMax m_armLiftMotor = new CANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
   private SparkMaxPIDController m_armLiftController;
@@ -42,13 +40,13 @@ public class Arm extends SubsystemBase {
   private double m_armExtendSetpointZero = 0;
   private boolean m_Resetting = false;
   private boolean m_TeleopMode = false;
-  private List<Pair<Double, Double>> liftProfile = List.of(
-    new Pair<>(5.0, 20.0),
-    new Pair<>(10.0, 80.0),
-    new Pair<>(20.0, 150.0),
-    new Pair<>(25.0, 300.0)
-  );
-  
+  private List<Pair<Double, Double>> liftProfile =
+      List.of(
+          new Pair<>(5.0, 20.0),
+          new Pair<>(10.0, 80.0),
+          new Pair<>(20.0, 150.0),
+          new Pair<>(25.0, 300.0));
+
   public Arm() {
     m_armLiftMotor.restoreFactoryDefaults();
     // initialze PID controller and encoder objects
@@ -62,9 +60,11 @@ public class Arm extends SubsystemBase {
     m_armLiftController.setD(RobotPreferences.ArmLift.armKD.get());
     m_armLiftController.setIZone(RobotPreferences.ArmLift.armKIZ.get());
     m_armLiftController.setFF(RobotPreferences.ArmLift.armKFF.get());
-    m_armLiftController.setOutputRange(RobotPreferences.ArmLift.armMinOutput.get(), RobotPreferences.ArmLift.armMaxOutput.get());
+    m_armLiftController.setOutputRange(
+        RobotPreferences.ArmLift.armMinOutput.get(), RobotPreferences.ArmLift.armMaxOutput.get());
 
-    // m_armLiftEncoder.setPositionConversionFactor(RobotPreferences.ArmLift.armGearRatio.get() * RobotPreferences.ArmLift.armMetersPerRotation.get());
+    // m_armLiftEncoder.setPositionConversionFactor(RobotPreferences.ArmLift.armGearRatio.get() *
+    // RobotPreferences.ArmLift.armMetersPerRotation.get());
     m_armLiftSetpoint = m_armLiftEncoder.getPosition();
     m_armLiftSetpointZero = 0;
 
@@ -72,7 +72,8 @@ public class Arm extends SubsystemBase {
     // initialze PID controller and encoder objects
     m_armExtendController = m_armExtendMotor.getPIDController();
     m_armExtendEncoder = m_armExtendMotor.getEncoder();
-    m_armExtendLimit = m_armExtendMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    m_armExtendLimit =
+        m_armExtendMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
     // set PID coefficients
     m_armExtendController.setP(RobotPreferences.ArmExtend.armKP.get());
@@ -80,9 +81,12 @@ public class Arm extends SubsystemBase {
     m_armExtendController.setD(RobotPreferences.ArmExtend.armKD.get());
     m_armExtendController.setIZone(RobotPreferences.ArmExtend.armKIZ.get());
     m_armExtendController.setFF(RobotPreferences.ArmExtend.armKFF.get());
-    m_armExtendController.setOutputRange(RobotPreferences.ArmExtend.armMinOutput.get(), RobotPreferences.ArmExtend.armMaxOutput.get());
+    m_armExtendController.setOutputRange(
+        RobotPreferences.ArmExtend.armMinOutput.get(),
+        RobotPreferences.ArmExtend.armMaxOutput.get());
 
-    // m_armExtendEncoder.setPositionConversionFactor(RobotPreferences.Arm.armExtendGearRatio.get() * RobotPreferences.Arm.armExtendMetersPerRotation.get());
+    // m_armExtendEncoder.setPositionConversionFactor(RobotPreferences.Arm.armExtendGearRatio.get()
+    // * RobotPreferences.Arm.armExtendMetersPerRotation.get());
     m_armExtendSetpoint = m_armExtendEncoder.getPosition();
     m_armExtendSetpointZero = 0;
 
@@ -104,18 +108,24 @@ public class Arm extends SubsystemBase {
       }
     } else {
       double ht = this.getArmLiftPosition();
-      
-      Pair<Double, Double> lastPair = new Pair<Double,Double>(0.0, 0.0);
+
+      Pair<Double, Double> lastPair = new Pair<Double, Double>(0.0, 0.0);
       for (Pair<Double, Double> pair : liftProfile) {
         if (ht <= pair.getFirst()) {
           Double htPct = (ht - lastPair.getFirst()) / (pair.getFirst() - lastPair.getFirst());
-          Double newLn = Math.min(MathUtil.interpolate(lastPair.getSecond(), pair.getSecond(), htPct), m_armExtendSetpoint);
+          Double newLn =
+              Math.min(
+                  MathUtil.interpolate(lastPair.getSecond(), pair.getSecond(), htPct),
+                  m_armExtendSetpoint);
 
           if (Math.abs(newLn - this.getArmExtendPosition()) > 0.01) {
-            m_armLiftController.setReference(ht + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
-            m_armExtendController.setReference(newLn + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
+            m_armLiftController.setReference(
+                ht + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
+            m_armExtendController.setReference(
+                newLn + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
           } else if (Math.abs(ht - m_armLiftSetpoint) > 0.01) {
-            m_armLiftController.setReference(m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
+            m_armLiftController.setReference(
+                m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
           }
           break;
         }
@@ -135,8 +145,13 @@ public class Arm extends SubsystemBase {
 
   public void setArmLiftPosition(double position) {
     if (!m_Resetting) {
-      m_armLiftSetpoint = MathUtil.clamp(position, RobotPreferences.ArmLift.armMinPosition.get(), RobotPreferences.ArmLift.armMaxPosition.get());
-      m_armLiftController.setReference(m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
+      m_armLiftSetpoint =
+          MathUtil.clamp(
+              position,
+              RobotPreferences.ArmLift.armMinPosition.get(),
+              RobotPreferences.ArmLift.armMaxPosition.get());
+      m_armLiftController.setReference(
+          m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
     }
   }
 
@@ -145,7 +160,11 @@ public class Arm extends SubsystemBase {
   }
 
   public void raiseArm(double pctHeight) {
-    this.setArmLiftPosition(MathUtil.interpolate(RobotPreferences.ArmLift.armMinPosition.get(), RobotPreferences.ArmLift.armMaxPosition.get(), pctHeight));
+    this.setArmLiftPosition(
+        MathUtil.interpolate(
+            RobotPreferences.ArmLift.armMinPosition.get(),
+            RobotPreferences.ArmLift.armMaxPosition.get(),
+            pctHeight));
   }
 
   public boolean isArmRaised() {
@@ -154,8 +173,13 @@ public class Arm extends SubsystemBase {
 
   public void setArmExtendPosition(double position) {
     if (!m_Resetting) {
-      m_armExtendSetpoint = MathUtil.clamp(position, RobotPreferences.ArmExtend.armMinPosition.get(), RobotPreferences.ArmExtend.armMaxPosition.get());
-      m_armExtendController.setReference(m_armExtendSetpoint + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
+      m_armExtendSetpoint =
+          MathUtil.clamp(
+              position,
+              RobotPreferences.ArmExtend.armMinPosition.get(),
+              RobotPreferences.ArmExtend.armMaxPosition.get());
+      m_armExtendController.setReference(
+          m_armExtendSetpoint + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
     }
   }
 
@@ -164,7 +188,11 @@ public class Arm extends SubsystemBase {
   }
 
   public void extendArm(double pctLength) {
-    this.setArmExtendPosition(MathUtil.interpolate(RobotPreferences.ArmExtend.armMinPosition.get(), RobotPreferences.ArmExtend.armMaxPosition.get(), pctLength));
+    this.setArmExtendPosition(
+        MathUtil.interpolate(
+            RobotPreferences.ArmExtend.armMinPosition.get(),
+            RobotPreferences.ArmExtend.armMaxPosition.get(),
+            pctLength));
   }
 
   public boolean isArmExtended() {
@@ -200,7 +228,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isArmLiftMinLimitSwitch() {
-      return m_armLiftLimit.isPressed();
+    return m_armLiftLimit.isPressed();
   }
 
   public void teleop(double liftVal, double extendVal) {
@@ -233,23 +261,23 @@ public class Arm extends SubsystemBase {
   public void initLogging() {
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
     tabMain.addNumber("ArmLift/Position", m_armLiftEncoder::getPosition);
-    tabMain.addNumber("ArmLift/SetPoint",() -> m_armLiftSetpoint);
+    tabMain.addNumber("ArmLift/SetPoint", () -> m_armLiftSetpoint);
     tabMain.addNumber("ArmExtend/Position", m_armExtendEncoder::getPosition);
-    tabMain.addNumber("ArmExtend/SetPoint",() -> m_armExtendSetpoint);
+    tabMain.addNumber("ArmExtend/SetPoint", () -> m_armExtendSetpoint);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("ARM");
       tab.addNumber("ArmLift/Process Variable", m_armLiftEncoder::getPosition);
       tab.addNumber("ArmLift/Output", m_armLiftMotor::getAppliedOutput);
-      tab.addNumber("ArmLift/SetPoint",() -> m_armLiftSetpoint);
-      tab.addNumber("ArmLift/SetPoint Zero",() -> m_armLiftSetpointZero);
-      tab.addBoolean("ArmLift/Reverse LimitSwitch",this::isArmLiftMinLimitSwitch);
+      tab.addNumber("ArmLift/SetPoint", () -> m_armLiftSetpoint);
+      tab.addNumber("ArmLift/SetPoint Zero", () -> m_armLiftSetpointZero);
+      tab.addBoolean("ArmLift/Reverse LimitSwitch", this::isArmLiftMinLimitSwitch);
 
       tab.addNumber("ArmExtend/Process Variable", m_armExtendEncoder::getPosition);
       tab.addNumber("ArmExtend/Lift Output", m_armExtendMotor::getAppliedOutput);
-      tab.addNumber("ArmExtend/SetPoint",() -> m_armExtendSetpoint);
-      tab.addNumber("ArmExtend/SetPoint Zero",() -> m_armExtendSetpointZero);
-      tab.addBoolean("ArmExtend/Reverse LimitSwitch",this::isArmExtendMinLimitSwitch);
+      tab.addNumber("ArmExtend/SetPoint", () -> m_armExtendSetpoint);
+      tab.addNumber("ArmExtend/SetPoint Zero", () -> m_armExtendSetpointZero);
+      tab.addBoolean("ArmExtend/Reverse LimitSwitch", this::isArmExtendMinLimitSwitch);
     }
   }
 }

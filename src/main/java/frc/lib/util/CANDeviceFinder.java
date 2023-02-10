@@ -1,9 +1,7 @@
 package frc.lib.util;
 
-import frc.lib.util.CANDeviceId.CANDeviceType;
-
 import edu.wpi.first.hal.can.CANJNI;
-
+import frc.lib.util.CANDeviceId.CANDeviceType;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -267,5 +265,6 @@ public class CANDeviceFinder {
 
   /** helper routine to get last received message for a given ID */
   private ByteBuffer targetID = ByteBuffer.allocateDirect(4);
+
   private ByteBuffer timeStamp = ByteBuffer.allocateDirect(4);
 }

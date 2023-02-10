@@ -35,7 +35,7 @@ public class SingleHandheldOI implements OperatorInterface {
     int povVal = controller.getPOV();
 
     if (updateScale && povVal == -1) {
-        updateScale = false;
+      updateScale = false;
     }
     if (!updateScale && povVal == 0) {
       driveScaleFactor += 0.05;
@@ -55,7 +55,7 @@ public class SingleHandheldOI implements OperatorInterface {
     int povVal = controller.getPOV();
 
     if (updateScale && povVal == -1) {
-        updateScale = false;
+      updateScale = false;
     }
     if (!updateScale && povVal == 90) {
       rotateScaleFactor += 0.05;
@@ -94,6 +94,7 @@ public class SingleHandheldOI implements OperatorInterface {
   public double getArmExtend() {
     return controller.getRightTriggerAxis();
   }
+
   @Override
   public Trigger getGripToggle() {
     return new Trigger(controller::getAButton);
@@ -115,5 +116,4 @@ public class SingleHandheldOI implements OperatorInterface {
   public Trigger getArmPosition2() {
     return new Trigger(controller::getBButton);
   }
-
 }

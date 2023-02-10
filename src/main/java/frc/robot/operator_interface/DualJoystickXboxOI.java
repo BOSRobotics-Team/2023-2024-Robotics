@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class DualJoystickXboxOI extends DualJoysticksOI {
   private final XboxController operator;
 
-  public DualJoystickXboxOI(int translatePort, int rotatePort, int xboxPort ) {
+  public DualJoystickXboxOI(int translatePort, int rotatePort, int xboxPort) {
     super(translatePort, rotatePort);
     operator = new XboxController(xboxPort);
   }

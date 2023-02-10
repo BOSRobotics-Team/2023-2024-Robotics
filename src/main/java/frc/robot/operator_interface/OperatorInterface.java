@@ -64,5 +64,4 @@ public interface OperatorInterface {
   public default Trigger getArmPosition2() {
     return new Trigger(() -> false);
   }
-
 }

@@ -43,5 +43,4 @@ public class DualHandheldOI extends SingleHandheldOI {
   public Trigger getArmPosition2() {
     return new Trigger(operator::getBButton);
   }
-
 }

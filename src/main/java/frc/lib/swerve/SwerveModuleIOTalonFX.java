@@ -12,13 +12,12 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import frc.lib.math.Conversions;
-import frc.robot.subsystems.drivetrain.*;
 import frc.robot.RobotPreferences;
+import frc.robot.subsystems.drivetrain.*;
 
 /**
  * Implementation of the SwerveModuleIO interface for MK4 Swerve Modules with two Falcon 500 motors
@@ -46,33 +45,42 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
    * @param canCoderID the CAN ID of the CANcoder
    * @param angleOffsetDeg the absolute offset of the angle encoder in degrees
    */
-  public SwerveModuleIOTalonFX( int moduleNumber,
-    String canBusID, 
-    int driveMotorID, 
-    int angleMotorID, 
-    int canCoderID, 
-    double angleOffsetDeg) {
+  public SwerveModuleIOTalonFX(
+      int moduleNumber,
+      String canBusID,
+      int driveMotorID,
+      int angleMotorID,
+      int canCoderID,
+      double angleOffsetDeg) {
 
-  this.moduleNumber = moduleNumber;
-  this.angleOffsetDeg = angleOffsetDeg;
-  this.feedForward = new SimpleMotorFeedforward(RobotPreferences.Swerve.driveKS.get(), 
-                                                RobotPreferences.Swerve.driveKV.get(), 
-                                                RobotPreferences.Swerve.driveKA.get());
+    this.moduleNumber = moduleNumber;
+    this.angleOffsetDeg = angleOffsetDeg;
+    this.feedForward =
+        new SimpleMotorFeedforward(
+            RobotPreferences.Swerve.driveKS.get(),
+            RobotPreferences.Swerve.driveKV.get(),
+            RobotPreferences.Swerve.driveKA.get());
 
-  configAngleEncoder(canCoderID, canBusID);
-  configAngleMotor(angleMotorID, canBusID);
-  configDriveMotor(driveMotorID, canBusID);
+    configAngleEncoder(canCoderID, canBusID);
+    configAngleMotor(angleMotorID, canBusID);
+    configDriveMotor(driveMotorID, canBusID);
 
-  SendableRegistry.setName(mDriveMotor, "SwerveModule " + moduleNumber, "Drive Motor");
-  SendableRegistry.setName(mAngleMotor, "SwerveModule " + moduleNumber, "Angle Motor");
-  SendableRegistry.setName(angleEncoder, "SwerveModule " + moduleNumber, "Angle Encoder");
-}
+    SendableRegistry.setName(mDriveMotor, "SwerveModule " + moduleNumber, "Drive Motor");
+    SendableRegistry.setName(mAngleMotor, "SwerveModule " + moduleNumber, "Angle Motor");
+    SendableRegistry.setName(angleEncoder, "SwerveModule " + moduleNumber, "Angle Encoder");
+  }
 
-public SwerveModuleIOTalonFX( COTSFalconSwerveConstants.moduleIDS modID ) {
-  this(modID.moduleNumber, modID.canBusID, modID.driveMotorID, modID.angleMotorID, modID.canCoderID, modID.angleOffsetDeg);
-}
+  public SwerveModuleIOTalonFX(COTSFalconSwerveConstants.moduleIDS modID) {
+    this(
+        modID.moduleNumber,
+        modID.canBusID,
+        modID.driveMotorID,
+        modID.angleMotorID,
+        modID.canCoderID,
+        modID.angleOffsetDeg);
+  }
 
-private void configAngleEncoder(int canCoderID, String canBusID) {
+  private void configAngleEncoder(int canCoderID, String canBusID) {
     angleEncoder = new WPI_CANCoder(canCoderID, canBusID);
     angleEncoder.configFactoryDefault();
 
@@ -80,7 +88,8 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
     CANCoderConfiguration swerveCanCoderConfig = new CANCoderConfiguration();
     swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
     swerveCanCoderConfig.sensorDirection = DriveTrainConstants.canCoderInvert;
-    swerveCanCoderConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
+    swerveCanCoderConfig.initializationStrategy =
+        SensorInitializationStrategy.BootToAbsolutePosition;
     swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
     angleEncoder.configAllSettings(swerveCanCoderConfig);
   }
@@ -89,11 +98,12 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
     mAngleMotor = new WPI_TalonFX(angleMotorID, canBusID);
 
     /* Swerve Angle Motor Configurations */
-    SupplyCurrentLimitConfiguration angleSupplyLimit = new SupplyCurrentLimitConfiguration(
-      DriveTrainConstants.angleEnableCurrentLimit, 
-      RobotPreferences.Swerve.angleContinuousCurrentLimit.get(), 
-      RobotPreferences.Swerve.anglePeakCurrentLimit.get(),
-      RobotPreferences.Swerve.anglePeakCurrentDuration.get());
+    SupplyCurrentLimitConfiguration angleSupplyLimit =
+        new SupplyCurrentLimitConfiguration(
+            DriveTrainConstants.angleEnableCurrentLimit,
+            RobotPreferences.Swerve.angleContinuousCurrentLimit.get(),
+            RobotPreferences.Swerve.anglePeakCurrentLimit.get(),
+            RobotPreferences.Swerve.anglePeakCurrentDuration.get());
 
     TalonFXConfiguration swerveAngleFXConfig = new TalonFXConfiguration();
     swerveAngleFXConfig.slot0.kP = RobotPreferences.Swerve.angleKP.get();
@@ -107,7 +117,9 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
     mAngleMotor.setInverted(DriveTrainConstants.angleMotorInvert);
     mAngleMotor.setNeutralMode(DriveTrainConstants.angleNeutralMode);
 
-    double absolutePosition = Conversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffsetDeg, DriveTrainConstants.angleGearRatio);
+    double absolutePosition =
+        Conversions.degreesToFalcon(
+            getCanCoder().getDegrees() - angleOffsetDeg, DriveTrainConstants.angleGearRatio);
     mAngleMotor.setSelectedSensorPosition(absolutePosition);
   }
 
@@ -115,17 +127,18 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
     mDriveMotor = new WPI_TalonFX(driveMotorID, canBusID);
 
     /* Swerve Drive Motor Configuration */
-    SupplyCurrentLimitConfiguration driveSupplyLimit = new SupplyCurrentLimitConfiguration(
-        DriveTrainConstants.driveEnableCurrentLimit, 
-        RobotPreferences.Swerve.driveContinuousCurrentLimit.get(), 
-        RobotPreferences.Swerve.drivePeakCurrentLimit.get(), 
-        RobotPreferences.Swerve.drivePeakCurrentDuration.get());
+    SupplyCurrentLimitConfiguration driveSupplyLimit =
+        new SupplyCurrentLimitConfiguration(
+            DriveTrainConstants.driveEnableCurrentLimit,
+            RobotPreferences.Swerve.driveContinuousCurrentLimit.get(),
+            RobotPreferences.Swerve.drivePeakCurrentLimit.get(),
+            RobotPreferences.Swerve.drivePeakCurrentDuration.get());
 
     TalonFXConfiguration swerveDriveFXConfig = new TalonFXConfiguration();
     swerveDriveFXConfig.slot0.kP = RobotPreferences.Swerve.driveKP.get();
     swerveDriveFXConfig.slot0.kI = RobotPreferences.Swerve.driveKI.get();
     swerveDriveFXConfig.slot0.kD = RobotPreferences.Swerve.driveKD.get();
-    swerveDriveFXConfig.slot0.kF = RobotPreferences.Swerve.driveKF.get();        
+    swerveDriveFXConfig.slot0.kF = RobotPreferences.Swerve.driveKF.get();
     swerveDriveFXConfig.supplyCurrLimit = driveSupplyLimit;
     swerveDriveFXConfig.openloopRamp = RobotPreferences.Swerve.openLoopRamp.get();
     swerveDriveFXConfig.closedloopRamp = RobotPreferences.Swerve.closedLoopRamp.get();
@@ -151,7 +164,9 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
   }
 
   @Override
-  public int getModuleNumber() { return this.moduleNumber; }
+  public int getModuleNumber() {
+    return this.moduleNumber;
+  }
 
   /** Updates the set of loggable inputs. */
   @Override
@@ -184,7 +199,7 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
     inputs.angleCurrentAmps = new double[] {mAngleMotor.getStatorCurrent()};
     inputs.angleTempCelsius = new double[] {mAngleMotor.getTemperature()};
 
-/*  // update tunables
+    /*  // update tunables
     if (driveKp.hasChanged()
         || driveKi.hasChanged()
         || driveKd.hasChanged()
@@ -196,7 +211,7 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
       mDriveMotor.config_kD(SLOT_INDEX, driveKd.get());
       mAngleMotor.config_kP(SLOT_INDEX, turnKp.get());
       mAngleMotor.config_kI(SLOT_INDEX, turnKi.get());
-      mAngleMotor.config_kD(SLOT_INDEX, turnKd.get()); 
+      mAngleMotor.config_kD(SLOT_INDEX, turnKd.get());
     } */
   }
 
@@ -211,9 +226,7 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
   public void setDriveVelocity(double velocity) {
     double ticksPerSecond =
         Conversions.MPSToFalcon(
-            velocity,
-            DriveTrainConstants.wheelCircumference,
-            DriveTrainConstants.driveGearRatio);
+            velocity, DriveTrainConstants.wheelCircumference, DriveTrainConstants.driveGearRatio);
     mDriveMotor.set(
         ControlMode.Velocity,
         ticksPerSecond,
@@ -224,7 +237,9 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
   /** Run the turn motor to the specified angle. */
   @Override
   public void setAnglePosition(double degrees) {
-    mAngleMotor.set(ControlMode.Position, Conversions.degreesToFalcon(degrees, DriveTrainConstants.angleGearRatio));
+    mAngleMotor.set(
+        ControlMode.Position,
+        Conversions.degreesToFalcon(degrees, DriveTrainConstants.angleGearRatio));
   }
 
   /** Enable or disable brake mode on the drive motor. */
@@ -241,17 +256,17 @@ private void configAngleEncoder(int canCoderID, String canBusID) {
   }
 
   @Override
-  public boolean isDriveMotorConnected() { 
-    return (mDriveMotor.getLastError() == ErrorCode.OK); 
-  }
-  
-  @Override
-  public boolean isAngleMotorConnected() { 
-    return (mAngleMotor.getLastError() == ErrorCode.OK); 
+  public boolean isDriveMotorConnected() {
+    return (mDriveMotor.getLastError() == ErrorCode.OK);
   }
 
   @Override
-  public boolean isAngleEncoderConnected() { 
-    return (angleEncoder.getLastError() == ErrorCode.OK); 
+  public boolean isAngleMotorConnected() {
+    return (mAngleMotor.getLastError() == ErrorCode.OK);
+  }
+
+  @Override
+  public boolean isAngleEncoderConnected() {
+    return (angleEncoder.getLastError() == ErrorCode.OK);
   }
 }

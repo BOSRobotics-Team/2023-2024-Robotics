@@ -2,9 +2,7 @@ package frc.lib.util;
 
 import edu.wpi.first.wpilibj.Preferences;
 
-/**
- * Gets a value from dashboard in active mode, returns default if not or value in dashboard.
- */
+/** Gets a value from dashboard in active mode, returns default if not or value in dashboard. */
 public class PreferencesValue {
   private String key = "";
   private double defaultNumber = 0.0;

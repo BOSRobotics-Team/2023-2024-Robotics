@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class GyroIO implements Gyro {
 
   public static final int DRIVEGYRO_NAVX = -1; // values from 0+ are for Pigeon CAN devices
-  public static final int DRIVEGYRO_CCW = 0; // set gyro yaw to counter-clockwise for angle direction
+  public static final int DRIVEGYRO_CCW = 0; // set gyro yaw to ccw for angle direction
   public static final int DRIVEGYRO_CW = 1; // set gyro yaw to clockwise for angle direction
 
   private AHRS ahrs = null;
@@ -25,7 +25,7 @@ public class GyroIO implements Gyro {
   private boolean ccwHeading = false;
   private double headingOffset = 0.0;
 
-  public GyroIO(int gyroId, String canBus)  {
+  public GyroIO(int gyroId, String canBus) {
     if (gyroId == DRIVEGYRO_NAVX) {
       ahrs = new AHRS();
       ccwHeading = false;
@@ -38,8 +38,8 @@ public class GyroIO implements Gyro {
   }
 
   public boolean isConnected() {
-    return (((ahrs != null) && ahrs.isConnected()) || 
-            ((pigeon != null) && pigeon.getLastError().equals(ErrorCode.OK)));
+    return (((ahrs != null) && ahrs.isConnected())
+        || ((pigeon != null) && pigeon.getLastError().equals(ErrorCode.OK)));
   }
 
   public void setGyroDirection(int direction) {
@@ -75,7 +75,8 @@ public class GyroIO implements Gyro {
    */
   public void setHeadingDegrees(final double heading) {
     if (ahrs != null) {
-      ahrs.setAngleAdjustment(ccwHeading ? (360.0 - heading) + ahrs.getYaw() : heading + ahrs.getYaw());
+      ahrs.setAngleAdjustment(
+          ccwHeading ? (360.0 - heading) + ahrs.getYaw() : heading + ahrs.getYaw());
     } else if (pigeon != null) {
       pigeon.setYaw(ccwHeading ? heading : 360.0 - heading);
     }
@@ -91,9 +92,9 @@ public class GyroIO implements Gyro {
     }
   }
 
-  public void calibrate() {};
-  
-  public void close(){
+  public void calibrate() {}
+
+  public void close() {
     if (ahrs != null) {
       ahrs.close();
     } else if (pigeon != null) {
@@ -105,7 +106,7 @@ public class GyroIO implements Gyro {
   public void reset() {
     if (ahrs != null) {
       ahrs.reset();
-    } 
+    }
     if (pigeon != null) {
       pigeon.reset();
     }
@@ -122,7 +123,7 @@ public class GyroIO implements Gyro {
     return heading + headingOffset;
   }
 
-  public double getRate(){
+  public double getRate() {
     if (ahrs != null) {
       return -ahrs.getRate();
     } else if (pigeon != null) {
@@ -159,31 +160,31 @@ public class GyroIO implements Gyro {
     if (ahrs != null) {
       tabMain.addBoolean("Gyro/IMU_Connected", () -> ahrs.isConnected());
       tabMain.addNumber("Gyro/IMU_Yaw", () -> ahrs.getYaw());
-      tabMain.addNumber("Gyro/IMU_Pitch",() -> ahrs.getPitch());
-      tabMain.addNumber("Gyro/IMU_Roll",() -> ahrs.getRoll());
+      tabMain.addNumber("Gyro/IMU_Pitch", () -> ahrs.getPitch());
+      tabMain.addNumber("Gyro/IMU_Roll", () -> ahrs.getRoll());
 
       if (TESTING) {
         /* Display tilt-corrected, Magnetometer-based heading (requires magnetometer calibration to be useful)                                   */
-        tabMain.addNumber("Gyro/IMU_CompassHeading",() -> ahrs.getCompassHeading());
+        tabMain.addNumber("Gyro/IMU_CompassHeading", () -> ahrs.getCompassHeading());
         /* Display 9-axis Heading (requires magnetometer calibration to be useful)  */
-        tabMain.addNumber("Gyro/IMU_FusedHeading",() -> ahrs.getFusedHeading());
+        tabMain.addNumber("Gyro/IMU_FusedHeading", () -> ahrs.getFusedHeading());
 
         /* These functions are compatible w/the WPI Gyro Class */
-        tabMain.addNumber("Gyro/IMU_TotalYaw",() -> ahrs.getAngle());
-        tabMain.addNumber("Gyro/IMU_YawRateDPS",() -> ahrs.getRate());
+        tabMain.addNumber("Gyro/IMU_TotalYaw", () -> ahrs.getAngle());
+        tabMain.addNumber("Gyro/IMU_YawRateDPS", () -> ahrs.getRate());
       }
     } else {
       tabMain.addNumber("Gyro/IMU_Yaw", () -> pigeon.getYaw());
-      tabMain.addNumber("Gyro/IMU_Pitch",() -> pigeon.getPitch());
-      tabMain.addNumber("Gyro/IMU_Roll",() -> pigeon.getRoll());
+      tabMain.addNumber("Gyro/IMU_Pitch", () -> pigeon.getPitch());
+      tabMain.addNumber("Gyro/IMU_Roll", () -> pigeon.getRoll());
 
       if (TESTING) {
         /* Display tilt-corrected, Magnetometer-based heading (requires magnetometer calibration to be useful)                                   */
-        tabMain.addNumber("Gyro/IMU_CompassHeading",() -> pigeon.getCompassHeading());
+        tabMain.addNumber("Gyro/IMU_CompassHeading", () -> pigeon.getCompassHeading());
 
         /* These functions are compatible w/the WPI Gyro Class */
-        tabMain.addNumber("Gyro/IMU_TotalYaw",() -> pigeon.getAngle());
-        tabMain.addNumber("Gyro/IMU_YawRateDPS",() -> pigeon.getRate());
+        tabMain.addNumber("Gyro/IMU_TotalYaw", () -> pigeon.getAngle());
+        tabMain.addNumber("Gyro/IMU_YawRateDPS", () -> pigeon.getRate());
       }
     }
   }
@@ -191,7 +192,7 @@ public class GyroIO implements Gyro {
   public void logPeriodic() {
     /* Smart dash plots */
     if (ahrs != null) {
-      SmartDashboard.putBoolean( "IMU_Connected",        ahrs.isConnected());
+      SmartDashboard.putBoolean("IMU_Connected", ahrs.isConnected());
       // SmartDashboard.putBoolean( "IMU_IsCalibrating",    ahrs.isCalibrating());
       SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
       SmartDashboard.putNumber("IMU_Pitch", ahrs.getPitch());
