@@ -5,29 +5,29 @@ import edu.wpi.first.wpilibj.Preferences;
 /**
  * Gets a value from dashboard in active mode, returns default if not or value in dashboard.
  */
-public class DashboardNumber {
+public class PreferencesValue {
   private String key = "";
-  private double defaultValue = 0.0;
-  private double lastHasChangedValue = defaultValue;
+  private double defaultNumber = 0.0;
+  private double lastHasChangedNumber = defaultNumber;
 
   /**
-   * Create a new DashboardNumber
+   * Create a new PreferencesNumber
    *
    * @param dashboardKey Key on dashboard
    */
-  public DashboardNumber(String dashboardKey) {
+  public PreferencesValue(String dashboardKey) {
     this.key = dashboardKey;
   }
 
   /**
-   * Create a new DashboardNumber with the default value
+   * Create a new PreferencesNumber with the default double
    *
    * @param dashboardKey Key on dashboard
    * @param defaultValue Default value
    */
-  public DashboardNumber(String dashboardKey, double defaultValue) {
+  public PreferencesValue(String dashboardKey, double defaultValue) {
     this(dashboardKey);
-    setDefaultValue(defaultValue);
+    setDefaultNumber(defaultValue);
   }
 
   /**
@@ -35,8 +35,8 @@ public class DashboardNumber {
    *
    * @return The default value
    */
-  public double getDefaultValue() {
-    return defaultValue;
+  public double getDefaultNumber() {
+    return defaultNumber;
   }
 
   /**
@@ -44,8 +44,8 @@ public class DashboardNumber {
    *
    * @param defaultValue The default value
    */
-  public void setDefaultValue(double defaultValue) {
-    this.defaultValue = defaultValue;
+  public void setDefaultNumber(double defaultValue) {
+    this.defaultNumber = defaultValue;
     if (!Preferences.containsKey(key)) {
       Preferences.setDouble(key, defaultValue);
     }
@@ -57,7 +57,7 @@ public class DashboardNumber {
    * @return The current value
    */
   public double get() {
-    return Preferences.getDouble(key, defaultValue);
+    return Preferences.getDouble(key, defaultNumber);
   }
 
   /**
@@ -77,8 +77,8 @@ public class DashboardNumber {
    */
   public boolean hasChanged() {
     double currentValue = get();
-    if (currentValue != lastHasChangedValue) {
-      lastHasChangedValue = currentValue;
+    if (currentValue != lastHasChangedNumber) {
+      lastHasChangedNumber = currentValue;
       return true;
     }
     return false;

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import frc.lib.util.DashboardNumber;
+import frc.lib.util.PreferencesValue;
 
 public class TestChecklist {
     private class ChecklistItem {
@@ -62,7 +62,7 @@ public class TestChecklist {
     private final ShuffleboardTab tabMain = Shuffleboard.getTab("Checklist");
     private final RobotContainer robot;
 
-    private final DashboardNumber voltageThreshold = new DashboardNumber("Checklist/VoltageThreshold", 12.0);
+    private final PreferencesValue voltageThreshold = new PreferencesValue("Checklist/VoltageThreshold", 12.0);
 
     private GenericEntry resetTestsWidget;
     private GenericEntry doStepWidget;

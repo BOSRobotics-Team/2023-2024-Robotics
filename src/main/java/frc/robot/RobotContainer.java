@@ -233,11 +233,9 @@ public class RobotContainer {
   }
 
   public void simulationInit() {
-    this.arm.simulationInit();
   }
 
   public void simulationPeriodic() {
-    this.arm.simulationPeriodic();
   }
 
   public void testInit() {

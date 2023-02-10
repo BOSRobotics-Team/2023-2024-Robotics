@@ -8,11 +8,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class OISelector {
   private static String[] lastJoystickNames = new String[] {null, null, null, null, null, null};
   private static final String noOperatorInterfaceWarning = "No operator controller(s) connected.";
-  private static final String dualJoystickOperatorInterfaces = "Dual Joysticks connected.";
-  private static final String singleJoystickOperatorInterfaces = "Single Joystick connected.";
-  private static final String dualXBoxOperatorInterfaces = "Dual XBox operator controllers connected.";
   private static final String singleXBoxOperatorInterfaces = "XBox operator controller connected.";
-
+  private static final String dualXBoxOperatorInterfaces = "Dual XBox operator controllers connected.";
+  private static final String singleJoystickOperatorInterfaces = "Single Joystick connected.";
+  private static final String dualJoystickOperatorInterfaces = "Dual Joysticks connected.";
+  private static final String dualJoystickXBoxOperatorInterfaces = "Dual Joysticks and XBox controller connected.";
+ 
   private OISelector() {}
 
   /**
@@ -58,18 +59,27 @@ public class OISelector {
       }
     }
 
-    if (joy0 != null && joy1 != null) {
-      System.out.println(dualJoystickOperatorInterfaces);
-      return new DualJoysticksOI(joy0, joy1);
-    } else if (xbox0 != null && xbox1 != null) {
-      System.out.println(dualXBoxOperatorInterfaces);
-      return new DualHandheldOI(xbox0, xbox1);
-    } else if (joy0 != null) {
-      System.out.println(singleJoystickOperatorInterfaces);
-      return new SingleHandheldOI(joy0) {};
+    if (joy0 != null) {
+      if (joy1 != null) {
+          if (xbox0 != null) {
+            System.out.println(dualJoystickXBoxOperatorInterfaces);
+            return new DualJoystickXboxOI(joy0, joy1, xbox0);
+          } else {
+            System.out.println(dualJoystickOperatorInterfaces);
+            return new DualJoysticksOI(joy0, joy1);
+          }
+      } else {
+        System.out.println(singleJoystickOperatorInterfaces);
+        return new SingleHandheldOI(joy0) {};
+      }
     } else if (xbox0 != null) {
-      System.out.println(singleXBoxOperatorInterfaces);
-      return new SingleHandheldOI(xbox0) {};
+      if (xbox1 != null) {
+        System.out.println(dualXBoxOperatorInterfaces);
+        return new DualHandheldOI(xbox0, xbox1);
+      } else {
+        System.out.println(singleXBoxOperatorInterfaces);
+        return new SingleHandheldOI(xbox0) {};
+      }
     } else {
       DriverStation.reportWarning(noOperatorInterfaceWarning, false);
       return new OperatorInterface() {};

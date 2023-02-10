@@ -82,7 +82,7 @@ public class SingleHandheldOI implements OperatorInterface {
 
   @Override
   public Trigger getXStanceButton() {
-    return new Trigger(controller::getYButton);
+    return new Trigger(controller::getRightBumper);
   }
 
   @Override
@@ -102,6 +102,18 @@ public class SingleHandheldOI implements OperatorInterface {
   @Override
   public Trigger getArmCalibrate() {
     return new Trigger(controller::getBackButton);
+  }
+
+  public Trigger getArmPosition0() {
+    return new Trigger(controller::getXButton);
+  }
+
+  public Trigger getArmPosition1() {
+    return new Trigger(controller::getYButton);
+  }
+
+  public Trigger getArmPosition2() {
+    return new Trigger(controller::getBButton);
   }
 
 }

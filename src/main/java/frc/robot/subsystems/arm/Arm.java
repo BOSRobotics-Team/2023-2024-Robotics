@@ -4,7 +4,6 @@ import static frc.robot.Constants.*;
 
 import java.util.List;
 
-import frc.robot.Robot;
 import frc.robot.RobotPreferences;
 
 import com.revrobotics.CANSparkMax;
@@ -12,11 +11,9 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -138,16 +135,6 @@ public class Arm extends SubsystemBase {
     }
   }
 
-  public void simulationInit() {
-    REVPhysicsSim.getInstance().addSparkMax(m_armLiftMotor, DCMotor.getNEO(1));
-    REVPhysicsSim.getInstance().addSparkMax(m_armExtendMotor, DCMotor.getNEO(1));
-  }
-
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run when in simulation
-    REVPhysicsSim.getInstance().run();
-  }
-
   public void resetArm() {
     m_Resetting = true;
     m_armExtendMotor.set(RobotPreferences.ArmExtend.armMinOutput.get());
@@ -160,13 +147,7 @@ public class Arm extends SubsystemBase {
   public void setArmLiftPosition(double position) {
     if (!m_Resetting) {
       m_armLiftSetpoint = MathUtil.clamp(position, RobotPreferences.ArmLift.armMinPosition.get(), RobotPreferences.ArmLift.armMaxPosition.get());
-      if (Robot.isReal()) {
-        m_armLiftController.setReference(m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
-      } else {
-        m_armLiftMotor.set(m_armLiftSetpoint > this.getArmLiftPosition() ? 
-          RobotPreferences.ArmLift.armMaxOutput.get() :
-          RobotPreferences.ArmLift.armMinOutput.get());
-      }
+      m_armLiftController.setReference(m_armLiftSetpoint + m_armLiftSetpointZero, CANSparkMax.ControlType.kPosition);
     }
   }
 
@@ -185,14 +166,7 @@ public class Arm extends SubsystemBase {
   public void setArmExtendPosition(double position) {
     if (!m_Resetting) {
       m_armExtendSetpoint = MathUtil.clamp(position, RobotPreferences.ArmExtend.armMinPosition.get(), RobotPreferences.ArmExtend.armMaxPosition.get());
-      if (Robot.isReal()) {
-        m_armExtendController.setReference(m_armExtendSetpoint + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
-      } else {
-        m_armExtendMotor.set(m_armExtendSetpoint > this.getArmExtendPosition() ? 
-          RobotPreferences.ArmExtend.armMaxOutput.get() :
-          RobotPreferences.ArmExtend.armMinOutput.get());
-      }
-
+      m_armExtendController.setReference(m_armExtendSetpoint + m_armExtendSetpointZero, CANSparkMax.ControlType.kPosition);
     }
   }
 
