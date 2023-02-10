@@ -45,7 +45,7 @@ public class RobotContainer {
   private SendableChooser<Command> chooser = new SendableChooser<>();
 
   /* Operator Interface */
-  private OperatorInterface oi = new OperatorInterface() {};
+  public OperatorInterface oi = new OperatorInterface() {};
 
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();

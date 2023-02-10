@@ -13,6 +13,21 @@ public class DualHandheldOI extends SingleHandheldOI {
   }
 
   @Override
+  public boolean testResults(int mode) {
+    boolean result = true;
+    if (mode == DRIVER) {
+      result = super.testResults(mode);
+    } else if (mode == OPERATOR) {
+      testController(operator, tests[mode]);
+
+      for (boolean test : tests[mode]) {
+        result = result && test;
+      }
+    }
+    return result;
+  }
+
+  @Override
   public double getArmLift() {
     return -operator.getLeftY();
   }

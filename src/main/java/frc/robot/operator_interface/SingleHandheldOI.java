@@ -10,9 +10,93 @@ public class SingleHandheldOI implements OperatorInterface {
   private double driveScaleFactor = 0.5;
   private double rotateScaleFactor = 1.0;
   private boolean updateScale = false;
+  protected boolean tests[][] = new boolean[2][17];
 
   public SingleHandheldOI(int port) {
     controller = new XboxController(port);
+  }
+
+  public void testController(XboxController contrl, boolean[] test) {
+    for (int testNum = 0; testNum < test.length; ++testNum) {
+      if (!test[testNum]) {
+        switch (testNum) {
+          case 0:
+            test[testNum] = MathUtil.applyDeadband(contrl.getLeftY(), 0.01) > 0.0;
+            break;
+          case 1:
+            test[testNum] = MathUtil.applyDeadband(contrl.getLeftX(), 0.01) > 0.0;
+            break;
+          case 2:
+            test[testNum] = MathUtil.applyDeadband(contrl.getRightX(), 0.01) > 0.0;
+            break;
+          case 3:
+            test[testNum] = MathUtil.applyDeadband(contrl.getLeftTriggerAxis(), 0.01) > 0.0;
+            break;
+          case 4:
+            test[testNum] = MathUtil.applyDeadband(contrl.getRightTriggerAxis(), 0.01) > 0.0;
+            break;
+          case 5:
+            test[testNum] = contrl.getPOV() == 0;
+            break;
+          case 6:
+            test[testNum] = contrl.getPOV() == 90;
+            break;
+          case 7:
+            test[testNum] = contrl.getPOV() == 180;
+            break;
+          case 8:
+            test[testNum] = contrl.getPOV() == 270;
+            break;
+          case 9:
+            test[testNum] = contrl.getLeftBumper();
+            break;
+          case 10:
+            test[testNum] = contrl.getRightBumper();
+            break;
+          case 11:
+            test[testNum] = contrl.getAButton();
+            break;
+          case 12:
+            test[testNum] = contrl.getBButton();
+            break;
+          case 13:
+            test[testNum] = contrl.getXButton();
+            break;
+          case 14:
+            test[testNum] = contrl.getYButton();
+            break;
+          case 15:
+            test[testNum] = contrl.getStartButton();
+            break;
+          case 16:
+            test[testNum] = contrl.getBackButton();
+            break;
+          default:
+            test[testNum] = true;
+            break;
+        }
+      }
+    }
+  }
+
+  @Override
+  public void testOI(int mode) {
+    for (int testNum = 0; testNum < tests[mode].length; ++testNum) {
+      tests[mode][testNum] = false;
+    }
+  }
+
+  @Override
+  public boolean testResults(int mode) {
+    boolean result = true;
+    if (mode == DRIVER) {
+      testController(controller, tests[mode]);
+
+      for (boolean test : tests[mode]) {
+        result = result && test;
+      }
+    }
+    return result;
   }
 
   @Override

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import frc.lib.util.PreferencesValue;
+import frc.robot.operator_interface.OperatorInterface;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -96,8 +97,11 @@ public class TestChecklist {
   private int GRIP_LEAKSCHECK = 19;
   private int GRIP_CLOSEOPENCLOSE = 20;
   private int GRIP_TESTS = 21;
+  private int DRIVERCTRL_TESTS = 22;
+  private int OPERATORCTRL_TESTS = 23;
+  private int CONTROLLER_TESTS = 24;
 
-  private int TESTS_COMPLETE = 22;
+  private int TESTS_COMPLETE = 25;
 
   private int checklistStep = 0;
   private List<ChecklistItem> checkListSteps =
@@ -124,6 +128,9 @@ public class TestChecklist {
           new ChecklistItem("7b. Check for Leaks", this::checkLeaks, 4, 7),
           new ChecklistItem("7c. Actuator Tests", this::checkGripperOpenClose, 6, 7),
           new ChecklistItem("7. Grip Tests", this::checkGrip, 0, 7),
+          new ChecklistItem("8a. Driver Ctrls", this::checkDriverController, 2, 8),
+          new ChecklistItem("8b. Operator Ctrls", this::checkOperatorController, 4, 8),
+          new ChecklistItem("8. Controller Tests", this::checkControllers, 0, 8),
           new ChecklistItem("Tests Complete", this::allTestsComplete, 8, 0));
 
   public TestChecklist(RobotContainer container) {
@@ -580,7 +587,7 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click Toggle after checking for leaks";
       } else {
-        item.state = 2;
+        item.state = 1;
         item.status = "Arm Raised to Max Height - Measure";
         item.setComplete(true);
         resetDoStep();
@@ -619,6 +626,56 @@ public class TestChecklist {
         checkListSteps.get(GRIP_COMPRESSOR).isComplete()
             && checkListSteps.get(GRIP_LEAKSCHECK).isComplete()
             && checkListSteps.get(GRIP_CLOSEOPENCLOSE).isComplete();
+    item.status = "Grip Tests complete";
+
+    return item.setComplete(result);
+  }
+
+  public boolean checkDriverController() {
+    ChecklistItem item = checkListSteps.get(DRIVERCTRL_TESTS);
+    if (item.state == 0) {
+      if (!getDoStep()) {
+        item.status = "Click Toggle and press all Driver buttons/axis";
+      } else {
+        robot.oi.testOI(OperatorInterface.DRIVER);
+        item.state = 1;
+        item.status = "Press all Driver controller buttons/axis";
+      }
+    } else if (item.state == 1) {
+      if (robot.oi.testResults(OperatorInterface.DRIVER)) {
+        item.state = 2;
+        item.setComplete(true);
+        resetDoStep();
+      }
+    }
+    return item.isComplete();
+  }
+
+  public boolean checkOperatorController() {
+    ChecklistItem item = checkListSteps.get(OPERATORCTRL_TESTS);
+    if (item.state == 0) {
+      if (!getDoStep()) {
+        item.status = "Click Toggle and press all Operator buttons/axis";
+      } else {
+        robot.oi.testOI(OperatorInterface.OPERATOR);
+        item.state = 1;
+        item.status = "Press all Operator controller buttons/axis";
+      }
+    } else if (item.state == 1) {
+      if (robot.oi.testResults(OperatorInterface.OPERATOR)) {
+        item.state = 2;
+        item.setComplete(true);
+        resetDoStep();
+      }
+    }
+    return item.isComplete();
+  }
+
+  public boolean checkControllers() {
+    ChecklistItem item = checkListSteps.get(CONTROLLER_TESTS);
+    boolean result =
+        checkListSteps.get(DRIVERCTRL_TESTS).isComplete()
+            && checkListSteps.get(OPERATORCTRL_TESTS).isComplete();
     item.status = "Grip Tests complete";
 
     return item.setComplete(result);

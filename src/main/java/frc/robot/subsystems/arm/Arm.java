@@ -244,7 +244,7 @@ public class Arm extends SubsystemBase {
     if ((liftVal > 0.0) || (extendVal > 0.0)) {
       m_TeleopMode = true;
     }
-    if (m_TeleopMode) {
+    if (m_TeleopMode && !m_Resetting) {
       this.raiseArm(liftVal);
       this.extendArm(extendVal);
 
