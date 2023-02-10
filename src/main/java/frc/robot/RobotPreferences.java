@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.util.PreferencesValue;
 import frc.robot.subsystems.arm.ArmConstants;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
@@ -128,6 +129,13 @@ public final class RobotPreferences {
         new PreferencesValue("armLift/armPosition1", ArmConstants.armLiftPosition1);
     public static PreferencesValue armPosition2 =
         new PreferencesValue("armLift/armPosition2", ArmConstants.armLiftPosition2);
+
+    public static String liftProfileStr() {
+        if (!Preferences.containsKey("armLift/liftProfileStr")) {
+            Preferences.setString("armLift/liftProfileStr", ArmConstants.armLiftProfile);
+        }
+        return Preferences.getString("armLift/liftProfileStr", ArmConstants.armLiftProfile);
+    }
   }
 
   public static final class ArmExtend {

@@ -29,4 +29,5 @@ public final class ArmConstants {
   public static final double armExtendPosition0 = 50;
   public static final double armExtendPosition1 = 350;
   public static final double armExtendPosition2 = 485;
+  public static final String armLiftProfile = "5.0:20.0,10.0:80.0,20.0:150.0,25.0:300.0,30.0:500.0";
 }

@@ -470,5 +470,61 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/armLift/armPosition0",
+    "type": "double",
+    "value": 10.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armLift/armPosition1",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armLift/armPosition2",
+    "type": "double",
+    "value": 50.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armExtend/armPosition0",
+    "type": "double",
+    "value": 50.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armExtend/armPosition1",
+    "type": "double",
+    "value": 350.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armExtend/armPosition2",
+    "type": "double",
+    "value": 485.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armLift/liftProfileStr",
+    "type": "string",
+    "value": "5.0:20.0,10.0:80.0,20.0:150.0,25.0:300.0,30.0:500.0",
+    "properties": {
+      "persistent": true
+    }
   }
 ]

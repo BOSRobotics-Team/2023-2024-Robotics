@@ -16,23 +16,27 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotPreferences;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /** */
 public class Arm extends SubsystemBase {
-  public PneumaticHub m_pH = new PneumaticHub(PNEUMATICSHUB_ID);
-  public DoubleSolenoid m_gripper =
+  public final PneumaticHub m_pH = new PneumaticHub(PNEUMATICSHUB_ID);
+  public final DoubleSolenoid m_gripper =
       m_pH.makeDoubleSolenoid(SOLENOID_FWD_CHANNEL, SOLENOID_REV_CHANNEL);
 
-  public CANSparkMax m_armLiftMotor = new CANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
-  private SparkMaxPIDController m_armLiftController;
-  private RelativeEncoder m_armLiftEncoder;
-  private SparkMaxLimitSwitch m_armLiftLimit;
+  public final CANSparkMax m_armLiftMotor =
+      new CANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
+  private final SparkMaxPIDController m_armLiftController;
+  private final RelativeEncoder m_armLiftEncoder;
+  private final SparkMaxLimitSwitch m_armLiftLimit;
 
-  public CANSparkMax m_armExtendMotor = new CANSparkMax(ARM_EXTEND_MOTOR_ID, MotorType.kBrushless);
-  private SparkMaxPIDController m_armExtendController;
-  private RelativeEncoder m_armExtendEncoder;
-  private SparkMaxLimitSwitch m_armExtendLimit;
+  public final CANSparkMax m_armExtendMotor =
+      new CANSparkMax(ARM_EXTEND_MOTOR_ID, MotorType.kBrushless);
+  private final SparkMaxPIDController m_armExtendController;
+  private final RelativeEncoder m_armExtendEncoder;
+  private final SparkMaxLimitSwitch m_armExtendLimit;
 
   private double m_armLiftSetpoint = 0;
   private double m_armLiftSetpointZero = 0;
@@ -40,12 +44,7 @@ public class Arm extends SubsystemBase {
   private double m_armExtendSetpointZero = 0;
   private boolean m_Resetting = false;
   private boolean m_TeleopMode = false;
-  private List<Pair<Double, Double>> liftProfile =
-      List.of(
-          new Pair<>(5.0, 20.0),
-          new Pair<>(10.0, 80.0),
-          new Pair<>(20.0, 150.0),
-          new Pair<>(25.0, 300.0));
+  private List<Pair<Double, Double>> liftProfile = new ArrayList<Pair<Double,Double>>();
 
   public Arm() {
     m_armLiftMotor.restoreFactoryDefaults();
@@ -63,8 +62,8 @@ public class Arm extends SubsystemBase {
     m_armLiftController.setOutputRange(
         RobotPreferences.ArmLift.armMinOutput.get(), RobotPreferences.ArmLift.armMaxOutput.get());
 
-    // m_armLiftEncoder.setPositionConversionFactor(RobotPreferences.ArmLift.armGearRatio.get() *
-    // RobotPreferences.ArmLift.armMetersPerRotation.get());
+    // m_armLiftEncoder.setPositionConversionFactor(RobotPreferences.ArmLift.armGearRatio.get()
+    // * RobotPreferences.ArmLift.armMetersPerRotation.get());
     m_armLiftSetpoint = m_armLiftEncoder.getPosition();
     m_armLiftSetpointZero = 0;
 
@@ -90,7 +89,21 @@ public class Arm extends SubsystemBase {
     m_armExtendSetpoint = m_armExtendEncoder.getPosition();
     m_armExtendSetpointZero = 0;
 
+    initLiftProfile();
     initLogging();
+  }
+
+  void initLiftProfile() {
+    String liftProfileStr = RobotPreferences.ArmLift.liftProfileStr();
+    if (!liftProfileStr.isEmpty()) {
+      liftProfile.clear();
+      for (String pair : liftProfileStr.split(",")) {
+        String[] items = pair.split(":");
+        if (items.length > 1) {
+          liftProfile.add(new Pair<Double,Double>(Double.parseDouble(items[0]), Double.parseDouble(items[1])));
+        }
+      }
+    }
   }
 
   @Override
