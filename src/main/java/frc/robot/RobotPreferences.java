@@ -131,10 +131,10 @@ public final class RobotPreferences {
         new PreferencesValue("armLift/armPosition2", ArmConstants.armLiftPosition2);
 
     public static String liftProfileStr() {
-        if (!Preferences.containsKey("armLift/liftProfileStr")) {
-            Preferences.setString("armLift/liftProfileStr", ArmConstants.armLiftProfile);
-        }
-        return Preferences.getString("armLift/liftProfileStr", ArmConstants.armLiftProfile);
+      if (!Preferences.containsKey("armLift/liftProfileStr")) {
+        Preferences.setString("armLift/liftProfileStr", ArmConstants.armLiftProfile);
+      }
+      return Preferences.getString("armLift/liftProfileStr", ArmConstants.armLiftProfile);
     }
   }
 

@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotPreferences;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class Arm extends SubsystemBase {
   private double m_armExtendSetpointZero = 0;
   private boolean m_Resetting = false;
   private boolean m_TeleopMode = false;
-  private List<Pair<Double, Double>> liftProfile = new ArrayList<Pair<Double,Double>>();
+  private List<Pair<Double, Double>> liftProfile = new ArrayList<Pair<Double, Double>>();
 
   public Arm() {
     m_armLiftMotor.restoreFactoryDefaults();
@@ -100,7 +99,8 @@ public class Arm extends SubsystemBase {
       for (String pair : liftProfileStr.split(",")) {
         String[] items = pair.split(":");
         if (items.length > 1) {
-          liftProfile.add(new Pair<Double,Double>(Double.parseDouble(items[0]), Double.parseDouble(items[1])));
+          liftProfile.add(
+              new Pair<Double, Double>(Double.parseDouble(items[0]), Double.parseDouble(items[1])));
         }
       }
     }
@@ -212,23 +212,19 @@ public class Arm extends SubsystemBase {
     return Math.abs(getArmExtendPosition() - m_armExtendSetpoint) < 0.01;
   }
 
-  public void gripClaw(boolean close) {
-    m_gripper.set(close ? Value.kReverse : Value.kForward);
-  }
-
   public void gripOpen() {
-    this.gripClaw(false);
+    m_gripper.set(Value.kForward);
   }
 
   public void gripClose() {
-    this.gripClaw(true);
+    m_gripper.set(Value.kReverse);
   }
 
   public void gripToggle() {
-    this.gripClaw(isGripClawOpen());
+    m_gripper.set(isGripClawOpen() ? Value.kReverse : Value.kForward);
   }
 
-  public void gripReset(boolean close) {
+  public void gripReset() {
     m_gripper.set(Value.kOff);
   }
 
@@ -273,20 +269,20 @@ public class Arm extends SubsystemBase {
 
   public void initLogging() {
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-    tabMain.addNumber("ArmLift/Position", m_armLiftEncoder::getPosition);
-    tabMain.addNumber("ArmLift/SetPoint", () -> m_armLiftSetpoint);
-    tabMain.addNumber("ArmExtend/Position", m_armExtendEncoder::getPosition);
-    tabMain.addNumber("ArmExtend/SetPoint", () -> m_armExtendSetpoint);
+    tabMain.addNumber("Arm/LiftPosition", m_armLiftEncoder::getPosition);
+    tabMain.addNumber("Arm/LiftSetPoint", () -> m_armLiftSetpoint);
+    tabMain.addNumber("Arm/ExtendPosition", m_armExtendEncoder::getPosition);
+    tabMain.addNumber("Arm/ExtendSetPoint", () -> m_armExtendSetpoint);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("ARM");
-      tab.addNumber("ArmLift/Process Variable", m_armLiftEncoder::getPosition);
+      tab.addNumber("ArmLift/Position", m_armLiftEncoder::getPosition);
       tab.addNumber("ArmLift/Output", m_armLiftMotor::getAppliedOutput);
       tab.addNumber("ArmLift/SetPoint", () -> m_armLiftSetpoint);
       tab.addNumber("ArmLift/SetPoint Zero", () -> m_armLiftSetpointZero);
       tab.addBoolean("ArmLift/Reverse LimitSwitch", this::isArmLiftMinLimitSwitch);
 
-      tab.addNumber("ArmExtend/Process Variable", m_armExtendEncoder::getPosition);
+      tab.addNumber("ArmExtend/Position", m_armExtendEncoder::getPosition);
       tab.addNumber("ArmExtend/Lift Output", m_armExtendMotor::getAppliedOutput);
       tab.addNumber("ArmExtend/SetPoint", () -> m_armExtendSetpoint);
       tab.addNumber("ArmExtend/SetPoint Zero", () -> m_armExtendSetpointZero);
