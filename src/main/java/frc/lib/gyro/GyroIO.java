@@ -177,6 +177,7 @@ public class GyroIO implements Gyro {
       tabMain.addNumber("Gyro/IMU_Yaw", () -> pigeon.getYaw());
       tabMain.addNumber("Gyro/IMU_Pitch", () -> pigeon.getPitch());
       tabMain.addNumber("Gyro/IMU_Roll", () -> pigeon.getRoll());
+      tabMain.addNumber("Gyro/IMU_TotalYaw", () -> pigeon.getAngle());
 
       if (TESTING) {
         /* Display tilt-corrected, Magnetometer-based heading (requires magnetometer calibration to be useful)                                   */
