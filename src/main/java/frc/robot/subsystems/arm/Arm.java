@@ -99,13 +99,13 @@ public class Arm extends SubsystemBase {
       mLiftSim =
           new ElevatorSimWrapper(
               new ElevatorSim(
-                  DCMotor.getNeo550(1), 1.0, 1.0, Units.inchesToMeters(2.0), 0.0, 80.0, false),
+                  DCMotor.getNeo550(1), 1.0, 5.0, Units.inchesToMeters(1.0), 0.0, 80.0, true),
               new RevMotorControllerSimWrapper(m_armLiftMotor),
               RevEncoderSimWrapper.create(m_armLiftMotor));
       mExtendSim =
           new ElevatorSimWrapper(
               new ElevatorSim(
-                  DCMotor.getNeo550(1), 0.5, 1.0, Units.inchesToMeters(2.0), 0.0, 550.0, false),
+                  DCMotor.getNeo550(1), 0.5, 2.0, Units.inchesToMeters(1.0), 0.0, 550.0, false),
               new RevMotorControllerSimWrapper(m_armExtendMotor),
               RevEncoderSimWrapper.create(m_armExtendMotor));
     }
