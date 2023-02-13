@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotPreferences;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
 import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
+import org.snobotv2.sim_wrappers.SingleJointedArmSimWrapper;
 
 /** */
 public class Arm extends SubsystemBase {
@@ -97,9 +99,15 @@ public class Arm extends SubsystemBase {
 
     if (RobotBase.isSimulation()) {
       mLiftSim =
-          new ElevatorSimWrapper(
-              new ElevatorSim(
-                  DCMotor.getNeo550(1), 1.0, 5.0, Units.inchesToMeters(1.0), 0.0, 80.0, true),
+          new SingleJointedArmSimWrapper(
+              new SingleJointedArmSim(
+                  DCMotor.getNeo550(1),
+                  200.0,
+                  SingleJointedArmSim.estimateMOI(Units.inchesToMeters(30.0), 5.0),
+                  Units.inchesToMeters(30.0),
+                  0.0,
+                  60.0,
+                  true),
               new RevMotorControllerSimWrapper(m_armLiftMotor),
               RevEncoderSimWrapper.create(m_armLiftMotor));
       mExtendSim =
