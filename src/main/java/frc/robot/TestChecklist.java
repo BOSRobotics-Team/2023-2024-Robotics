@@ -72,6 +72,7 @@ public class TestChecklist {
 
   private GenericEntry resetTestsWidget;
   private GenericEntry doStepWidget;
+  private GenericEntry skipStepWidget;
 
   private boolean m_enableCheckList = false;
 
@@ -137,9 +138,25 @@ public class TestChecklist {
     this.robot = container;
 
     tabMain.addString("Current Step", this::getCurrentStep).withPosition(0, 0).withSize(2, 1);
+    doStepWidget =
+        tabMain
+            .add("Step", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .withPosition(2, 0)
+            .withSize(1, 1)
+            .getEntry();
+
+    skipStepWidget =
+        tabMain
+            .add("Skip", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .withPosition(3, 0)
+            .withSize(1, 1)
+            .getEntry();
+
     tabMain
         .addString("Current Step Status", this::getCurrentStepStatus)
-        .withPosition(3, 0)
+        .withPosition(4, 0)
         .withSize(5, 1);
 
     resetTestsWidget =
@@ -147,14 +164,6 @@ public class TestChecklist {
             .add("Reset", false)
             .withWidget(BuiltInWidgets.kToggleButton)
             .withPosition(10, 0)
-            .withSize(1, 1)
-            .getEntry();
-
-    doStepWidget =
-        tabMain
-            .add("Step", false)
-            .withWidget(BuiltInWidgets.kToggleButton)
-            .withPosition(2, 0)
             .withSize(1, 1)
             .getEntry();
 
@@ -205,24 +214,46 @@ public class TestChecklist {
     return doStepWidget.getBoolean(false);
   }
 
-  public boolean resetDoStep() {
+  public boolean resetDoStepWidget() {
     return doStepWidget.setBoolean(false);
+  }
+
+  public boolean getSkipStep() {
+    return skipStepWidget.getBoolean(false);
+  }
+
+  public boolean resetSkipStepWidget() {
+    return skipStepWidget.setBoolean(false);
+  }
+
+  public boolean getResetTests() {
+    return resetTestsWidget.getBoolean(false);
+  }
+
+  public boolean resetTestsWidget() {
+    return resetTestsWidget.setBoolean(false);
   }
 
   public void resetTests() {
     for (var step : checkListSteps) {
       step.reset();
     }
-    resetDoStep();
-
     checklistStep = 0;
-    resetTestsWidget.setBoolean(false);
+    resetDoStepWidget();
+    resetTestsWidget();
+    resetSkipStepWidget();
   }
 
   public void update() {
     if (m_enableCheckList) {
-      if (resetTestsWidget.getBoolean(false)) {
+      if (getResetTests()) {
         resetTests();
+      }
+      if (getSkipStep()) {
+        if (checklistStep < TESTS_COMPLETE) {
+          checklistStep += 1;
+        }
+        resetSkipStepWidget();
       }
 
       if (checklistStep < checkListSteps.size()) {
@@ -319,6 +350,9 @@ public class TestChecklist {
       allPresent = false;
       item.status += "SparkMax(" + Constants.ARM_EXTEND_MOTOR_ID + ") ";
     }
+    if (allPresent) {
+      item.status = "All devices present";
+    }
     return item.setComplete(allPresent);
   }
 
@@ -385,7 +419,7 @@ public class TestChecklist {
         item.state = 2;
         item.status = "Gyro test complete";
         item.setComplete(true);
-        resetDoStep();
+        resetDoStepWidget();
       }
     }
     return item.isComplete();
@@ -406,7 +440,7 @@ public class TestChecklist {
         item.state = 2;
         item.status = "Gyro test complete";
         item.setComplete(true);
-        resetDoStep();
+        resetDoStepWidget();
       }
     }
     return item.isComplete();
@@ -472,16 +506,25 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click Toggle to Start Arm Calibration";
       } else {
-        robot.arm.resetArm();
+        robot.arm.m_armExtendMotor.set(RobotPreferences.ArmExtend.armMinOutput.get());
         item.state = 1;
-        item.status = "Calibrating Arm";
+        item.status = "Calibrating Arm Extend";
       }
     } else if (item.state == 1) {
-      if (!robot.arm.isResetting()) {
+      if (robot.arm.m_armExtendLimit.isPressed()) {
+        robot.arm.m_armExtendMotor.set(0.0);
+        robot.arm.m_armExtendEncoder.setPosition(0.0);
+        robot.arm.m_armLiftMotor.set(RobotPreferences.ArmLift.armMinOutput.get());
         item.state = 2;
-        item.status = "Arm Calibrate complete";
+        item.status = "Calibrating Arm Lift";
+      }
+    } else if (item.state == 2) {
+      if (robot.arm.m_armLiftLimit.isPressed()) {
+        robot.arm.m_armLiftMotor.set(0.0);
+        robot.arm.m_armLiftEncoder.setPosition(0.0);
+        item.state = 3;
+        item.status = "Calibrating Arm Complete";
         item.setComplete(true);
-        resetDoStep();
       }
     }
     return item.isComplete();
@@ -501,7 +544,7 @@ public class TestChecklist {
       item.state = 2;
       item.status = "Arm Raised to Max Height - Measure";
       item.setComplete(true);
-      resetDoStep();
+      resetDoStepWidget();
     }
     return item.isComplete();
   }
@@ -520,7 +563,7 @@ public class TestChecklist {
       item.state = 2;
       item.status = "Arm Extended to Max Length - Measure";
       item.setComplete(true);
-      resetDoStep();
+      resetDoStepWidget();
     }
     return item.isComplete();
   }
@@ -544,7 +587,7 @@ public class TestChecklist {
       item.state = 3;
       item.status = "Arm Set to Zero Position";
       item.setComplete(true);
-      resetDoStep();
+      resetDoStepWidget();
     }
     return item.isComplete();
   }
@@ -575,7 +618,7 @@ public class TestChecklist {
         item.state = 2;
         item.status = "Compressor check complete";
         item.setComplete(true);
-        resetDoStep();
+        resetDoStepWidget();
       }
     }
     return item.isComplete();
@@ -590,7 +633,7 @@ public class TestChecklist {
         item.state = 1;
         item.status = "Arm Raised to Max Height - Measure";
         item.setComplete(true);
-        resetDoStep();
+        resetDoStepWidget();
       }
     }
     return item.isComplete();
@@ -615,7 +658,7 @@ public class TestChecklist {
       item.state = 3;
       item.status = "Actuator Test Complete";
       item.setComplete(true);
-      resetDoStep();
+      resetDoStepWidget();
     }
     return item.isComplete();
   }
@@ -645,7 +688,7 @@ public class TestChecklist {
       if (robot.oi.testResults(OperatorInterface.DRIVER)) {
         item.state = 2;
         item.setComplete(true);
-        resetDoStep();
+        resetDoStepWidget();
       }
     }
     return item.isComplete();
@@ -665,7 +708,7 @@ public class TestChecklist {
       if (robot.oi.testResults(OperatorInterface.OPERATOR)) {
         item.state = 2;
         item.setComplete(true);
-        resetDoStep();
+        resetDoStepWidget();
       }
     }
     return item.isComplete();
