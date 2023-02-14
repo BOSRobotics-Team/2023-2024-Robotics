@@ -188,7 +188,7 @@ public class RobotContainer {
     SmartDashboard.putData("ExtendArm 0.5", new ExtendArm(arm, 0.5));
     SmartDashboard.putData("ExtendArm 1.0", new ExtendArm(arm, 1.0));
 
-    Shuffleboard.getTab("MAIN").add(chooser);
+    Shuffleboard.getTab("MAIN").add(chooser).withSize(2, 1);
   }
 
   private void configureAutoPaths() {

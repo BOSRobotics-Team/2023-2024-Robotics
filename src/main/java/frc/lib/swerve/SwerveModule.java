@@ -5,7 +5,9 @@ import static frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.lib.swerve.SwerveModuleIO.SwerveModuleIOInputs;
 import frc.robot.RobotPreferences;
@@ -27,10 +29,11 @@ public class SwerveModule {
     /* set DEBUGGING to true to view values in Shuffleboard. This is useful when determining the steer offset constants. */
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
-      tab.addNumber(
+      ShuffleboardLayout layout = tab.getLayout( "Mod " + io.getModuleNumber(), BuiltInLayouts.kList).withPosition(io.getModuleNumber() * 3, 0).withSize(3, 3);
+      layout.addNumber(
           "Mod " + io.getModuleNumber() + ": Cancoder", () -> inputs.angleAbsolutePositionDeg);
-      tab.addNumber("Mod " + io.getModuleNumber() + ": Integrated", () -> inputs.anglePositionDeg);
-      tab.addNumber(
+      layout.addNumber("Mod " + io.getModuleNumber() + ": Integrated", () -> inputs.anglePositionDeg);
+      layout.addNumber(
           "Mod " + io.getModuleNumber() + ": Velocity", () -> inputs.driveVelocityMetersPerSec);
     }
   }

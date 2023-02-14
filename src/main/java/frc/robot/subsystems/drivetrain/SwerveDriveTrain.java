@@ -18,7 +18,9 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -479,13 +481,14 @@ public class SwerveDriveTrain extends SubsystemBase {
 
   public void initLogging() {
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-    tabMain.addNumber("DriveTrain/Gyroscope Angle", this::getRotationDegrees);
-    tabMain.addBoolean("DriveTrain/X-Stance On?", this::isXstance);
-    tabMain.addBoolean("DriveTrain/Field-Relative Enabled?", this::getFieldRelative);
+    ShuffleboardLayout layout = tabMain.getLayout("DriveTrain", BuiltInLayouts.kList).withPosition(8, 0).withSize(4, 4);
+    layout.addNumber("DriveTrain/Gyroscope Angle", this::getRotationDegrees);
+    layout.addBoolean("DriveTrain/X-Stance On?", this::isXstance);
+    layout.addBoolean("DriveTrain/Field-Relative Enabled?", this::getFieldRelative);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");
-      tab.add("DriveTrain", this);
+      tab.add("DriveTrain", this).withPosition(0, 0).withSize(3, 1);
       tab.addNumber("vx", this::getVelocityX);
       tab.addNumber("vy", this::getVelocityY);
       tab.addNumber("Pose Est X", () -> poseEstimator.getEstimatedPosition().getX());

@@ -134,17 +134,17 @@ public class TestChecklist {
           new ChecklistItem("8a. Driver Ctrls", this::checkDriverController, 2, 8),
           new ChecklistItem("8b. Operator Ctrls", this::checkOperatorController, 4, 8),
           new ChecklistItem("8. Controller Tests", this::checkControllers, 0, 8),
-          new ChecklistItem("Tests Complete", this::allTestsComplete, 8, 0));
+          new ChecklistItem("Tests Complete", this::allTestsComplete, 0, 0));
 
   public TestChecklist(RobotContainer container) {
     this.robot = container;
 
-    tabMain.addString("Current Step", this::getCurrentStep).withPosition(0, 0).withSize(2, 1);
+    tabMain.addString("Current Step", this::getCurrentStep).withPosition(2, 0).withSize(2, 1);
     doStepWidget =
         tabMain
             .add("Step", false)
             .withWidget(BuiltInWidgets.kToggleButton)
-            .withPosition(2, 0)
+            .withPosition(4, 0)
             .withSize(1, 1)
             .getEntry();
 
@@ -152,20 +152,20 @@ public class TestChecklist {
         tabMain
             .add("Skip", false)
             .withWidget(BuiltInWidgets.kToggleButton)
-            .withPosition(3, 0)
+            .withPosition(5, 0)
             .withSize(1, 1)
             .getEntry();
 
     tabMain
         .addString("Current Step Status", this::getCurrentStepStatus)
-        .withPosition(4, 0)
+        .withPosition(6, 0)
         .withSize(5, 1);
 
     resetTestsWidget =
         tabMain
             .add("Reset", false)
             .withWidget(BuiltInWidgets.kToggleButton)
-            .withPosition(10, 0)
+            .withPosition(11, 0)
             .withSize(1, 1)
             .getEntry();
 
@@ -173,7 +173,7 @@ public class TestChecklist {
         tabMain
             .add("TeleOp", false)
             .withWidget(BuiltInWidgets.kToggleButton)
-            .withPosition(11, 0)
+            .withPosition(12, 0)
             .withSize(1, 1)
             .getEntry();
 
@@ -406,7 +406,7 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(SWERVE_MOD_0 + mod);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle to Start Motor " + mod;
+        item.status = "Click 'Step' to Start Motor " + mod;
       } else {
         robot.driveTrain.testModule(mod, 0.5, 90.0);
         item.state = 1;
@@ -475,7 +475,7 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(GYRO_PITCHTEST);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle to Start Gyro Pitch Test";
+        item.status = "Click 'Step' to Start Gyro Pitch Test";
       } else {
         robot.gyro.reset();
         item.state = 1;
@@ -550,7 +550,7 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(ARM_CALIBRATE);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle to Start Arm Calibration";
+        item.status = "Click 'Step' to Start Arm Calibration";
       } else {
         resetTeleopWidget();
         robot.arm.resetArm();
@@ -578,7 +578,7 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(ARM_MAXLIFTTEST);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle to Raise Arm to Max Height";
+        item.status = "Click 'Step' to Raise Arm to Max Height";
       } else {
         robot.arm.raiseArm(1.0);
         item.state = 1;
@@ -597,7 +597,7 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(ARM_MAXEXTENDTEST);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle to Extend Arm to Max Length";
+        item.status = "Click 'Step' to Extend Arm to Max Length";
       } else {
         robot.arm.extendArm(1.0);
         item.state = 1;
@@ -617,7 +617,7 @@ public class TestChecklist {
 
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle to reset Arm to Zero";
+        item.status = "Click 'Step' to reset Arm to Zero";
       } else {
         robot.arm.extendArm(0.0);
         item.state = 1;
@@ -651,7 +651,7 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(GRIP_COMPRESSOR);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle to Start Compressor";
+        item.status = "Click 'Step' to Start Compressor";
       } else {
         robot.arm.m_pH.enableCompressorDigital();
         item.state = 1;
@@ -672,7 +672,7 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(GRIP_LEAKSCHECK);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle after checking for leaks";
+        item.status = "Click 'Step' after checking for leaks";
       } else {
         item.state = 1;
         item.status = "Arm Raised to Max Height - Measure";
@@ -687,16 +687,16 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(GRIP_CLOSEOPENCLOSE);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle to Close Gripper";
+        item.status = "Click 'Step' to Close Gripper";
       } else {
         robot.arm.gripClose();
         item.state = 1;
-        item.status = "Click Toggle to Open Gripper";
+        item.status = "Click 'Step' to Open Gripper";
       }
     } else if ((item.state == 1) && getDoStep()) {
       robot.arm.gripOpen();
       item.state = 2;
-      item.status = "Click Toggle to Close Gripper";
+      item.status = "Click 'Step' to Close Gripper";
     } else if ((item.state == 2) && getDoStep()) {
       robot.arm.gripClose();
       item.state = 3;
@@ -722,7 +722,7 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(DRIVERCTRL_TESTS);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle and press all Driver buttons/axis";
+        item.status = "Click 'Step' and press all Driver buttons/axis";
       } else {
         robot.oi.testOI(OperatorInterface.DRIVER);
         item.state = 1;
@@ -742,7 +742,7 @@ public class TestChecklist {
     ChecklistItem item = checkListSteps.get(OPERATORCTRL_TESTS);
     if (item.state == 0) {
       if (!getDoStep()) {
-        item.status = "Click Toggle and press all Operator buttons/axis";
+        item.status = "Click 'Step' and press all Operator buttons/axis";
       } else {
         robot.oi.testOI(OperatorInterface.OPERATOR);
         item.state = 1;

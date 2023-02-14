@@ -9,7 +9,9 @@ import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -156,36 +158,37 @@ public class GyroIO implements Gyro {
 
   public void initLogging() {
     ShuffleboardTab tabMain = Shuffleboard.getTab("GYRO");
+    ShuffleboardLayout layout = tabMain.getLayout("Gyro", BuiltInLayouts.kList).withPosition(0, 0).withSize(4, 4);
 
     if (ahrs != null) {
-      tabMain.addBoolean("Gyro/IMU_Connected", () -> ahrs.isConnected());
-      tabMain.addNumber("Gyro/IMU_Yaw", () -> ahrs.getYaw());
-      tabMain.addNumber("Gyro/IMU_Pitch", () -> ahrs.getPitch());
-      tabMain.addNumber("Gyro/IMU_Roll", () -> ahrs.getRoll());
+      layout.addBoolean("IMU_Connected", () -> ahrs.isConnected());
+      layout.addNumber("IMU_Yaw", () -> ahrs.getYaw());
+      layout.addNumber("IMU_Pitch", () -> ahrs.getPitch());
+      layout.addNumber("IMU_Roll", () -> ahrs.getRoll());
 
       if (TESTING) {
         /* Display tilt-corrected, Magnetometer-based heading (requires magnetometer calibration to be useful)                                   */
-        tabMain.addNumber("Gyro/IMU_CompassHeading", () -> ahrs.getCompassHeading());
+        layout.addNumber("IMU_CompassHeading", () -> ahrs.getCompassHeading());
         /* Display 9-axis Heading (requires magnetometer calibration to be useful)  */
-        tabMain.addNumber("Gyro/IMU_FusedHeading", () -> ahrs.getFusedHeading());
+        layout.addNumber("IMU_FusedHeading", () -> ahrs.getFusedHeading());
 
         /* These functions are compatible w/the WPI Gyro Class */
-        tabMain.addNumber("Gyro/IMU_TotalYaw", () -> ahrs.getAngle());
-        tabMain.addNumber("Gyro/IMU_YawRateDPS", () -> ahrs.getRate());
+        layout.addNumber("IMU_TotalYaw", () -> ahrs.getAngle());
+        layout.addNumber("IMU_YawRateDPS", () -> ahrs.getRate());
       }
     } else {
-      tabMain.addNumber("Gyro/IMU_Yaw", () -> pigeon.getYaw());
-      tabMain.addNumber("Gyro/IMU_Pitch", () -> pigeon.getPitch());
-      tabMain.addNumber("Gyro/IMU_Roll", () -> pigeon.getRoll());
-      tabMain.addNumber("Gyro/IMU_TotalYaw", () -> pigeon.getAngle());
+      layout.addNumber("IMU_Yaw", () -> pigeon.getYaw());
+      layout.addNumber("IMU_Pitch", () -> pigeon.getPitch());
+      layout.addNumber("IMU_Roll", () -> pigeon.getRoll());
+      layout.addNumber("IMU_TotalYaw", () -> pigeon.getAngle());
 
       if (TESTING) {
         /* Display tilt-corrected, Magnetometer-based heading (requires magnetometer calibration to be useful)                                   */
-        tabMain.addNumber("Gyro/IMU_CompassHeading", () -> pigeon.getCompassHeading());
+        layout.addNumber("IMU_CompassHeading", () -> pigeon.getCompassHeading());
 
         /* These functions are compatible w/the WPI Gyro Class */
-        tabMain.addNumber("Gyro/IMU_TotalYaw", () -> pigeon.getAngle());
-        tabMain.addNumber("Gyro/IMU_YawRateDPS", () -> pigeon.getRate());
+        layout.addNumber("IMU_TotalYaw", () -> pigeon.getAngle());
+        layout.addNumber("IMU_YawRateDPS", () -> pigeon.getRate());
       }
     }
   }
