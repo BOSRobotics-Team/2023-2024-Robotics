@@ -132,7 +132,7 @@ public class RobotContainer {
      */
     driveTrain.setDefaultCommand(
         new TeleopSwerve(
-            driveTrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::getDriveScaling));
+            driveTrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::getDriveScaling, oi::getRotateScaling));
 
     arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
 
@@ -162,6 +162,7 @@ public class RobotContainer {
     oi.getArmPosition0().onTrue(Commands.runOnce(arm::setArmPosition0, arm));
     oi.getArmPosition1().onTrue(Commands.runOnce(arm::setArmPosition1, arm));
     oi.getArmPosition2().onTrue(Commands.runOnce(arm::setArmPosition2, arm));
+    oi.getArmPosition3().onTrue(Commands.runOnce(arm::setArmPosition3, arm));
   }
 
   /**

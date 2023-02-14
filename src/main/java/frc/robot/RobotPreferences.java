@@ -129,6 +129,8 @@ public final class RobotPreferences {
         new PreferencesValue("armLift/armPosition1", ArmConstants.armLiftPosition1);
     public static PreferencesValue armPosition2 =
         new PreferencesValue("armLift/armPosition2", ArmConstants.armLiftPosition2);
+    public static PreferencesValue armPosition3 =
+        new PreferencesValue("armLift/armPosition3", ArmConstants.armLiftPosition3);
 
     public static String liftProfileStr() {
       if (!Preferences.containsKey("armLift/liftProfileStr")) {
@@ -165,5 +167,7 @@ public final class RobotPreferences {
         new PreferencesValue("armExtend/armPosition1", ArmConstants.armExtendPosition1);
     public static PreferencesValue armPosition2 =
         new PreferencesValue("armExtend/armPosition2", ArmConstants.armExtendPosition2);
+    public static PreferencesValue armPosition3 =
+        new PreferencesValue("armExtend/armPosition3", ArmConstants.armExtendPosition3);
   }
 }

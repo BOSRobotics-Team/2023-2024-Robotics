@@ -347,6 +347,11 @@ public class Arm extends SubsystemBase {
     this.setArmExtendPosition(RobotPreferences.ArmExtend.armPosition2.get());
   }
 
+  public void setArmPosition3() {
+    this.setArmLiftPosition(RobotPreferences.ArmLift.armPosition3.get());
+    this.setArmExtendPosition(RobotPreferences.ArmExtend.armPosition3.get());
+  }
+
   public void initLogging() {
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
     ShuffleboardLayout armLay = tabMain.getLayout("Arm", BuiltInLayouts.kList).withSize(4, 4);

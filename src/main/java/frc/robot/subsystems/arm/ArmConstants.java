@@ -12,9 +12,10 @@ public final class ArmConstants {
   public static final double armLiftMaxRPM = 5700.0;
   public static final double armLiftMinPosition = 0.0;
   public static final double armLiftMaxPosition = 60.0;
-  public static final double armLiftPosition0 = 18;
-  public static final double armLiftPosition1 = 50;
-  public static final double armLiftPosition2 = 57;
+  public static final double armLiftPosition0 = 0;
+  public static final double armLiftPosition1 = 18;
+  public static final double armLiftPosition2 = 50;
+  public static final double armLiftPosition3 = 57;
 
   public static final double armExtendKP = 0.2;
   public static final double armExtendKI = 0.0;
@@ -25,10 +26,11 @@ public final class ArmConstants {
   public static final double armExtendMinOutput = -0.85;
   public static final double armExtendMaxRPM = 5700.0;
   public static final double armExtendMinPosition = 0.0;
-  public static final double armExtendMaxPosition = 495.0;
-  public static final double armExtendPosition0 = 50;
-  public static final double armExtendPosition1 = 80;
-  public static final double armExtendPosition2 = 492;
+  public static final double armExtendMaxPosition = 500.0;
+  public static final double armExtendPosition0 = 0;
+  public static final double armExtendPosition1 = 50;
+  public static final double armExtendPosition2 = 80;
+  public static final double armExtendPosition3 = 495;
   public static final String armLiftProfile =
       "8.0:92.0,11.0:180.0,15.0:230.0,20.0:350.0,23.0:480.0,26.0:550";
 }

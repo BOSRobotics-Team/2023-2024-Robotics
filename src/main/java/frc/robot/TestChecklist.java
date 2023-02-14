@@ -298,6 +298,7 @@ public class TestChecklist {
     robot.arm.teleop(liftVal, extendVal);
 
     double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * robot.oi.getDriveScaling();
+    double maxRotate = RobotPreferences.Swerve.maxAngularVelocity.get() * robot.oi.getRotateScaling();
     double translationVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
     double strafeVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
     double rotationVal = MathUtil.applyDeadband(robot.oi.getRotate(), deadBand);
@@ -305,8 +306,7 @@ public class TestChecklist {
     robot.driveTrain.drive(
         Math.copySign(translationVal * translationVal, translationVal) * maxSpeed,
         Math.copySign(strafeVal * strafeVal, strafeVal) * maxSpeed,
-        Math.copySign(rotationVal * rotationVal, rotationVal)
-            * RobotPreferences.Swerve.maxAngularVelocity.get());
+        Math.copySign(rotationVal * rotationVal, rotationVal) * maxRotate);
   }
 
   public boolean resetTeleopWidget() {

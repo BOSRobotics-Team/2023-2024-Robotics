@@ -12,13 +12,15 @@ public class TeleopSwerve extends CommandBase {
   private DoubleSupplier strafeSup;
   private DoubleSupplier rotationSup;
   private DoubleSupplier scaleFactorSup;
+  private DoubleSupplier rotateFactorSup;
 
   public TeleopSwerve(
       SwerveDriveTrain driveTrain,
       DoubleSupplier translationSup,
       DoubleSupplier strafeSup,
       DoubleSupplier rotationSup,
-      DoubleSupplier scaleFactorSup) {
+      DoubleSupplier scaleFactorSup,
+      DoubleSupplier rotateFactorSub) {
     this.driveTrain = driveTrain;
     addRequirements(driveTrain);
 
@@ -26,6 +28,7 @@ public class TeleopSwerve extends CommandBase {
     this.strafeSup = strafeSup;
     this.rotationSup = rotationSup;
     this.scaleFactorSup = scaleFactorSup;
+    this.rotateFactorSup = rotateFactorSub;
   }
 
   @Override
@@ -33,12 +36,11 @@ public class TeleopSwerve extends CommandBase {
     /* Get Values, Deadband*/
     double deadBand = RobotPreferences.stickDeadband.get();
     double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * scaleFactorSup.getAsDouble();
+    double maxRotate = RobotPreferences.Swerve.maxAngularVelocity.get() * rotateFactorSup.getAsDouble();
 
     double translationVal = this.scaleController(translationSup.getAsDouble(), deadBand) * maxSpeed;
     double strafeVal = this.scaleController(strafeSup.getAsDouble(), deadBand) * maxSpeed;
-    double rotationVal =
-        this.scaleController(rotationSup.getAsDouble(), deadBand)
-            * RobotPreferences.Swerve.maxAngularVelocity.get();
+    double rotationVal = this.scaleController(rotationSup.getAsDouble(), deadBand) * maxRotate;
 
     /* Drive */
     driveTrain.drive(translationVal, strafeVal, rotationVal);
