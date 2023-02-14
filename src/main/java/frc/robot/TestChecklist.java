@@ -198,37 +198,20 @@ public class TestChecklist {
     m_enableCheckList = true;
     robot.arm.m_pH.disableCompressor();
 
-    resetTests();
+    doResetTests();
   }
 
   public void testPeriodic() {
     if (m_enableCheckList) {
       if (getResetTests()) {
-        resetTests();
+        doResetTests();
       }
       if (getSkipStep()) {
-        if (checklistStep < TESTS_COMPLETE) {
-          checklistStep += 1;
-        }
-        resetSkipStepWidget();
+        doSkipStep();
       }
 
       if (getEnableTeleop()) {
-        double deadBand = RobotPreferences.stickDeadband.get();
-        double liftVal = MathUtil.applyDeadband(robot.oi.getArmLift(), deadBand);
-        double extendVal = MathUtil.applyDeadband(robot.oi.getArmExtend(), deadBand);
-        robot.arm.teleop(liftVal, extendVal);
-
-        double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * robot.oi.getDriveScaling();
-        double translationVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
-        double strafeVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
-        double rotationVal = MathUtil.applyDeadband(robot.oi.getRotate(), deadBand);
-
-        robot.driveTrain.drive(
-            Math.copySign(translationVal * translationVal, translationVal) * maxSpeed,
-            Math.copySign(strafeVal * strafeVal, strafeVal) * maxSpeed,
-            Math.copySign(rotationVal * rotationVal, rotationVal)
-                * RobotPreferences.Swerve.maxAngularVelocity.get());
+        doTeleop();
       }
 
       if (checklistStep < checkListSteps.size()) {
@@ -276,10 +259,29 @@ public class TestChecklist {
     return skipStepWidget.setBoolean(false);
   }
 
+  public void doSkipStep() {
+    if (checklistStep < checkListSteps.size()) {
+      checkListSteps.get(checklistStep).setComplete(false);
+      if (checklistStep < TESTS_COMPLETE) {
+        checklistStep += 1;
+      }
+    }
+    resetSkipStepWidget();
+  }
+
   public boolean getResetTests() {
     return resetTestsWidget.getBoolean(false);
   }
 
+  public void doResetTests() {
+    for (var step : checkListSteps) {
+      step.reset();
+    }
+    checklistStep = 0;
+    resetDoStepWidget();
+    resetTestsWidget();
+    resetSkipStepWidget();
+  }
   public boolean resetTestsWidget() {
     return resetTestsWidget.setBoolean(false);
   }
@@ -288,18 +290,26 @@ public class TestChecklist {
     return enableTeleopWidget.getBoolean(false);
   }
 
-  public boolean resetTeleopWidget() {
-    return enableTeleopWidget.setBoolean(false);
+  public void doTeleop() {
+    double deadBand = RobotPreferences.stickDeadband.get();
+    double liftVal = MathUtil.applyDeadband(robot.oi.getArmLift(), deadBand);
+    double extendVal = MathUtil.applyDeadband(robot.oi.getArmExtend(), deadBand);
+    robot.arm.teleop(liftVal, extendVal);
+
+    double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * robot.oi.getDriveScaling();
+    double translationVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
+    double strafeVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
+    double rotationVal = MathUtil.applyDeadband(robot.oi.getRotate(), deadBand);
+
+    robot.driveTrain.drive(
+        Math.copySign(translationVal * translationVal, translationVal) * maxSpeed,
+        Math.copySign(strafeVal * strafeVal, strafeVal) * maxSpeed,
+        Math.copySign(rotationVal * rotationVal, rotationVal)
+            * RobotPreferences.Swerve.maxAngularVelocity.get());
   }
 
-  public void resetTests() {
-    for (var step : checkListSteps) {
-      step.reset();
-    }
-    checklistStep = 0;
-    resetDoStepWidget();
-    resetTestsWidget();
-    resetSkipStepWidget();
+  public boolean resetTeleopWidget() {
+    return enableTeleopWidget.setBoolean(false);
   }
 
   public boolean checkBattery() {
