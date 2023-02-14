@@ -282,6 +282,7 @@ public class TestChecklist {
     resetTestsWidget();
     resetSkipStepWidget();
   }
+
   public boolean resetTestsWidget() {
     return resetTestsWidget.setBoolean(false);
   }

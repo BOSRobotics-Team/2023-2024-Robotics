@@ -358,13 +358,15 @@ public class Arm extends SubsystemBase {
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("ARM");
 
-      ShuffleboardLayout liftLay = tab.getLayout("ArmLift", BuiltInLayouts.kList).withSize(4, 4).withPosition(0, 0);
+      ShuffleboardLayout liftLay =
+          tab.getLayout("ArmLift", BuiltInLayouts.kList).withSize(4, 4).withPosition(0, 0);
       liftLay.addNumber("Position", m_armLiftEncoder::getPosition).withPosition(0, 0);
       liftLay.addNumber("Output", m_armLiftMotor::getAppliedOutput).withPosition(0, 1);
       liftLay.addNumber("SetPoint", () -> m_armLiftSetpoint).withPosition(0, 2);
       liftLay.addBoolean("Reverse LimitSwitch", this::isArmLiftMinLimitSwitch).withPosition(0, 3);
 
-      ShuffleboardLayout extLay = tab.getLayout("ArmExtend", BuiltInLayouts.kList).withSize(4, 4).withPosition(4, 0);
+      ShuffleboardLayout extLay =
+          tab.getLayout("ArmExtend", BuiltInLayouts.kList).withSize(4, 4).withPosition(4, 0);
       extLay.addNumber("Position", m_armExtendEncoder::getPosition).withPosition(0, 0);
       extLay.addNumber("Output", m_armExtendMotor::getAppliedOutput).withPosition(0, 1);
       extLay.addNumber("SetPoint", () -> m_armExtendSetpoint).withPosition(0, 2);

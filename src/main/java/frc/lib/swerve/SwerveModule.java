@@ -29,10 +29,14 @@ public class SwerveModule {
     /* set DEBUGGING to true to view values in Shuffleboard. This is useful when determining the steer offset constants. */
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
-      ShuffleboardLayout layout = tab.getLayout( "Mod " + io.getModuleNumber(), BuiltInLayouts.kList).withPosition(io.getModuleNumber() * 3, 0).withSize(3, 3);
+      ShuffleboardLayout layout =
+          tab.getLayout("Mod " + io.getModuleNumber(), BuiltInLayouts.kList)
+              .withPosition(io.getModuleNumber() * 3, 0)
+              .withSize(3, 3);
       layout.addNumber(
           "Mod " + io.getModuleNumber() + ": Cancoder", () -> inputs.angleAbsolutePositionDeg);
-      layout.addNumber("Mod " + io.getModuleNumber() + ": Integrated", () -> inputs.anglePositionDeg);
+      layout.addNumber(
+          "Mod " + io.getModuleNumber() + ": Integrated", () -> inputs.anglePositionDeg);
       layout.addNumber(
           "Mod " + io.getModuleNumber() + ": Velocity", () -> inputs.driveVelocityMetersPerSec);
     }

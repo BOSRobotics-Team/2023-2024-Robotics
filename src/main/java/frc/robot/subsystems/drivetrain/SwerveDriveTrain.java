@@ -481,7 +481,8 @@ public class SwerveDriveTrain extends SubsystemBase {
 
   public void initLogging() {
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-    ShuffleboardLayout layout = tabMain.getLayout("DriveTrain", BuiltInLayouts.kList).withPosition(8, 0).withSize(4, 4);
+    ShuffleboardLayout layout =
+        tabMain.getLayout("DriveTrain", BuiltInLayouts.kList).withPosition(8, 0).withSize(4, 4);
     layout.addNumber("DriveTrain/Gyroscope Angle", this::getRotationDegrees);
     layout.addBoolean("DriveTrain/X-Stance On?", this::isXstance);
     layout.addBoolean("DriveTrain/Field-Relative Enabled?", this::getFieldRelative);

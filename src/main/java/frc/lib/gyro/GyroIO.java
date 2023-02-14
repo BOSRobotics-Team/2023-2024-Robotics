@@ -158,7 +158,8 @@ public class GyroIO implements Gyro {
 
   public void initLogging() {
     ShuffleboardTab tabMain = Shuffleboard.getTab("GYRO");
-    ShuffleboardLayout layout = tabMain.getLayout("Gyro", BuiltInLayouts.kList).withPosition(0, 0).withSize(4, 4);
+    ShuffleboardLayout layout =
+        tabMain.getLayout("Gyro", BuiltInLayouts.kList).withPosition(0, 0).withSize(4, 4);
 
     if (ahrs != null) {
       layout.addBoolean("IMU_Connected", () -> ahrs.isConnected());
