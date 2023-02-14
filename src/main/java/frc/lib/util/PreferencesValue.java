@@ -7,6 +7,7 @@ public class PreferencesValue {
   private String key = "";
   private double defaultNumber = 0.0;
   private double lastHasChangedNumber = defaultNumber;
+  public static boolean usePreferences = false;
 
   /**
    * Create a new PreferencesNumber
@@ -55,7 +56,7 @@ public class PreferencesValue {
    * @return The current value
    */
   public double get() {
-    return Preferences.getDouble(key, defaultNumber);
+    return usePreferences ? Preferences.getDouble(key, defaultNumber) : defaultNumber;
   }
 
   /**

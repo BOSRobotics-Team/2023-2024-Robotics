@@ -7,7 +7,7 @@ public final class Constants {
   public static final boolean DEBUGGING = true;
   public static final boolean TESTING = false;
 
-  public static final String GYRO_CAN_BUS = "Swerve";
+  public static final String GYRO_CAN_BUS = ""; //"Swerve";
   public static final int GYRO_ID = 20; // DriveGyro.DRIVEGYRO_NAVX;
   public static final int GYRO_DIRECTION = GyroIO.DRIVEGYRO_CCW; // Always ensure Gyro is CCW+ CW-
 

@@ -506,7 +506,7 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click Toggle to Start Arm Calibration";
       } else {
-        robot.arm.m_armExtendMotor.set(RobotPreferences.ArmExtend.armMinOutput.get());
+        robot.arm.m_armExtendMotor.set(-0.2);
         item.state = 1;
         item.status = "Calibrating Arm Extend";
       }
@@ -514,7 +514,7 @@ public class TestChecklist {
       if (robot.arm.m_armExtendLimit.isPressed()) {
         robot.arm.m_armExtendMotor.set(0.0);
         robot.arm.m_armExtendEncoder.setPosition(0.0);
-        robot.arm.m_armLiftMotor.set(RobotPreferences.ArmLift.armMinOutput.get());
+        robot.arm.m_armLiftMotor.set(-0.1);
         item.state = 2;
         item.status = "Calibrating Arm Lift";
       }

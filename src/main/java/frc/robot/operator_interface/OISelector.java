@@ -46,6 +46,10 @@ public class OISelector {
     Integer xbox1 = null;
 
     for (int port = 0; port < DriverStation.kJoystickPorts; port++) {
+      System.out.println("JoystickName: " + DriverStation.getJoystickName(port));
+      System.out.println("JoystickType: " + DriverStation.getJoystickType(port));
+      System.out.println("getJoystickIsXbox: " + DriverStation.getJoystickIsXbox(port));
+
       if (DriverStation.getJoystickIsXbox(port)) {
         if (xbox0 == null) {
           xbox0 = port;
