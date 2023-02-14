@@ -250,7 +250,7 @@
   {
     "name": "/Preferences/armExtend/armMaxOutput",
     "type": "double",
-    "value": 0.5,
+    "value": 0.85,
     "properties": {
       "persistent": true
     }
@@ -258,7 +258,7 @@
   {
     "name": "/Preferences/armExtend/armMinOutput",
     "type": "double",
-    "value": -0.5,
+    "value": -0.85,
     "properties": {
       "persistent": true
     }
@@ -474,7 +474,7 @@
   {
     "name": "/Preferences/armLift/armPosition0",
     "type": "double",
-    "value": 10.0,
+    "value": 18.0,
     "properties": {
       "persistent": true
     }
@@ -482,7 +482,7 @@
   {
     "name": "/Preferences/armLift/armPosition1",
     "type": "double",
-    "value": 40.0,
+    "value": 50.0,
     "properties": {
       "persistent": true
     }
@@ -490,7 +490,7 @@
   {
     "name": "/Preferences/armLift/armPosition2",
     "type": "double",
-    "value": 50.0,
+    "value": 56.0,
     "properties": {
       "persistent": true
     }
@@ -506,7 +506,7 @@
   {
     "name": "/Preferences/armExtend/armPosition1",
     "type": "double",
-    "value": 350.0,
+    "value": 80.0,
     "properties": {
       "persistent": true
     }

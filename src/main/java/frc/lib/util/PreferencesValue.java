@@ -45,7 +45,7 @@ public class PreferencesValue {
    */
   public void setDefaultNumber(double defaultValue) {
     this.defaultNumber = defaultValue;
-    if (!Preferences.containsKey(key)) {
+    if (!usePreferences || !Preferences.containsKey(key)) {
       Preferences.setDouble(key, defaultValue);
     }
   }

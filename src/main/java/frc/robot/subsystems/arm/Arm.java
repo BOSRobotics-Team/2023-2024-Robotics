@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -347,24 +349,26 @@ public class Arm extends SubsystemBase {
 
   public void initLogging() {
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-    tabMain.addNumber("Arm/LiftPosition", m_armLiftEncoder::getPosition);
-    tabMain.addNumber("Arm/LiftSetPoint", () -> m_armLiftSetpoint);
-    tabMain.addNumber("Arm/ExtendPosition", m_armExtendEncoder::getPosition);
-    tabMain.addNumber("Arm/ExtendSetPoint", () -> m_armExtendSetpoint);
+    ShuffleboardLayout armLay = tabMain.getLayout("Arm", BuiltInLayouts.kList).withSize(4, 4);
+    armLay.addNumber("LiftPosition", m_armLiftEncoder::getPosition);
+    armLay.addNumber("LiftSetPoint", () -> m_armLiftSetpoint);
+    armLay.addNumber("ExtendPosition", m_armExtendEncoder::getPosition);
+    armLay.addNumber("ExtendSetPoint", () -> m_armExtendSetpoint);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("ARM");
-      tab.addNumber("ArmLift/Position", m_armLiftEncoder::getPosition);
-      tab.addNumber("ArmLift/Output", m_armLiftMotor::getAppliedOutput);
-      tab.addNumber("ArmLift/SetPoint", () -> m_armLiftSetpoint);
-      tab.addBoolean("ArmLift/Reverse LimitSwitch", this::isArmLiftMinLimitSwitch);
-      tab.getLayout("ArmLift").withSize(4, 4);
 
-      tab.addNumber("ArmExtend/Position", m_armExtendEncoder::getPosition);
-      tab.addNumber("ArmExtend/Lift Output", m_armExtendMotor::getAppliedOutput);
-      tab.addNumber("ArmExtend/SetPoint", () -> m_armExtendSetpoint);
-      tab.addBoolean("ArmExtend/Reverse LimitSwitch", this::isArmExtendMinLimitSwitch);
-      tab.getLayout("ArmExtend").withSize(4, 4);
+      ShuffleboardLayout liftLay = tab.getLayout("ArmLift", BuiltInLayouts.kList).withSize(4, 4).withPosition(0, 0);
+      liftLay.addNumber("Position", m_armLiftEncoder::getPosition).withPosition(0, 0);
+      liftLay.addNumber("Output", m_armLiftMotor::getAppliedOutput).withPosition(0, 1);
+      liftLay.addNumber("SetPoint", () -> m_armLiftSetpoint).withPosition(0, 2);
+      liftLay.addBoolean("Reverse LimitSwitch", this::isArmLiftMinLimitSwitch).withPosition(0, 3);
+
+      ShuffleboardLayout extLay = tab.getLayout("ArmExtend", BuiltInLayouts.kList).withSize(4, 4).withPosition(4, 0);
+      extLay.addNumber("Position", m_armExtendEncoder::getPosition).withPosition(0, 0);
+      extLay.addNumber("Output", m_armExtendMotor::getAppliedOutput).withPosition(0, 1);
+      extLay.addNumber("SetPoint", () -> m_armExtendSetpoint).withPosition(0, 2);
+      extLay.addBoolean("Reverse LimitSwitch", this::isArmExtendMinLimitSwitch).withPosition(0, 3);
     }
   }
 }
