@@ -218,6 +218,17 @@ public class TestChecklist {
         double liftVal = MathUtil.applyDeadband(robot.oi.getArmLift(), deadBand);
         double extendVal = MathUtil.applyDeadband(robot.oi.getArmExtend(), deadBand);
         robot.arm.teleop(liftVal, extendVal);
+
+        double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * robot.oi.getDriveScaling();
+        double translationVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
+        double strafeVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
+        double rotationVal = MathUtil.applyDeadband(robot.oi.getRotate(), deadBand);
+
+        robot.driveTrain.drive(
+            Math.copySign(translationVal * translationVal, translationVal) * maxSpeed,
+            Math.copySign(strafeVal * strafeVal, strafeVal) * maxSpeed,
+            Math.copySign(rotationVal * rotationVal, rotationVal)
+                * RobotPreferences.Swerve.maxAngularVelocity.get());
       }
 
       if (checklistStep < checkListSteps.size()) {
