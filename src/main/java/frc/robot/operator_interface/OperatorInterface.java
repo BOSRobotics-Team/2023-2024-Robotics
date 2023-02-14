@@ -68,6 +68,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getArmPosition3() {
+    return new Trigger(() -> false);
+  }
+
   public default void testOI(int mode) {}
 
   public default boolean testResults(int mode) {

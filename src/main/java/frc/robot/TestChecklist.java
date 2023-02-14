@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.revrobotics.REVLibError;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -71,6 +72,7 @@ public class TestChecklist {
       new PreferencesValue("Checklist/VoltageThreshold", 12.0);
 
   private GenericEntry resetTestsWidget;
+  private GenericEntry enableTeleopWidget;
   private GenericEntry doStepWidget;
   private GenericEntry skipStepWidget;
 
@@ -167,6 +169,14 @@ public class TestChecklist {
             .withSize(1, 1)
             .getEntry();
 
+    enableTeleopWidget =
+        tabMain
+            .add("TeleOp", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .withPosition(11, 0)
+            .withSize(1, 1)
+            .getEntry();
+
     for (var step : checkListSteps) {
       step.initTab(tabMain);
     }
@@ -184,14 +194,43 @@ public class TestChecklist {
         .withSize(6, 1);
   }
 
-  public void enableChecklist() {
+  public void testInit() {
     m_enableCheckList = true;
     robot.arm.m_pH.disableCompressor();
 
     resetTests();
   }
 
-  public void disableChecklist() {
+  public void testPeriodic() {
+    if (m_enableCheckList) {
+      if (getResetTests()) {
+        resetTests();
+      }
+      if (getSkipStep()) {
+        if (checklistStep < TESTS_COMPLETE) {
+          checklistStep += 1;
+        }
+        resetSkipStepWidget();
+      }
+
+      if (getEnableTeleop()) {
+        double deadBand = RobotPreferences.stickDeadband.get();
+        double liftVal = MathUtil.applyDeadband(robot.oi.getArmLift(), deadBand);
+        double extendVal = MathUtil.applyDeadband(robot.oi.getArmExtend(), deadBand);
+        robot.arm.teleop(liftVal, extendVal);
+      }
+
+      if (checklistStep < checkListSteps.size()) {
+        if (checkListSteps.get(checklistStep).runTest.get()) {
+          if (checklistStep < TESTS_COMPLETE) {
+            checklistStep += 1;
+          }
+        }
+      }
+    }
+  }
+
+  public void testExit() {
     m_enableCheckList = false;
     robot.arm.m_pH.enableCompressorDigital();
   }
@@ -234,6 +273,14 @@ public class TestChecklist {
     return resetTestsWidget.setBoolean(false);
   }
 
+  public boolean getEnableTeleop() {
+    return enableTeleopWidget.getBoolean(false);
+  }
+
+  public boolean resetTeleopWidget() {
+    return enableTeleopWidget.setBoolean(false);
+  }
+
   public void resetTests() {
     for (var step : checkListSteps) {
       step.reset();
@@ -242,28 +289,6 @@ public class TestChecklist {
     resetDoStepWidget();
     resetTestsWidget();
     resetSkipStepWidget();
-  }
-
-  public void update() {
-    if (m_enableCheckList) {
-      if (getResetTests()) {
-        resetTests();
-      }
-      if (getSkipStep()) {
-        if (checklistStep < TESTS_COMPLETE) {
-          checklistStep += 1;
-        }
-        resetSkipStepWidget();
-      }
-
-      if (checklistStep < checkListSteps.size()) {
-        if (checkListSteps.get(checklistStep).runTest.get()) {
-          if (checklistStep < TESTS_COMPLETE) {
-            checklistStep += 1;
-          }
-        }
-      }
-    }
   }
 
   public boolean checkBattery() {
@@ -506,22 +531,20 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click Toggle to Start Arm Calibration";
       } else {
-        robot.arm.m_armExtendMotor.set(-0.2);
+        resetTeleopWidget();
+        robot.arm.resetArm();
         item.state = 1;
-        item.status = "Calibrating Arm Extend";
+        item.status = "Calibrating Extend Arm";
       }
     } else if (item.state == 1) {
+      robot.arm.doResetting();
       if (robot.arm.m_armExtendLimit.isPressed()) {
-        robot.arm.m_armExtendMotor.set(0.0);
-        robot.arm.m_armExtendEncoder.setPosition(0.0);
-        robot.arm.m_armLiftMotor.set(-0.1);
         item.state = 2;
-        item.status = "Calibrating Arm Lift";
+        item.status = "Calibrating Lift Arm";
       }
     } else if (item.state == 2) {
+      robot.arm.doResetting();
       if (robot.arm.m_armLiftLimit.isPressed()) {
-        robot.arm.m_armLiftMotor.set(0.0);
-        robot.arm.m_armLiftEncoder.setPosition(0.0);
         item.state = 3;
         item.status = "Calibrating Arm Complete";
         item.setComplete(true);

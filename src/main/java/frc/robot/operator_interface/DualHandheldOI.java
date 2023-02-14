@@ -39,23 +39,31 @@ public class DualHandheldOI extends SingleHandheldOI {
 
   @Override
   public Trigger getGripToggle() {
-    return new Trigger(operator::getAButton);
+    return new Trigger(operator::getLeftBumper);
   }
 
   @Override
   public Trigger getArmCalibrate() {
-    return new Trigger(operator::getBackButton);
+    return new Trigger(operator::getStartButton);
   }
 
+  @Override
   public Trigger getArmPosition0() {
+    return new Trigger(operator::getAButton);
+  }
+
+  @Override
+  public Trigger getArmPosition1() {
     return new Trigger(operator::getXButton);
   }
 
-  public Trigger getArmPosition1() {
+  @Override
+  public Trigger getArmPosition2() {
     return new Trigger(operator::getYButton);
   }
 
-  public Trigger getArmPosition2() {
+  @Override
+  public Trigger getArmPosition3() {
     return new Trigger(operator::getBButton);
   }
 }

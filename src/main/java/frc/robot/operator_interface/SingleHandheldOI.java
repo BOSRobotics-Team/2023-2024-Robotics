@@ -170,34 +170,24 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public double getArmLift() {
-    return controller.getLeftTriggerAxis();
-  }
-
-  @Override
-  public double getArmExtend() {
-    return controller.getRightTriggerAxis();
-  }
-
-  @Override
   public Trigger getGripToggle() {
+    return new Trigger(() -> controller.getLeftTriggerAxis() != 0.0);
+  }
+
+  @Override
+  public Trigger getArmPosition0() {
     return new Trigger(controller::getAButton);
   }
 
-  @Override
-  public Trigger getArmCalibrate() {
-    return new Trigger(controller::getBackButton);
-  }
-
-  public Trigger getArmPosition0() {
+  public Trigger getArmPosition1() {
     return new Trigger(controller::getXButton);
   }
 
-  public Trigger getArmPosition1() {
+  public Trigger getArmPosition2() {
     return new Trigger(controller::getYButton);
   }
 
-  public Trigger getArmPosition2() {
+  public Trigger getArmPosition3() {
     return new Trigger(controller::getBButton);
   }
 }

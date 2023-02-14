@@ -53,7 +53,7 @@ public class Arm extends SubsystemBase {
 
   private double m_armLiftSetpoint = 0;
   private double m_armExtendSetpoint = 0;
-  private boolean m_Resetting = false;
+  private int m_Resetting = 0; // 1 == resetting Extend, 2 == resetting Lift
   private List<Pair<Double, Double>> liftProfile = new ArrayList<Pair<Double, Double>>();
 
   public Arm() {
@@ -122,12 +122,6 @@ public class Arm extends SubsystemBase {
     initLogging();
   }
 
-  @Override
-  public void simulationPeriodic() {
-    mLiftSim.update();
-    mExtendSim.update();
-  }
-
   void initLiftProfile() {
     String liftProfileStr = RobotPreferences.ArmLift.liftProfileStr();
     if (!liftProfileStr.isEmpty()) {
@@ -143,95 +137,115 @@ public class Arm extends SubsystemBase {
   }
 
   @Override
+  public void simulationPeriodic() {
+    mLiftSim.update();
+    mExtendSim.update();
+  }
+
+  @Override
   public void periodic() {
-    if (m_Resetting) {
-      if (m_armExtendLimit.isPressed()) {
-        m_armExtendEncoder.setPosition(0.0);
-        m_armExtendMotor.set(0.0);
-        m_armLiftMotor.set(-0.1);
-      }
-      if (m_armLiftLimit.isPressed()) {
-        m_armLiftEncoder.setPosition(0.0);
-        m_armLiftMotor.set(0.0);
-        m_armExtendSetpoint = 0.0;
-        m_armLiftSetpoint = 0.0;
-        m_Resetting = false;
-      }
+    if (isResetting()) {
+      doResetting();
     } else {
-      double ht = this.getArmLiftPosition();
-      double ln = this.getArmExtendPosition();
-      double newLn = m_armExtendSetpoint;
+      double liftPos = this.getArmLiftPosition();
+      double extendPos = this.getArmExtendPosition();
+      double newExtendSetpoint = m_armExtendSetpoint;
 
       Pair<Double, Double> lastPair = new Pair<Double, Double>(0.0, 0.0);
       for (Pair<Double, Double> pair : liftProfile) {
-        if (ht <= pair.getFirst()) {
-          double htPct = (ht - lastPair.getFirst()) / (pair.getFirst() - lastPair.getFirst());
-          newLn =
-              Math.floor(Math.min(
-                  MathUtil.interpolate(lastPair.getSecond(), pair.getSecond(), htPct),
-                  m_armExtendSetpoint));
+        if (liftPos <= pair.getFirst()) {
+          double htPct = (liftPos - lastPair.getFirst()) / (pair.getFirst() - lastPair.getFirst());
+          newExtendSetpoint =
+              Math.floor(
+                  Math.min(
+                      MathUtil.interpolate(lastPair.getSecond(), pair.getSecond(), htPct),
+                      m_armExtendSetpoint));
           break;
         }
         lastPair = pair;
       }
-      boolean liftDone = Math.abs(ht - m_armLiftSetpoint) <= 1.0;
-      boolean extendDone = Math.abs(ln - newLn) <= 1.0;      
-      boolean goUp = (m_armLiftSetpoint - ht) > 1.0;
-      boolean inSafeZoneHt = (ht >= 26.0);
-      boolean inSafeZoneLn = (ln < 230.0);
+      boolean liftDone = Math.abs(liftPos - m_armLiftSetpoint) <= 1.0;
+      boolean extendDone = Math.abs(extendPos - newExtendSetpoint) <= 1.0;
+      boolean goUp = (m_armLiftSetpoint - liftPos) > 1.0;
+      boolean inSafeZoneHt = (liftPos >= 26.0);
+      boolean inSafeZoneLn = (extendPos < 180.0);
+
       if (!liftDone && goUp) {
-          m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
-          if (!inSafeZoneHt){
-            m_armExtendController.setReference(0.0, CANSparkMax.ControlType.kDutyCycle);
-          } else {
-            m_armExtendController.setReference(newLn, CANSparkMax.ControlType.kPosition);
-          }
-            System.out.println("goUp: ht:" + ht + " ln:" + ln + " lift:" + m_armLiftSetpoint + " ext:" + newLn);
+        m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
+        m_armExtendController.setReference(
+            inSafeZoneHt ? newExtendSetpoint : extendPos, CANSparkMax.ControlType.kPosition);
+        System.out.println(
+            "goUp: ht:"
+                + liftPos
+                + " ln:"
+                + extendPos
+                + " lift:"
+                + m_armLiftSetpoint
+                + " ext:"
+                + newExtendSetpoint);
       } else if (!extendDone && !goUp) {
-          m_armExtendController.setReference(newLn, CANSparkMax.ControlType.kPosition);
-          m_armLiftController.setReference(0.0, CANSparkMax.ControlType.kDutyCycle);
-          if (!inSafeZoneLn){
-            m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
-          } else {
-            m_armLiftController.setReference(0.0, CANSparkMax.ControlType.kDutyCycle);
-          }
-            System.out.println("extend: ht:" + ht + " ln:" + ln + " lift:" + m_armLiftSetpoint + " ext:" + newLn);  
+        m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
+        m_armLiftController.setReference(
+            inSafeZoneLn ? m_armLiftSetpoint : liftPos, CANSparkMax.ControlType.kPosition);
+        System.out.println(
+            "extend: ht:"
+                + liftPos
+                + " ln:"
+                + extendPos
+                + " lift:"
+                + m_armLiftSetpoint
+                + " ext:"
+                + newExtendSetpoint);
       } else if (!liftDone || !extendDone) {
         m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
-        m_armExtendController.setReference(newLn, CANSparkMax.ControlType.kPosition);
-        System.out.println("liftDone: ht:" + ht + " ln:" + ln + " lift:" + m_armLiftSetpoint + " ext:" + newLn);
+        m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
+        System.out.println(
+            "liftDone: ht:"
+                + liftPos
+                + " ln:"
+                + extendPos
+                + " lift:"
+                + m_armLiftSetpoint
+                + " ext:"
+                + newExtendSetpoint);
       }
-      // if ((newLn - ln) > 1.0) {
-      //   m_armLiftController.setReference(0.0, CANSparkMax.ControlType.kDutyCycle); // stop lift arm
-      //   m_armExtendController.setReference(newLn, CANSparkMax.ControlType.kPosition);
-      // } else if ((newLn - ln) < 1.0) {
-      //   m_armLiftController.setReference(0.0, CANSparkMax.ControlType.kDutyCycle); // stop lift arm
-      //   m_armExtendController.setReference(newLn, CANSparkMax.ControlType.kPosition);
-      //   // System.out.println("LiftProfile: ht:" + ht + " ln:" + ln + " newLn:" + newLn);
-      // } else if (Math.abs(ht - m_armLiftSetpoint) > 1.0) {
-      //   m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
-      //   // System.out.println("LiftProfile: ht:" + ht + " ln:" + ln + " lift:" + m_armLiftSetpoint);
-      // }
+    }
+  }
+
+  public void doResetting() {
+    if ((m_Resetting == 1) && m_armExtendLimit.isPressed()) {
+      m_armExtendMotor.set(0.0);
+      m_armExtendEncoder.setPosition(0.0);
+      m_armExtendSetpoint = 0.0;
+
+      m_Resetting = 2;
+      m_armLiftMotor.set(-0.1);
+    }
+    if ((m_Resetting == 2) && m_armLiftLimit.isPressed()) {
+      m_armLiftEncoder.setPosition(0.0);
+      m_armLiftMotor.set(0.0);
+      m_armLiftSetpoint = 0.0;
+
+      m_Resetting = 0;
     }
   }
 
   public void resetArm() {
-    m_Resetting = true;
+    m_Resetting = 1;
     m_armExtendMotor.set(-0.2);
   }
 
   public boolean isResetting() {
-    return m_Resetting;
+    return m_Resetting > 0;
   }
 
   public void setArmLiftPosition(double position) {
-    if (!m_Resetting) {
+    if (!isResetting()) {
       m_armLiftSetpoint =
           MathUtil.clamp(
               position,
               RobotPreferences.ArmLift.armMinPosition.get(),
               RobotPreferences.ArmLift.armMaxPosition.get());
-      // m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
     }
   }
 
@@ -248,17 +262,16 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isArmRaised() {
-    return Math.abs(getArmLiftPosition() - m_armLiftSetpoint) < 0.01;
+    return Math.abs(getArmLiftPosition() - m_armLiftSetpoint) < 1.0;
   }
 
   public void setArmExtendPosition(double position) {
-    if (!m_Resetting) {
+    if (!isResetting()) {
       m_armExtendSetpoint =
           MathUtil.clamp(
               position,
               RobotPreferences.ArmExtend.armMinPosition.get(),
               RobotPreferences.ArmExtend.armMaxPosition.get());
-      // m_armExtendController.setReference(m_armExtendSetpoint, CANSparkMax.ControlType.kPosition);
     }
   }
 
@@ -275,7 +288,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isArmExtended() {
-    return Math.abs(getArmExtendPosition() - m_armExtendSetpoint) < 0.01;
+    return Math.abs(getArmExtendPosition() - m_armExtendSetpoint) < 1.0;
   }
 
   public void gripOpen() {
@@ -307,7 +320,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void teleop(double liftVal, double extendVal) {
-    if (!m_Resetting) {
+    if (!isResetting()) {
       if (liftVal != 0.0) {
         this.setArmLiftPosition(m_armLiftSetpoint + liftVal);
       }
@@ -345,11 +358,13 @@ public class Arm extends SubsystemBase {
       tab.addNumber("ArmLift/Output", m_armLiftMotor::getAppliedOutput);
       tab.addNumber("ArmLift/SetPoint", () -> m_armLiftSetpoint);
       tab.addBoolean("ArmLift/Reverse LimitSwitch", this::isArmLiftMinLimitSwitch);
+      tab.getLayout("ArmLift").withSize(4, 4);
 
       tab.addNumber("ArmExtend/Position", m_armExtendEncoder::getPosition);
       tab.addNumber("ArmExtend/Lift Output", m_armExtendMotor::getAppliedOutput);
       tab.addNumber("ArmExtend/SetPoint", () -> m_armExtendSetpoint);
       tab.addBoolean("ArmExtend/Reverse LimitSwitch", this::isArmExtendMinLimitSwitch);
+      tab.getLayout("ArmExtend").withSize(4, 4);
     }
   }
 }

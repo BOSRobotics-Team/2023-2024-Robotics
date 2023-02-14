@@ -238,14 +238,14 @@ public class RobotContainer {
   public void simulationPeriodic() {}
 
   public void testInit() {
-    this.test.enableChecklist();
+    this.test.testInit();
   }
 
   public void testPeriodic() {
-    this.test.update();
+    this.test.testPeriodic();
   }
 
   public void testExit() {
-    this.test.disableChecklist();
+    this.test.testExit();
   }
 }
