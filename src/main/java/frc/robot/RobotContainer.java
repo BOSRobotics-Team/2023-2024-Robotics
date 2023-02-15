@@ -182,12 +182,11 @@ public class RobotContainer {
 
     // SmartDashboard Buttons
     SmartDashboard.putData("Auto mode", chooser);
-    SmartDashboard.putData("RaiseArm 0.0", new RaiseArm(arm, 0.0));
-    SmartDashboard.putData("RaiseArm 0.5", new RaiseArm(arm, 0.5));
-    SmartDashboard.putData("RaiseArm 1.0", new RaiseArm(arm, 1.0));
-    SmartDashboard.putData("ExtendArm 0.0", new ExtendArm(arm, 0.0));
-    SmartDashboard.putData("ExtendArm 0.5", new ExtendArm(arm, 0.5));
-    SmartDashboard.putData("ExtendArm 1.0", new ExtendArm(arm, 1.0));
+    SmartDashboard.putData("Calibrate Arm", new InstantCommand(arm::resetArm) );
+    SmartDashboard.putData("SetArmPosition (Home)", new InstantCommand(arm::setArmPosition0) );
+    SmartDashboard.putData("SetArmPosition (Floor)", new InstantCommand(arm::setArmPosition1) );
+    SmartDashboard.putData("SetArmPosition (Middle)", new InstantCommand(arm::setArmPosition2) );
+    SmartDashboard.putData("SetArmPosition (Top)", new InstantCommand(arm::setArmPosition3) );
 
     Shuffleboard.getTab("MAIN").add(chooser).withSize(2, 1);
   }

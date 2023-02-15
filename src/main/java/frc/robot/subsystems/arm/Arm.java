@@ -324,10 +324,10 @@ public class Arm extends SubsystemBase {
   public void teleop(double liftVal, double extendVal) {
     if (!isResetting()) {
       if (liftVal != 0.0) {
-        this.setArmLiftPosition(m_armLiftSetpoint + liftVal);
+        this.setArmLiftPosition(getArmLiftPosition() + liftVal);
       }
       if (extendVal != 0.0) {
-        this.setArmExtendPosition(m_armExtendSetpoint + extendVal);
+        this.setArmExtendPosition(getArmExtendPosition() + extendVal);
       }
     }
   }
