@@ -9,7 +9,10 @@ import frc.robot.Constants;
 public class SingleJoystickOI implements OperatorInterface {
   protected final CommandJoystick joystick;
   protected final Trigger[] joystickButtons;
-  protected boolean tests[][] = new boolean[2][17];
+
+  private double driveScaleFactor = 0.5;
+  private boolean updateScale = false;
+  protected boolean tests[][] = new boolean[2][20];
 
   public SingleJoystickOI(int port) {
     joystick = new CommandJoystick(port);
@@ -38,25 +41,21 @@ public class SingleJoystickOI implements OperatorInterface {
                 MathUtil.applyDeadband(contrl.getTwist(), Constants.STICK_DEADBAND) > 0.0;
             break;
           case 3:
-            test[testNum] =
-                MathUtil.applyDeadband(contrl.getThrottle(), Constants.STICK_DEADBAND) > 0.0;
-            break;
-          case 4:
             test[testNum] = contrl.button(0).getAsBoolean();
             break;
-          case 5:
+          case 4:
             test[testNum] = contrl.button(1).getAsBoolean();
             break;
-          case 6:
+          case 5:
             test[testNum] = contrl.button(2).getAsBoolean();
             break;
-          case 7:
+          case 6:
             test[testNum] = contrl.button(3).getAsBoolean();
             break;
-          case 8:
+          case 7:
             test[testNum] = contrl.button(4).getAsBoolean();
             break;
-          case 9:
+          case 8:
             test[testNum] = contrl.button(5).getAsBoolean();
             break;
           default:
@@ -104,7 +103,20 @@ public class SingleJoystickOI implements OperatorInterface {
 
   @Override
   public double getDriveScaling() {
-    return joystick.getThrottle();
+    int povVal = joystick.getHID().getPOV();
+    if (updateScale && povVal == -1) {
+      updateScale = false;
+    }
+    if (!updateScale && povVal == 0) {
+      driveScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
+      System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
+      updateScale = true;
+    } else if (!updateScale && povVal == 180) {
+      driveScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
+      System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
+      updateScale = true;
+    }
+    return driveScaleFactor;
   }
 
   @Override

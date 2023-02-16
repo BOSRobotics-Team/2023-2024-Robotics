@@ -11,6 +11,10 @@ public class DualJoysticksOI implements OperatorInterface {
   private final CommandJoystick rotateJoystick;
   private final Trigger[] translateJoystickButtons;
   private final Trigger[] rotateJoystickButtons;
+
+  private double driveScaleFactor = 0.5;
+  private double rotateScaleFactor = 1.0;
+  private boolean updateScale = false;
   protected boolean tests[][] = new boolean[3][20];
 
   public DualJoysticksOI(int translatePort, int rotatePort) {
@@ -43,25 +47,21 @@ public class DualJoysticksOI implements OperatorInterface {
                 MathUtil.applyDeadband(contrl.getTwist(), Constants.STICK_DEADBAND) > 0.0;
             break;
           case 3:
-            test[testNum] =
-                MathUtil.applyDeadband(contrl.getThrottle(), Constants.STICK_DEADBAND) > 0.0;
-            break;
-          case 4:
             test[testNum] = contrl.button(0).getAsBoolean();
             break;
-          case 5:
+          case 4:
             test[testNum] = contrl.button(1).getAsBoolean();
             break;
-          case 6:
+          case 5:
             test[testNum] = contrl.button(2).getAsBoolean();
             break;
-          case 7:
+          case 6:
             test[testNum] = contrl.button(3).getAsBoolean();
             break;
-          case 8:
+          case 7:
             test[testNum] = contrl.button(4).getAsBoolean();
             break;
-          case 9:
+          case 8:
             test[testNum] = contrl.button(5).getAsBoolean();
             break;
           default:
@@ -118,12 +118,39 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public double getDriveScaling() {
-    return translateJoystick.getThrottle();
+    int povVal = translateJoystick.getHID().getPOV();
+    if (updateScale && povVal == -1) {
+      updateScale = false;
+    }
+    if (!updateScale && povVal == 0) {
+      driveScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
+      System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
+      updateScale = true;
+    } else if (!updateScale && povVal == 180) {
+      driveScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
+      System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
+      updateScale = true;
+    }
+    return driveScaleFactor;
   }
 
   @Override
   public double getRotateScaling() {
-    return rotateJoystick.getThrottle();
+    int povVal = rotateJoystick.getHID().getPOV();
+
+    if (updateScale && povVal == -1) {
+      updateScale = false;
+    }
+    if (!updateScale && povVal == 90) {
+      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor + 0.05, 0.1, 1.0);
+      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
+      updateScale = true;
+    } else if (!updateScale && povVal == 270) {
+      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor - 0.05, 0.1, 1.0);
+      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
+      updateScale = true;
+    }
+    return rotateScaleFactor;
   }
 
   @Override

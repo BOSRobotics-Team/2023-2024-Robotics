@@ -11,7 +11,7 @@ public class SingleHandheldOI implements OperatorInterface {
   private double driveScaleFactor = 0.5;
   private double rotateScaleFactor = 1.0;
   private boolean updateScale = false;
-  protected boolean tests[][] = new boolean[2][17];
+  protected boolean tests[][] = new boolean[2][20];
 
   public SingleHandheldOI(int port) {
     controller = new XboxController(port);
@@ -129,15 +129,14 @@ public class SingleHandheldOI implements OperatorInterface {
       updateScale = false;
     }
     if (!updateScale && povVal == 0) {
-      driveScaleFactor += 0.05;
+      driveScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateScale = true;
     } else if (!updateScale && povVal == 180) {
-      driveScaleFactor -= 0.05;
+      driveScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateScale = true;
     }
-    driveScaleFactor = MathUtil.clamp(driveScaleFactor, 0.1, 1.0);
     return driveScaleFactor;
   }
 
@@ -149,15 +148,14 @@ public class SingleHandheldOI implements OperatorInterface {
       updateScale = false;
     }
     if (!updateScale && povVal == 90) {
-      rotateScaleFactor += 0.05;
+      rotateScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
       updateScale = true;
     } else if (!updateScale && povVal == 270) {
-      rotateScaleFactor -= 0.05;
+      rotateScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
       updateScale = true;
     }
-    rotateScaleFactor = MathUtil.clamp(rotateScaleFactor, 0.1, 1.0);
     return rotateScaleFactor;
   }
 
