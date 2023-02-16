@@ -22,19 +22,25 @@ public class SingleHandheldOI implements OperatorInterface {
       if (!test[testNum]) {
         switch (testNum) {
           case 0:
-            test[testNum] = MathUtil.applyDeadband(contrl.getLeftY(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] =
+                MathUtil.applyDeadband(contrl.getLeftY(), Constants.STICK_DEADBAND) > 0.0;
             break;
           case 1:
-            test[testNum] = MathUtil.applyDeadband(contrl.getLeftX(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] =
+                MathUtil.applyDeadband(contrl.getLeftX(), Constants.STICK_DEADBAND) > 0.0;
             break;
           case 2:
-            test[testNum] = MathUtil.applyDeadband(contrl.getRightX(), Constants.STICK_DEADBAND) > 0.0; 
+            test[testNum] =
+                MathUtil.applyDeadband(contrl.getRightX(), Constants.STICK_DEADBAND) > 0.0;
             break;
           case 3:
-            test[testNum] = MathUtil.applyDeadband(contrl.getLeftTriggerAxis(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] =
+                MathUtil.applyDeadband(contrl.getLeftTriggerAxis(), Constants.STICK_DEADBAND) > 0.0;
             break;
           case 4:
-            test[testNum] = MathUtil.applyDeadband(contrl.getRightTriggerAxis(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] =
+                MathUtil.applyDeadband(contrl.getRightTriggerAxis(), Constants.STICK_DEADBAND)
+                    > 0.0;
             break;
           case 5:
             test[testNum] = contrl.getPOV() == 0;

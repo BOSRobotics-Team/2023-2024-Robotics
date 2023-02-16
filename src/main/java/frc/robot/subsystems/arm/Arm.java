@@ -176,40 +176,16 @@ public class Arm extends SubsystemBase {
         m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
         m_armExtendController.setReference(
             inSafeZoneHt ? newExtendSetpoint : extendPos, CANSparkMax.ControlType.kPosition);
-        System.out.println(
-            "goUp: ht:"
-                + liftPos
-                + " ln:"
-                + extendPos
-                + " lift:"
-                + m_armLiftSetpoint
-                + " ext:"
-                + newExtendSetpoint);
+        // System.out.println("goUp: ht:" + liftPos + " ln:" + extendPos + " lift:" + m_armLiftSetpoint + " ext:" + newExtendSetpoint);
       } else if (!extendDone && !goUp) {
         m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
         m_armLiftController.setReference(
             inSafeZoneLn ? m_armLiftSetpoint : liftPos, CANSparkMax.ControlType.kPosition);
-        System.out.println(
-            "extend: ht:"
-                + liftPos
-                + " ln:"
-                + extendPos
-                + " lift:"
-                + m_armLiftSetpoint
-                + " ext:"
-                + newExtendSetpoint);
+        // System.out.println("extend: ht:" + liftPos + " ln:" + extendPos + " lift:" + m_armLiftSetpoint + " ext:" + newExtendSetpoint);
       } else if (!liftDone || !extendDone) {
         m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
         m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
-        System.out.println(
-            "liftDone: ht:"
-                + liftPos
-                + " ln:"
-                + extendPos
-                + " lift:"
-                + m_armLiftSetpoint
-                + " ext:"
-                + newExtendSetpoint);
+        // System.out.println("liftDone: ht:" + liftPos + " ln:" + extendPos + " lift:" + m_armLiftSetpoint + " ext:" + newExtendSetpoint);
       }
     }
   }

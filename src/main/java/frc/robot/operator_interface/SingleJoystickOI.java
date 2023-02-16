@@ -34,10 +34,12 @@ public class SingleJoystickOI implements OperatorInterface {
             test[testNum] = MathUtil.applyDeadband(contrl.getX(), Constants.STICK_DEADBAND) > 0.0;
             break;
           case 2:
-            test[testNum] = MathUtil.applyDeadband(contrl.getTwist(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] =
+                MathUtil.applyDeadband(contrl.getTwist(), Constants.STICK_DEADBAND) > 0.0;
             break;
           case 3:
-            test[testNum] = MathUtil.applyDeadband(contrl.getThrottle(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] =
+                MathUtil.applyDeadband(contrl.getThrottle(), Constants.STICK_DEADBAND) > 0.0;
             break;
           case 4:
             test[testNum] = contrl.button(0).getAsBoolean();

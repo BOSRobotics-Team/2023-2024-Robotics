@@ -132,7 +132,12 @@ public class RobotContainer {
      */
     driveTrain.setDefaultCommand(
         new TeleopSwerve(
-            driveTrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::getDriveScaling, oi::getRotateScaling));
+            driveTrain,
+            oi::getTranslateX,
+            oi::getTranslateY,
+            oi::getRotate,
+            oi::getDriveScaling,
+            oi::getRotateScaling));
 
     arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
 
@@ -182,11 +187,12 @@ public class RobotContainer {
 
     // SmartDashboard Buttons
     SmartDashboard.putData("Auto mode", chooser);
-    SmartDashboard.putData("Calibrate Arm", new InstantCommand(arm::resetArm) );
-    SmartDashboard.putData("SetArmPosition (Home)", new InstantCommand(arm::setArmPosition0) );
-    SmartDashboard.putData("SetArmPosition (Floor)", new InstantCommand(arm::setArmPosition1) );
-    SmartDashboard.putData("SetArmPosition (Middle)", new InstantCommand(arm::setArmPosition2) );
-    SmartDashboard.putData("SetArmPosition (Top)", new InstantCommand(arm::setArmPosition3) );
+    SmartDashboard.putData("Calibrate Arm", new InstantCommand(arm::resetArm, arm));
+    SmartDashboard.putData("SetArmPosition (Home)", new InstantCommand(arm::setArmPosition0, arm));
+    SmartDashboard.putData("SetArmPosition (Floor)", new InstantCommand(arm::setArmPosition1, arm));
+    SmartDashboard.putData(
+        "SetArmPosition (Middle)", new InstantCommand(arm::setArmPosition2, arm));
+    SmartDashboard.putData("SetArmPosition (Top)", new InstantCommand(arm::setArmPosition3, arm));
 
     Shuffleboard.getTab("MAIN").add(chooser).withSize(2, 1);
   }

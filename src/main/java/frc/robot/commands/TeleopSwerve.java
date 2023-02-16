@@ -36,7 +36,8 @@ public class TeleopSwerve extends CommandBase {
     /* Get Values, Deadband*/
     double deadBand = RobotPreferences.stickDeadband.get();
     double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * scaleFactorSup.getAsDouble();
-    double maxRotate = RobotPreferences.Swerve.maxAngularVelocity.get() * rotateFactorSup.getAsDouble();
+    double maxRotate =
+        RobotPreferences.Swerve.maxAngularVelocity.get() * rotateFactorSup.getAsDouble();
 
     double translationVal = this.scaleController(translationSup.getAsDouble(), deadBand) * maxSpeed;
     double strafeVal = this.scaleController(strafeSup.getAsDouble(), deadBand) * maxSpeed;

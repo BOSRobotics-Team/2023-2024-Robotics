@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.gyro.GyroIO;
@@ -51,6 +53,7 @@ public class SwerveDriveTrain extends SubsystemBase {
 
   private SwerveDrivePoseEstimator poseEstimator;
   private Pose2d estimatedPoseWithoutGyro;
+  private Field2d m_field = new Field2d();
 
   /* Swerve Kinematics
    * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
@@ -476,6 +479,7 @@ public class SwerveDriveTrain extends SubsystemBase {
   @Override
   public void periodic() {
     this.swerveOdometry.update(getRotation(), getModulePositions());
+    m_field.setRobotPose(this.swerveOdometry.getPoseMeters());
     updateBrakeMode();
   }
 
@@ -486,6 +490,8 @@ public class SwerveDriveTrain extends SubsystemBase {
     layout.addNumber("DriveTrain/Gyroscope Angle", this::getRotationDegrees);
     layout.addBoolean("DriveTrain/X-Stance On?", this::isXstance);
     layout.addBoolean("DriveTrain/Field-Relative Enabled?", this::getFieldRelative);
+
+    SmartDashboard.putData("Field", m_field);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");

@@ -50,21 +50,23 @@ public class OISelector {
       System.out.println("JoystickType: " + DriverStation.getJoystickType(port));
       System.out.println("getJoystickIsXbox: " + DriverStation.getJoystickIsXbox(port));
 
-      if (DriverStation.getJoystickIsXbox(port)) {
-        if (xbox0 == null) {
-          xbox0 = port;
-        } else if (xbox1 == null) {
-          xbox1 = port;
-        }
-      } else if (!DriverStation.getJoystickName(port).equals("")) {
-        if (joy0 == null) {
-          joy0 = port;
-        } else if (joy1 == null) {
-          joy1 = port;
+      if (!DriverStation.getJoystickName(port).equals("")) {
+        if (DriverStation.getJoystickIsXbox(port)
+            || DriverStation.getJoystickName(port).contains("Keyboard")) {
+          if (xbox0 == null) {
+            xbox0 = port;
+          } else if (xbox1 == null) {
+            xbox1 = port;
+          }
+        } else {
+          if (joy0 == null) {
+            joy0 = port;
+          } else if (joy1 == null) {
+            joy1 = port;
+          }
         }
       }
     }
-
     if (joy0 != null) {
       if (joy1 != null) {
         if (xbox0 != null) {
