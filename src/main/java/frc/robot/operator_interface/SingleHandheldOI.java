@@ -9,8 +9,9 @@ import frc.robot.Constants;
 public class SingleHandheldOI implements OperatorInterface {
   private final XboxController controller;
   private double driveScaleFactor = 0.5;
+  private boolean updateDriveScale = false;
   private double rotateScaleFactor = 1.0;
-  private boolean updateScale = false;
+  private boolean updateRotateScale = false;
   protected boolean tests[][] = new boolean[2][20];
 
   public SingleHandheldOI(int port) {
@@ -125,17 +126,17 @@ public class SingleHandheldOI implements OperatorInterface {
   public double getDriveScaling() {
     int povVal = controller.getPOV();
 
-    if (updateScale && povVal == -1) {
-      updateScale = false;
+    if (updateDriveScale && povVal == -1) {
+      updateDriveScale = false;
     }
-    if (!updateScale && povVal == 0) {
+    if (!updateDriveScale && povVal == 0) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
-      updateScale = true;
-    } else if (!updateScale && povVal == 180) {
+      updateDriveScale = true;
+    } else if (!updateDriveScale && povVal == 180) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
-      updateScale = true;
+      updateDriveScale = true;
     }
     return driveScaleFactor;
   }
@@ -144,17 +145,17 @@ public class SingleHandheldOI implements OperatorInterface {
   public double getRotateScaling() {
     int povVal = controller.getPOV();
 
-    if (updateScale && povVal == -1) {
-      updateScale = false;
+    if (updateRotateScale && povVal == -1) {
+      updateRotateScale = false;
     }
-    if (!updateScale && povVal == 0) {
+    if (!updateRotateScale && povVal == 0) {
       rotateScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
-      updateScale = true;
-    } else if (!updateScale && povVal == 180) {
+      updateRotateScale = true;
+    } else if (!updateRotateScale && povVal == 180) {
       rotateScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
-      updateScale = true;
+      updateRotateScale = true;
     }
     return rotateScaleFactor;
   }
