@@ -128,16 +128,16 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public Trigger getRobotRelative() {
-    return rotateJoystickButtons[3];
+    return rotateJoystickButtons[4];
   }
 
   @Override
   public Trigger getResetGyroButton() {
-    return rotateJoystickButtons[2];
+    return rotateJoystickButtons[3];
   }
 
   @Override
   public Trigger getXStanceButton() {
-    return rotateJoystickButtons[1];
+    return rotateJoystickButtons[2];
   }
 }

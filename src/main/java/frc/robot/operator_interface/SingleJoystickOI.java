@@ -109,16 +109,16 @@ public class SingleJoystickOI implements OperatorInterface {
 
   @Override
   public Trigger getRobotRelative() {
-    return joystickButtons[3];
+    return joystickButtons[4];
   }
 
   @Override
   public Trigger getResetGyroButton() {
-    return joystickButtons[2];
+    return joystickButtons[3];
   }
 
   @Override
   public Trigger getXStanceButton() {
-    return joystickButtons[1];
+    return joystickButtons[2];
   }
 }

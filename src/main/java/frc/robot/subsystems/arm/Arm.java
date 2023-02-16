@@ -104,7 +104,7 @@ public class Arm extends SubsystemBase {
           new SingleJointedArmSimWrapper(
               new SingleJointedArmSim(
                   DCMotor.getNEO(1),
-                  192.0,
+                  768.0,
                   SingleJointedArmSim.estimateMOI(Units.inchesToMeters(30.0), 5.0),
                   Units.inchesToMeters(30.0),
                   0.0,
@@ -169,7 +169,7 @@ public class Arm extends SubsystemBase {
       boolean liftDone = Math.abs(liftPos - m_armLiftSetpoint) <= 1.0;
       boolean extendDone = Math.abs(extendPos - newExtendSetpoint) <= 1.0;
       boolean goUp = (m_armLiftSetpoint - liftPos) > 1.0;
-      boolean inSafeZoneHt = (liftPos >= 26.0);
+      boolean inSafeZoneHt = (liftPos >= 104.0);
       boolean inSafeZoneLn = (extendPos < 180.0);
 
       if (!liftDone && goUp) {
@@ -300,10 +300,10 @@ public class Arm extends SubsystemBase {
   public void teleop(double liftVal, double extendVal) {
     if (!isResetting()) {
       if (liftVal != 0.0) {
-        this.setArmLiftPosition(getArmLiftPosition() + liftVal);
+        this.setArmLiftPosition(m_armLiftSetpoint + liftVal);
       }
       if (extendVal != 0.0) {
-        this.setArmExtendPosition(getArmExtendPosition() + extendVal);
+        this.setArmExtendPosition(m_armExtendSetpoint + extendVal);
       }
     }
   }

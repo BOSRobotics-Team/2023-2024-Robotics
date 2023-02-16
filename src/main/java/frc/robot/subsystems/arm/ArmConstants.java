@@ -7,15 +7,15 @@ public final class ArmConstants {
   public static final double armLiftKD = 0.0;
   public static final double armLiftKIZ = 0.0;
   public static final double armLiftKFF = 0.000156;
-  public static final double armLiftMaxOutput = 0.15;
-  public static final double armLiftMinOutput = -0.15;
+  public static final double armLiftMaxOutput = 0.4;
+  public static final double armLiftMinOutput = -0.4;
   public static final double armLiftMaxRPM = 5700.0;
   public static final double armLiftMinPosition = 0.0;
-  public static final double armLiftMaxPosition = 60.0;
+  public static final double armLiftMaxPosition = 240.0;
   public static final double armLiftPosition0 = 0;
-  public static final double armLiftPosition1 = 18;
-  public static final double armLiftPosition2 = 50;
-  public static final double armLiftPosition3 = 57;
+  public static final double armLiftPosition1 = 72;
+  public static final double armLiftPosition2 = 200;
+  public static final double armLiftPosition3 = 228;
 
   public static final double armExtendKP = 0.2;
   public static final double armExtendKI = 0.0;
