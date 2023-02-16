@@ -11,6 +11,7 @@ public class SingleJoystickOI implements OperatorInterface {
   protected final Trigger[] joystickButtons;
 
   private double driveScaleFactor = 0.5;
+  private double rotateScaleFactor = 1.0;
   private boolean updateScale = false;
   protected boolean tests[][] = new boolean[2][20];
 
@@ -117,6 +118,24 @@ public class SingleJoystickOI implements OperatorInterface {
       updateScale = true;
     }
     return driveScaleFactor;
+  }
+
+  @Override
+  public double getRotateScaling() {
+    int povVal = joystick.getHID().getPOV();
+    if (updateScale && povVal == -1) {
+      updateScale = false;
+    }
+    if (!updateScale && povVal == 90) {
+      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor + 0.05, 0.1, 1.0);
+      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
+      updateScale = true;
+    } else if (!updateScale && povVal == 270) {
+      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor - 0.05, 0.1, 1.0);
+      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
+      updateScale = true;
+    }
+    return rotateScaleFactor;
   }
 
   @Override

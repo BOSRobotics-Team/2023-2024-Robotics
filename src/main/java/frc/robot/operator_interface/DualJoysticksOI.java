@@ -141,11 +141,11 @@ public class DualJoysticksOI implements OperatorInterface {
     if (updateScale && povVal == -1) {
       updateScale = false;
     }
-    if (!updateScale && povVal == 90) {
+    if (!updateScale && povVal == 0) {
       rotateScaleFactor = MathUtil.clamp(rotateScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
       updateScale = true;
-    } else if (!updateScale && povVal == 270) {
+    } else if (!updateScale && povVal == 180) {
       rotateScaleFactor = MathUtil.clamp(rotateScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
       updateScale = true;
