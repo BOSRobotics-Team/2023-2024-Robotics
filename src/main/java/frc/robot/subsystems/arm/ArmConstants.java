@@ -31,6 +31,20 @@ public final class ArmConstants {
   public static final double armExtendPosition1 = 50;
   public static final double armExtendPosition2 = 80;
   public static final double armExtendPosition3 = 495;
-  public static final String armLiftProfile =
-      "8.0:92.0,11.0:180.0,15.0:230.0,20.0:350.0,23.0:480.0,26.0:550";
+
+  public static final double[][] armLiftProfile = {{ 8.0, 92.0 },
+                                                    { 11.0, 180.0 }, 
+                                                    { 15.0, 230,0 },
+                                                    { 20.0, 350.0 },
+                                                    { 23.0, 480.0 },
+                                                    { 26.0, 550.0 }};
+
+  public static final double[][] armPositionCone = {{ 0.0, 0.0 },
+                                                    { 72.0, 50.0 }, 
+                                                    { 200.0, 80,0 },
+                                                    { 228.0, 495.0 }};
+  public static final double[][] armPositionCube = { { 0.0, 0.0 },
+                                                    { 72.0, 50.0 }, 
+                                                    { 200.0, 80,0 },
+                                                    { 228.0, 495.0 } };
 }

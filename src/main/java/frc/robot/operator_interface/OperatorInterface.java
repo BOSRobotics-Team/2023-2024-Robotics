@@ -72,6 +72,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getArmTargetToggle() {
+    return new Trigger(() -> false);
+  }
+
   public default void testOI(int mode) {}
 
   public default boolean testResults(int mode) {

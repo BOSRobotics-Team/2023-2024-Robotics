@@ -1,7 +1,7 @@
 package frc.robot.autos;
 
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
@@ -12,15 +12,15 @@ public class driveToTrajectory extends SequentialCommandGroup {
         new SwerveControllerCommand(
             trajectory,
             driveTrain::getPose,
-            SwerveDriveTrain.swerveKinematics,
+            driveTrain.swerveKinematics,
             driveTrain.getAutoXController(),
             driveTrain.getAutoYController(),
             driveTrain.getAutoProfiledThetaController(),
-            driveTrain::setModuleStates,
+            driveTrain::setSwerveModuleStates,
             driveTrain);
 
     addCommands(
-        new InstantCommand(() -> driveTrain.resetOdometry(trajectory.getInitialPose())),
+        Commands.runOnce(() -> driveTrain.resetOdometry(trajectory.getInitialPose()), driveTrain),
         swerveControllerCommand);
   }
 }

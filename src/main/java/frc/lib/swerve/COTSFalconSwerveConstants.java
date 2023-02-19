@@ -150,28 +150,4 @@ public class COTSFalconSwerveConstants {
     /** SDS MK4i - 6.12 : 1 */
     public static final double SDSMK4i_L3 = (6.12 / 1.0);
   }
-
-  public static class moduleIDS {
-    public int moduleNumber; // the module number (0-3); primarily used for logging
-    public String canBusID; // name of the CAN bus
-    public int driveMotorID; // the CAN ID of the drive motor
-    public int angleMotorID; // the CAN ID of the angle motor
-    public int canCoderID; // the CAN ID of the CANcoder
-    public double angleOffsetDeg; // the absolute offset of the angle encoder in degrees
-
-    public moduleIDS(
-        int moduleNumber,
-        String canBusID,
-        int driveMotorID,
-        int angleMotorID,
-        int canCoderID,
-        double angleOffsetDeg) {
-      this.moduleNumber = moduleNumber;
-      this.canBusID = canBusID;
-      this.driveMotorID = driveMotorID;
-      this.angleMotorID = angleMotorID;
-      this.canCoderID = canCoderID;
-      this.angleOffsetDeg = angleOffsetDeg;
-    }
-  }
 }

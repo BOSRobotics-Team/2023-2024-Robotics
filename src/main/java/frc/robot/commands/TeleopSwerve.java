@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotPreferences;
@@ -34,7 +36,7 @@ public class TeleopSwerve extends CommandBase {
   @Override
   public void execute() {
     /* Get Values, Deadband*/
-    double deadBand = RobotPreferences.stickDeadband.get();
+    double deadBand = STICK_DEADBAND;
     double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * scaleFactorSup.getAsDouble();
     double maxRotate =
         RobotPreferences.Swerve.maxAngularVelocity.get() * rotateFactorSup.getAsDouble();

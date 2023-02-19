@@ -1,19 +1,14 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.util.PreferencesValue;
 import frc.robot.subsystems.arm.ArmConstants;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 
 public final class RobotPreferences {
 
-  public static PreferencesValue stickDeadband =
-      new PreferencesValue("stickDeadband", Constants.STICK_DEADBAND);
-  public static PreferencesValue trackWidth =
-      new PreferencesValue("trackWidth", Constants.TRACKWIDTH);
-  public static PreferencesValue wheelBase = new PreferencesValue("wheelBase", Constants.WHEELBASE);
-
   public static final class Swerve {
+    public static PreferencesValue startAngleDegrees =
+        new PreferencesValue("swerve/startAngleDegrees", DriveTrainConstants.startAngleDegrees);
     public static PreferencesValue driveContinuousCurrentLimit =
         new PreferencesValue(
             "swerve/driveContinuousCurrentLimit", DriveTrainConstants.driveContinuousCurrentLimit);
@@ -123,21 +118,6 @@ public final class RobotPreferences {
         new PreferencesValue("armLift/armMinPosition", ArmConstants.armLiftMinPosition);
     public static PreferencesValue armMaxPosition =
         new PreferencesValue("armLift/armMaxPosition", ArmConstants.armLiftMaxPosition);
-    public static PreferencesValue armPosition0 =
-        new PreferencesValue("armLift/armPosition0", ArmConstants.armLiftPosition0);
-    public static PreferencesValue armPosition1 =
-        new PreferencesValue("armLift/armPosition1", ArmConstants.armLiftPosition1);
-    public static PreferencesValue armPosition2 =
-        new PreferencesValue("armLift/armPosition2", ArmConstants.armLiftPosition2);
-    public static PreferencesValue armPosition3 =
-        new PreferencesValue("armLift/armPosition3", ArmConstants.armLiftPosition3);
-
-    public static String liftProfileStr() {
-      if (!Preferences.containsKey("armLift/liftProfileStr")) {
-        Preferences.setString("armLift/liftProfileStr", ArmConstants.armLiftProfile);
-      }
-      return Preferences.getString("armLift/liftProfileStr", ArmConstants.armLiftProfile);
-    }
   }
 
   public static final class ArmExtend {
@@ -161,13 +141,5 @@ public final class RobotPreferences {
         new PreferencesValue("armExtend/armMinPosition", ArmConstants.armExtendMinPosition);
     public static PreferencesValue armMaxPosition =
         new PreferencesValue("armExtend/armMaxPosition", ArmConstants.armExtendMaxPosition);
-    public static PreferencesValue armPosition0 =
-        new PreferencesValue("armExtend/armPosition0", ArmConstants.armExtendPosition0);
-    public static PreferencesValue armPosition1 =
-        new PreferencesValue("armExtend/armPosition1", ArmConstants.armExtendPosition1);
-    public static PreferencesValue armPosition2 =
-        new PreferencesValue("armExtend/armPosition2", ArmConstants.armExtendPosition2);
-    public static PreferencesValue armPosition3 =
-        new PreferencesValue("armExtend/armPosition3", ArmConstants.armExtendPosition3);
   }
 }

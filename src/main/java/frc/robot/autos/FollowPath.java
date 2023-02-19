@@ -36,11 +36,11 @@ public class FollowPath extends PPSwerveControllerCommand {
     super(
         trajectory,
         subsystem::getPose,
-        SwerveDriveTrain.swerveKinematics,
+        subsystem.swerveKinematics,
         subsystem.getAutoXController(),
         subsystem.getAutoYController(),
         subsystem.getAutoThetaController(),
-        subsystem::setModuleStates,
+        subsystem::setSwerveModuleStates,
         subsystem);
 
     this.drivetrain = subsystem;

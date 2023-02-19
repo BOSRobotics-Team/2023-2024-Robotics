@@ -3,7 +3,9 @@ package frc.lib.swerve;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -27,13 +29,14 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
 
   /* PID SLOT INDEX */
   public static final int SLOT_INDEX = 0;
+  public static final int TIMEOUT_MS = 100;
 
   private int moduleNumber;
-  private double angleOffsetDeg;
-  private SimpleMotorFeedforward feedForward;
   private WPI_TalonFX mAngleMotor;
   private WPI_TalonFX mDriveMotor;
   private WPI_CANCoder angleEncoder;
+  private SimpleMotorFeedforward feedForward;
+  private double angleOffsetDeg;
 
   /**
    * Make a new SwerveModuleIOTalonFX object.
@@ -70,7 +73,7 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
     SendableRegistry.setName(angleEncoder, "SwerveModule " + moduleNumber, "Angle Encoder");
   }
 
-  public SwerveModuleIOTalonFX(COTSFalconSwerveConstants.moduleIDS modID) {
+  public SwerveModuleIOTalonFX(SwerveModuleID modID) {
     this(
         modID.moduleNumber,
         modID.canBusID,
@@ -82,38 +85,51 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
 
   private void configAngleEncoder(int canCoderID, String canBusID) {
     angleEncoder = new WPI_CANCoder(canCoderID, canBusID);
+
     angleEncoder.configFactoryDefault();
 
     /* Swerve CANCoder Configuration */
-    CANCoderConfiguration swerveCanCoderConfig = new CANCoderConfiguration();
-    swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-    swerveCanCoderConfig.sensorDirection = DriveTrainConstants.canCoderInvert;
-    swerveCanCoderConfig.initializationStrategy =
-        SensorInitializationStrategy.BootToAbsolutePosition;
-    swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
-    angleEncoder.configAllSettings(swerveCanCoderConfig);
+    CANCoderConfiguration config = new CANCoderConfiguration();
+    config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+    config.sensorDirection = DriveTrainConstants.canCoderInvert;
+    config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
+    config.sensorTimeBase = SensorTimeBase.PerSecond;
+    angleEncoder.configAllSettings(config);
   }
 
   private void configAngleMotor(int angleMotorID, String canBusID) {
     mAngleMotor = new WPI_TalonFX(angleMotorID, canBusID);
 
     /* Swerve Angle Motor Configurations */
-    SupplyCurrentLimitConfiguration angleSupplyLimit =
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.supplyCurrLimit =
         new SupplyCurrentLimitConfiguration(
             DriveTrainConstants.angleEnableCurrentLimit,
             RobotPreferences.Swerve.angleContinuousCurrentLimit.get(),
             RobotPreferences.Swerve.anglePeakCurrentLimit.get(),
             RobotPreferences.Swerve.anglePeakCurrentDuration.get());
-
-    TalonFXConfiguration swerveAngleFXConfig = new TalonFXConfiguration();
-    swerveAngleFXConfig.slot0.kP = RobotPreferences.Swerve.angleKP.get();
-    swerveAngleFXConfig.slot0.kI = RobotPreferences.Swerve.angleKI.get();
-    swerveAngleFXConfig.slot0.kD = RobotPreferences.Swerve.angleKD.get();
-    swerveAngleFXConfig.slot0.kF = RobotPreferences.Swerve.angleKF.get();
-    swerveAngleFXConfig.supplyCurrLimit = angleSupplyLimit;
+    ;
+    config.slot0.kP = RobotPreferences.Swerve.angleKP.get();
+    config.slot0.kI = RobotPreferences.Swerve.angleKI.get();
+    config.slot0.kD = RobotPreferences.Swerve.angleKD.get();
+    config.slot0.kF = RobotPreferences.Swerve.angleKF.get();
 
     mAngleMotor.configFactoryDefault();
-    mAngleMotor.configAllSettings(swerveAngleFXConfig);
+    mAngleMotor.configAllSettings(config, TIMEOUT_MS);
+
+    mAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    mAngleMotor.changeMotionControlFramePeriod(101);
+    mAngleMotor.clearMotionProfileHasUnderrun(TIMEOUT_MS);
+    mAngleMotor.clearMotionProfileTrajectories();
+    mAngleMotor.clearStickyFaults(TIMEOUT_MS);
+    mAngleMotor.selectProfileSlot(0, 0);
+
+    mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 9, TIMEOUT_MS);
+    mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 19, TIMEOUT_MS);
+    mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 100, TIMEOUT_MS);
+    mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 101, TIMEOUT_MS);
+    mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 102, TIMEOUT_MS);
+
     mAngleMotor.setInverted(DriveTrainConstants.angleMotorInvert);
     mAngleMotor.setNeutralMode(DriveTrainConstants.angleNeutralMode);
 
@@ -121,32 +137,50 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
         Conversions.degreesToFalcon(
             getCanCoder().getDegrees() - angleOffsetDeg, DriveTrainConstants.angleGearRatio);
     mAngleMotor.setSelectedSensorPosition(absolutePosition);
+    mAngleMotor.configVoltageCompSaturation(12); // default 12v voltage compensation for motors
+    mAngleMotor.enableVoltageCompensation(true);
   }
 
   private void configDriveMotor(int driveMotorID, String canBusID) {
     mDriveMotor = new WPI_TalonFX(driveMotorID, canBusID);
 
     /* Swerve Drive Motor Configuration */
-    SupplyCurrentLimitConfiguration driveSupplyLimit =
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.supplyCurrLimit =
         new SupplyCurrentLimitConfiguration(
             DriveTrainConstants.driveEnableCurrentLimit,
             RobotPreferences.Swerve.driveContinuousCurrentLimit.get(),
             RobotPreferences.Swerve.drivePeakCurrentLimit.get(),
             RobotPreferences.Swerve.drivePeakCurrentDuration.get());
-
-    TalonFXConfiguration swerveDriveFXConfig = new TalonFXConfiguration();
-    swerveDriveFXConfig.slot0.kP = RobotPreferences.Swerve.driveKP.get();
-    swerveDriveFXConfig.slot0.kI = RobotPreferences.Swerve.driveKI.get();
-    swerveDriveFXConfig.slot0.kD = RobotPreferences.Swerve.driveKD.get();
-    swerveDriveFXConfig.slot0.kF = RobotPreferences.Swerve.driveKF.get();
-    swerveDriveFXConfig.supplyCurrLimit = driveSupplyLimit;
-    swerveDriveFXConfig.openloopRamp = RobotPreferences.Swerve.openLoopRamp.get();
-    swerveDriveFXConfig.closedloopRamp = RobotPreferences.Swerve.closedLoopRamp.get();
+    ;
+    config.slot0.kP = RobotPreferences.Swerve.driveKP.get();
+    config.slot0.kI = RobotPreferences.Swerve.driveKI.get();
+    config.slot0.kD = RobotPreferences.Swerve.driveKD.get();
+    config.slot0.kF = RobotPreferences.Swerve.driveKF.get();
+    config.openloopRamp = RobotPreferences.Swerve.openLoopRamp.get();
+    config.closedloopRamp = RobotPreferences.Swerve.closedLoopRamp.get();
 
     mDriveMotor.configFactoryDefault();
-    mDriveMotor.configAllSettings(swerveDriveFXConfig);
+    mDriveMotor.configAllSettings(config, TIMEOUT_MS);
+
+    mDriveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    mDriveMotor.changeMotionControlFramePeriod(101);
+    mDriveMotor.clearMotionProfileHasUnderrun(TIMEOUT_MS);
+    mDriveMotor.clearMotionProfileTrajectories();
+    mDriveMotor.clearStickyFaults(TIMEOUT_MS);
+    mDriveMotor.selectProfileSlot(0, 0);
+
+    mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 9, TIMEOUT_MS);
+    mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 19, TIMEOUT_MS);
+    mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 100, TIMEOUT_MS);
+    mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 101, TIMEOUT_MS);
+    mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 102, TIMEOUT_MS);
+
     mDriveMotor.setInverted(DriveTrainConstants.driveMotorInvert);
     mDriveMotor.setNeutralMode(DriveTrainConstants.driveNeutralMode);
+
+    mDriveMotor.configVoltageCompSaturation(12); // default 12v voltage compensation for motors
+    mDriveMotor.enableVoltageCompensation(true);
     mDriveMotor.setSelectedSensorPosition(0);
   }
 

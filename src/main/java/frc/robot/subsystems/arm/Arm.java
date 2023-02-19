@@ -57,6 +57,7 @@ public class Arm extends SubsystemBase {
   private double m_armExtendSetpoint = 0;
   private int m_Resetting = 0; // 1 == resetting Extend, 2 == resetting Lift
   private List<Pair<Double, Double>> liftProfile = new ArrayList<Pair<Double, Double>>();
+  private boolean m_targetCones = true;
 
   public Arm() {
     m_armLiftMotor.restoreFactoryDefaults();
@@ -125,17 +126,21 @@ public class Arm extends SubsystemBase {
   }
 
   void initLiftProfile() {
-    String liftProfileStr = RobotPreferences.ArmLift.liftProfileStr();
-    if (!liftProfileStr.isEmpty()) {
-      liftProfile.clear();
-      for (String pair : liftProfileStr.split(",")) {
-        String[] items = pair.split(":");
-        if (items.length > 1) {
-          liftProfile.add(
-              new Pair<Double, Double>(Double.parseDouble(items[0]), Double.parseDouble(items[1])));
-        }
-      }
+    liftProfile.clear();
+    for (double[] pairs : ArmConstants.armLiftProfile) {
+      liftProfile.add(new Pair<Double, Double>(pairs[0], pairs[1]));
     }
+    // String liftProfileStr = RobotPreferences.ArmLift.liftProfileStr();
+    // if (!liftProfileStr.isEmpty()) {
+    //   liftProfile.clear();
+    //   for (String pair : liftProfileStr.split(",")) {
+    //     String[] items = pair.split(":");
+    //     if (items.length > 1) {
+    //       liftProfile.add(
+    //           new Pair<Double, Double>(Double.parseDouble(items[0]), Double.parseDouble(items[1])));
+    //     }
+    //   }
+    // }
   }
 
   @Override
@@ -176,16 +181,19 @@ public class Arm extends SubsystemBase {
         m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
         m_armExtendController.setReference(
             inSafeZoneHt ? newExtendSetpoint : extendPos, CANSparkMax.ControlType.kPosition);
-        // System.out.println("goUp: ht:" + liftPos + " ln:" + extendPos + " lift:" + m_armLiftSetpoint + " ext:" + newExtendSetpoint);
+        // System.out.println("goUp: ht:" + liftPos + " ln:" + extendPos + " lift:" +
+        // m_armLiftSetpoint + " ext:" + newExtendSetpoint);
       } else if (!extendDone && !goUp) {
         m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
         m_armLiftController.setReference(
             inSafeZoneLn ? m_armLiftSetpoint : liftPos, CANSparkMax.ControlType.kPosition);
-        // System.out.println("extend: ht:" + liftPos + " ln:" + extendPos + " lift:" + m_armLiftSetpoint + " ext:" + newExtendSetpoint);
+        // System.out.println("extend: ht:" + liftPos + " ln:" + extendPos + " lift:" +
+        // m_armLiftSetpoint + " ext:" + newExtendSetpoint);
       } else if (!liftDone || !extendDone) {
         m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
         m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
-        // System.out.println("liftDone: ht:" + liftPos + " ln:" + extendPos + " lift:" + m_armLiftSetpoint + " ext:" + newExtendSetpoint);
+        // System.out.println("liftDone: ht:" + liftPos + " ln:" + extendPos + " lift:" +
+        // m_armLiftSetpoint + " ext:" + newExtendSetpoint);
       }
     }
   }
@@ -286,7 +294,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isGripClawOpen() {
-    return (m_gripper.get() != Value.kReverse);
+    return (m_gripper.get() == Value.kForward);
   }
 
   public boolean isArmExtendMinLimitSwitch() {
@@ -295,6 +303,14 @@ public class Arm extends SubsystemBase {
 
   public boolean isArmLiftMinLimitSwitch() {
     return m_armLiftLimit.isPressed();
+  }
+
+public boolean isTargetCone() {
+  return m_targetCones;
+}
+
+  public void targetCones( boolean enable ) {
+    m_targetCones = enable;
   }
 
   public void teleop(double liftVal, double extendVal) {
@@ -308,37 +324,26 @@ public class Arm extends SubsystemBase {
     }
   }
 
-  public void setArmPosition0() {
-    this.setArmLiftPosition(RobotPreferences.ArmLift.armPosition0.get());
-    this.setArmExtendPosition(RobotPreferences.ArmExtend.armPosition0.get());
-  }
-
-  public void setArmPosition1() {
-    this.setArmLiftPosition(RobotPreferences.ArmLift.armPosition1.get());
-    this.setArmExtendPosition(RobotPreferences.ArmExtend.armPosition1.get());
-  }
-
-  public void setArmPosition2() {
-    this.setArmLiftPosition(RobotPreferences.ArmLift.armPosition2.get());
-    this.setArmExtendPosition(RobotPreferences.ArmExtend.armPosition2.get());
-  }
-
-  public void setArmPosition3() {
-    this.setArmLiftPosition(RobotPreferences.ArmLift.armPosition3.get());
-    this.setArmExtendPosition(RobotPreferences.ArmExtend.armPosition3.get());
+  public void setArmPosition(int pos) {
+    if ((pos >= 0) && (pos < 4)) { 
+      double[] position = m_targetCones ? ArmConstants.armPositionCone[pos] : ArmConstants.armPositionCube[pos];
+      this.setArmLiftPosition(position[0]);
+      this.setArmExtendPosition(position[1]);
+    }
   }
 
   public void initLogging() {
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
     ShuffleboardLayout armLay = tabMain.getLayout("Arm", BuiltInLayouts.kList).withSize(4, 4);
-    armLay.addNumber("LiftPosition", m_armLiftEncoder::getPosition);
-    armLay.addNumber("LiftSetPoint", () -> m_armLiftSetpoint);
-    armLay.addNumber("ExtendPosition", m_armExtendEncoder::getPosition);
-    armLay.addNumber("ExtendSetPoint", () -> m_armExtendSetpoint);
+    armLay.addNumber("Lift Position", m_armLiftEncoder::getPosition);
+    armLay.addNumber("Lift SetPoint", () -> m_armLiftSetpoint);
+    armLay.addBoolean("Lift LimitSwitch", this::isArmLiftMinLimitSwitch);
+    armLay.addNumber("Extend Position", m_armExtendEncoder::getPosition);
+    armLay.addNumber("Extend SetPoint", () -> m_armExtendSetpoint);
+    armLay.addBoolean("Extend LimitSwitch", this::isArmExtendMinLimitSwitch);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("ARM");
-
       ShuffleboardLayout liftLay =
           tab.getLayout("ArmLift", BuiltInLayouts.kList).withSize(4, 4).withPosition(0, 0);
       liftLay.addNumber("Position", m_armLiftEncoder::getPosition).withPosition(0, 0);

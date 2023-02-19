@@ -66,4 +66,10 @@ public class DualHandheldOI extends SingleHandheldOI {
   public Trigger getArmPosition3() {
     return new Trigger(operator::getBButton);
   }
+
+  @Override
+  public Trigger getArmTargetToggle() {
+    return new Trigger(operator::getRightBumper);
+  }
+
 }

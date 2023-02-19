@@ -3,8 +3,8 @@ package frc.robot;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
+// import edu.wpi.first.cameraserver.CameraServer;
+// import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -19,8 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.lib.gyro.GyroIO;
+import frc.lib.gyro.*;
 import frc.lib.swerve.*;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
@@ -49,16 +48,16 @@ public class RobotContainer {
 
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
-  public final GyroIO gyro = new GyroIO(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+  public final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
   public final SwerveDriveTrain driveTrain;
   public final Arm arm;
 
   private final TestChecklist test;
 
   /* Cameras */
-  public UsbCamera cam0;
-  public UsbCamera cam1;
-  public UsbCamera cam2;
+  // public UsbCamera cam0;
+  // public UsbCamera cam1;
+  // public UsbCamera cam2;
 
   /* Auto paths */
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
@@ -72,13 +71,13 @@ public class RobotContainer {
     SwerveModuleIO brModule;
 
     if (RobotBase.isReal()) {
-      cam0 = CameraServer.startAutomaticCapture(0);
-      cam1 = CameraServer.startAutomaticCapture(1);
-      cam2 = CameraServer.startAutomaticCapture(2);
+      // cam0 = CameraServer.startAutomaticCapture(0);
+      // cam1 = CameraServer.startAutomaticCapture(1);
+      // cam2 = CameraServer.startAutomaticCapture(2);
 
-      cam0.setConnectVerbose(0);
-      cam1.setConnectVerbose(0);
-      cam2.setConnectVerbose(0);
+      // cam0.setConnectVerbose(0);
+      // cam1.setConnectVerbose(0);
+      // cam2.setConnectVerbose(0);
 
       flModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod0);
       frModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod1);
@@ -164,10 +163,11 @@ public class RobotContainer {
     oi.getGripToggle().onTrue(Commands.runOnce(arm::gripToggle, arm));
 
     oi.getArmCalibrate().onTrue(Commands.runOnce(arm::resetArm, arm));
-    oi.getArmPosition0().onTrue(Commands.runOnce(arm::setArmPosition0, arm));
-    oi.getArmPosition1().onTrue(Commands.runOnce(arm::setArmPosition1, arm));
-    oi.getArmPosition2().onTrue(Commands.runOnce(arm::setArmPosition2, arm));
-    oi.getArmPosition3().onTrue(Commands.runOnce(arm::setArmPosition3, arm));
+    oi.getArmPosition0().onTrue(Commands.runOnce(() -> arm.setArmPosition(0), arm));
+    oi.getArmPosition1().onTrue(Commands.runOnce(() -> arm.setArmPosition(1), arm));
+    oi.getArmPosition2().onTrue(Commands.runOnce(() -> arm.setArmPosition(2), arm));
+    oi.getArmPosition3().onTrue(Commands.runOnce(() -> arm.setArmPosition(3), arm));
+    oi.getArmTargetToggle().onTrue(Commands.runOnce(() -> arm.targetCones(!arm.isTargetCone()), arm));
   }
 
   /**
@@ -183,16 +183,15 @@ public class RobotContainer {
   private void configureAutoCommands() {
 
     // Add commands to Autonomous Sendable Chooser
-    chooser.setDefaultOption("Do Nothing", new InstantCommand());
+    chooser.setDefaultOption("Do Nothing", Commands.none());
 
     // SmartDashboard Buttons
     SmartDashboard.putData("Auto mode", chooser);
-    SmartDashboard.putData("Calibrate Arm", new InstantCommand(arm::resetArm, arm));
-    SmartDashboard.putData("SetArmPosition (Home)", new InstantCommand(arm::setArmPosition0, arm));
-    SmartDashboard.putData("SetArmPosition (Floor)", new InstantCommand(arm::setArmPosition1, arm));
-    SmartDashboard.putData(
-        "SetArmPosition (Middle)", new InstantCommand(arm::setArmPosition2, arm));
-    SmartDashboard.putData("SetArmPosition (Top)", new InstantCommand(arm::setArmPosition3, arm));
+    SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
+    SmartDashboard.putData("SetArmPosition (Home)", Commands.runOnce(() -> arm.setArmPosition(0), arm));
+    SmartDashboard.putData("SetArmPosition (Floor)", Commands.runOnce(() -> arm.setArmPosition(1), arm));
+    SmartDashboard.putData("SetArmPosition (Middle)", Commands.runOnce(() -> arm.setArmPosition(2), arm));
+    SmartDashboard.putData("SetArmPosition (Top)", Commands.runOnce(() -> arm.setArmPosition(3), arm));
 
     Shuffleboard.getTab("MAIN").add(chooser).withSize(2, 1);
   }

@@ -3,45 +3,57 @@ package frc.robot.subsystems.drivetrain;
 import static frc.robot.Constants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.lib.swerve.COTSFalconSwerveConstants;
+import frc.lib.swerve.SwerveModuleIO.SwerveModuleID;
 
 public final class DriveTrainConstants {
 
   public static final COTSFalconSwerveConstants moduleType =
       COTSFalconSwerveConstants.SDSMK4(COTSFalconSwerveConstants.driveGearRatios.SDSMK4_L2);
 
-  public static final COTSFalconSwerveConstants.moduleIDS mod0 =
-      new COTSFalconSwerveConstants.moduleIDS(
+  public static final SwerveModuleID mod0 =
+      new SwerveModuleID(
           FRONT_LEFT_MODULE,
           SWERVE_CAN_BUS,
           FRONT_LEFT_MODULE_DRIVE_MOTOR_ID,
           FRONT_LEFT_MODULE_ANGLE_MOTOR_ID,
           FRONT_LEFT_MODULE_ANGLE_ENCODER_ID,
           FRONT_LEFT_MODULE_ANGLE_OFFSET);
-  public static final COTSFalconSwerveConstants.moduleIDS mod1 =
-      new COTSFalconSwerveConstants.moduleIDS(
+  public static final SwerveModuleID mod1 =
+      new SwerveModuleID(
           FRONT_RIGHT_MODULE,
           SWERVE_CAN_BUS,
           FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID,
           FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID,
           FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID,
           FRONT_RIGHT_MODULE_ANGLE_OFFSET);
-  public static final COTSFalconSwerveConstants.moduleIDS mod2 =
-      new COTSFalconSwerveConstants.moduleIDS(
+  public static final SwerveModuleID mod2 =
+      new SwerveModuleID(
           BACK_LEFT_MODULE,
           SWERVE_CAN_BUS,
           BACK_LEFT_MODULE_DRIVE_MOTOR_ID,
           BACK_LEFT_MODULE_ANGLE_MOTOR_ID,
           BACK_LEFT_MODULE_ANGLE_ENCODER_ID,
           BACK_LEFT_MODULE_ANGLE_OFFSET);
-  public static final COTSFalconSwerveConstants.moduleIDS mod3 =
-      new COTSFalconSwerveConstants.moduleIDS(
+  public static final SwerveModuleID mod3 =
+      new SwerveModuleID(
           BACK_RIGHT_MODULE,
           SWERVE_CAN_BUS,
           BACK_RIGHT_MODULE_DRIVE_MOTOR_ID,
           BACK_RIGHT_MODULE_ANGLE_MOTOR_ID,
           BACK_RIGHT_MODULE_ANGLE_ENCODER_ID,
           BACK_RIGHT_MODULE_ANGLE_OFFSET);
+
+  /* Swerve Kinematics
+   * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
+  public static final SwerveDriveKinematics swerveKinematics =
+      new SwerveDriveKinematics(
+          new Translation2d(WHEELBASE / 2.0, TRACKWIDTH / 2.0),
+          new Translation2d(WHEELBASE / 2.0, -TRACKWIDTH / 2.0),
+          new Translation2d(-WHEELBASE / 2.0, TRACKWIDTH / 2.0),
+          new Translation2d(-WHEELBASE / 2.0, -TRACKWIDTH / 2.0));
 
   public static final double wheelCircumference = moduleType.wheelCircumference;
 
@@ -55,6 +67,9 @@ public final class DriveTrainConstants {
 
   /* Angle Encoder Invert */
   public static final boolean canCoderInvert = moduleType.canCoderInvert;
+
+  /* Angle Encoder Invert */
+  public static final double startAngleDegrees = 0.0;
 
   /* Swerve Current Limiting */
   public static final int driveContinuousCurrentLimit = 35;
@@ -94,8 +109,7 @@ public final class DriveTrainConstants {
   /** Meters per Second */
   public static final double maxSpeed = 4.5; // TODO: This must be tuned to specific robot
   /** Radians per Second */
-  public static final double maxAngularVelocity =
-      5.0; // 10.0; //TODO: This must be tuned to specific robot
+  public static final double maxAngularVelocity = 5.0; // TODO: This must be tuned to specific robot
 
   /* Neutral Modes */
   public static final NeutralMode angleNeutralMode = NeutralMode.Coast;

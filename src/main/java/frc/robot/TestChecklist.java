@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static frc.robot.Constants.*;
+
 import com.revrobotics.REVLibError;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
@@ -63,6 +65,10 @@ public class TestChecklist {
     public void setCurrentStep() {
       this.widget.withProperties(Map.of("Color when false", "red"));
     }
+
+    public boolean isMainStep() {
+      return this.column == 0;
+    }
   }
 
   private final ShuffleboardTab tabMain = Shuffleboard.getTab("Checklist");
@@ -81,9 +87,9 @@ public class TestChecklist {
   private int BATTERY_TEST = 0;
   private int DEVICES_TEST = 1;
   private int SWERVE_MOD_0 = 2;
-  // private int SWERVE_MOD_1 = 3;
-  // private int SWERVE_MOD_2 = 4;
-  // private int SWERVE_MOD_3 = 5;
+  private int SWERVE_MOD_1 = 3;
+  private int SWERVE_MOD_2 = 4;
+  private int SWERVE_MOD_3 = 5;
   private int SWERVE_MODULES = 6;
   private int GYRO_YAWTEST = 7;
   private int GYRO_PITCHTEST = 8;
@@ -111,10 +117,10 @@ public class TestChecklist {
       List.of(
           new ChecklistItem("1. Battery Test", this::checkBattery, 0, 1),
           new ChecklistItem("2. CAN Devices", this::checkDevices, 0, 2),
-          new ChecklistItem("3a. Module 0", this::checkSwerveModule0, 2, 3),
-          new ChecklistItem("3b. Module 1", this::checkSwerveModule1, 4, 3),
-          new ChecklistItem("3c. Module 2", this::checkSwerveModule2, 6, 3),
-          new ChecklistItem("3d. Module 3", this::checkSwerveModule3, 8, 3),
+          new ChecklistItem("3a. Module 0", () -> testSwerveModule(0), 2, 3),
+          new ChecklistItem("3b. Module 1", () -> testSwerveModule(1), 4, 3),
+          new ChecklistItem("3c. Module 2", () -> testSwerveModule(2), 6, 3),
+          new ChecklistItem("3d. Module 3", () -> testSwerveModule(3), 8, 3),
           new ChecklistItem("3. Swerve Module Test", this::checkSwerveModules, 0, 3),
           new ChecklistItem("4a. Yaw", this::checkGyroYaw, 2, 4),
           new ChecklistItem("4b. Pitch", this::checkGyroPitch, 4, 4),
@@ -199,6 +205,7 @@ public class TestChecklist {
     robot.arm.m_pH.disableCompressor();
 
     doResetTests();
+    resetTeleopWidget();
   }
 
   public void testPeriodic() {
@@ -244,33 +251,39 @@ public class TestChecklist {
   }
 
   public boolean getDoStep() {
-    return doStepWidget.getBoolean(false);
-  }
-
-  public boolean resetDoStepWidget() {
-    return doStepWidget.setBoolean(false);
+    boolean result = doStepWidget.getBoolean(false);
+    if (result) {
+      doStepWidget.setBoolean(false);
+    }
+    return result;
   }
 
   public boolean getSkipStep() {
-    return skipStepWidget.getBoolean(false);
-  }
-
-  public boolean resetSkipStepWidget() {
-    return skipStepWidget.setBoolean(false);
+    boolean result = skipStepWidget.getBoolean(false);
+    if (result) {
+      skipStepWidget.setBoolean(false);
+    }
+    return result;
   }
 
   public void doSkipStep() {
-    if (checklistStep < checkListSteps.size()) {
+    while (checklistStep < checkListSteps.size()) {
+      boolean isMain = checkListSteps.get(checklistStep).isMainStep();
       checkListSteps.get(checklistStep).setComplete(false);
       if (checklistStep < TESTS_COMPLETE) {
         checklistStep += 1;
       }
+      if (isMain || (checklistStep == TESTS_COMPLETE))
+        return;
     }
-    resetSkipStepWidget();
   }
 
   public boolean getResetTests() {
-    return resetTestsWidget.getBoolean(false);
+    boolean result = resetTestsWidget.getBoolean(false);
+    if (result) {
+      resetTestsWidget.setBoolean(false);
+    }
+    return result;
   }
 
   public void doResetTests() {
@@ -278,40 +291,35 @@ public class TestChecklist {
       step.reset();
     }
     checklistStep = 0;
-    resetDoStepWidget();
-    resetTestsWidget();
-    resetSkipStepWidget();
-  }
-
-  public boolean resetTestsWidget() {
-    return resetTestsWidget.setBoolean(false);
+    doStepWidget.setBoolean(false);
+    skipStepWidget.setBoolean(false);
+    resetTestsWidget.setBoolean(false);
   }
 
   public boolean getEnableTeleop() {
     return enableTeleopWidget.getBoolean(false);
   }
 
+  public boolean resetTeleopWidget() {
+    return enableTeleopWidget.setBoolean(false);
+  }
+
   public void doTeleop() {
-    double deadBand = RobotPreferences.stickDeadband.get();
-    double liftVal = MathUtil.applyDeadband(robot.oi.getArmLift(), deadBand);
-    double extendVal = MathUtil.applyDeadband(robot.oi.getArmExtend(), deadBand);
+    double liftVal = MathUtil.applyDeadband(robot.oi.getArmLift(), STICK_DEADBAND);
+    double extendVal = MathUtil.applyDeadband(robot.oi.getArmExtend(), STICK_DEADBAND);
     robot.arm.teleop(liftVal, extendVal);
 
     double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * robot.oi.getDriveScaling();
     double maxRotate =
         RobotPreferences.Swerve.maxAngularVelocity.get() * robot.oi.getRotateScaling();
-    double translationVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
-    double strafeVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), deadBand);
-    double rotationVal = MathUtil.applyDeadband(robot.oi.getRotate(), deadBand);
+    double translationVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), STICK_DEADBAND);
+    double strafeVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), STICK_DEADBAND);
+    double rotationVal = MathUtil.applyDeadband(robot.oi.getRotate(), STICK_DEADBAND);
 
     robot.driveTrain.drive(
         Math.copySign(translationVal * translationVal, translationVal) * maxSpeed,
         Math.copySign(strafeVal * strafeVal, strafeVal) * maxSpeed,
         Math.copySign(rotationVal * rotationVal, rotationVal) * maxRotate);
-  }
-
-  public boolean resetTeleopWidget() {
-    return enableTeleopWidget.setBoolean(false);
   }
 
   public boolean checkBattery() {
@@ -416,7 +424,7 @@ public class TestChecklist {
             "Verify motor is moving forward, angle is 90 degrees - flip toggle when complete";
       }
     } else if (item.state == 1) {
-      if (!getDoStep()) {
+      if (getDoStep()) {
         robot.driveTrain.testModule(mod, 0.0, 0.0);
         item.state = 2;
         item.status = "Module " + mod + " complete";
@@ -426,28 +434,14 @@ public class TestChecklist {
     return item.isComplete();
   }
 
-  public boolean checkSwerveModule0() {
-    return testSwerveModule(0);
-  }
-
-  public boolean checkSwerveModule1() {
-    return testSwerveModule(1);
-  }
-
-  public boolean checkSwerveModule2() {
-    return testSwerveModule(2);
-  }
-
-  public boolean checkSwerveModule3() {
-    return testSwerveModule(3);
-  }
-
   public boolean checkSwerveModules() {
     ChecklistItem item = checkListSteps.get(SWERVE_MODULES);
-    boolean result = true;
-    for (int mod = 0; mod < 4; mod++) {
-      result = result && checkListSteps.get(SWERVE_MOD_0 + mod).isComplete();
-    }
+
+    boolean result =
+        checkListSteps.get(SWERVE_MOD_0).isComplete()
+            && checkListSteps.get(SWERVE_MOD_1).isComplete()
+            && checkListSteps.get(SWERVE_MOD_2).isComplete()
+            && checkListSteps.get(SWERVE_MOD_3).isComplete();
     item.status = "Module Tests complete";
     return item.setComplete(result);
   }
@@ -467,7 +461,6 @@ public class TestChecklist {
         item.state = 2;
         item.status = "Gyro test complete";
         item.setComplete(true);
-        resetDoStepWidget();
       }
     }
     return item.isComplete();
@@ -488,7 +481,6 @@ public class TestChecklist {
         item.state = 2;
         item.status = "Gyro test complete";
         item.setComplete(true);
-        resetDoStepWidget();
       }
     }
     return item.isComplete();
@@ -507,14 +499,19 @@ public class TestChecklist {
   public boolean checkArmExtendSwitch() {
     ChecklistItem item = checkListSteps.get(LIMITSWITCH_ARMEXTENDTEST);
     if (item.state == 0) {
-      if (!robot.arm.isArmExtendMinLimitSwitch()) {
-        item.status = "Click Arm Extend Limit Switch";
+      if (robot.arm.isArmExtendMinLimitSwitch()) {
+        item.status = "Extending Arm";
+        robot.arm.m_armExtendMotor.set(0.1);
       } else {
         item.state = 1;
-        item.status = "Release Arm Extend Limit Switch";
+        item.status = "Click Arm Extend Limit Switch";
+        robot.arm.m_armExtendMotor.set(0.0);
       }
-    } else if ((item.state == 1) && !robot.arm.isArmExtendMinLimitSwitch()) {
+    } else if ((item.state == 1) && robot.arm.isArmExtendMinLimitSwitch()) {
       item.state = 2;
+      item.status = "Release Arm Extend Limit Switch";
+    } else if ((item.state == 2) && !robot.arm.isArmExtendMinLimitSwitch()) {
+      item.state = 3;
       item.status = "Arm Extend Limit Switch complete";
       item.setComplete(true);
     }
@@ -524,14 +521,19 @@ public class TestChecklist {
   public boolean checkArmLiftSwitch() {
     ChecklistItem item = checkListSteps.get(LIMITSWITCH_ARMLIFTTEST);
     if (item.state == 0) {
-      if (!robot.arm.isArmLiftMinLimitSwitch()) {
-        item.status = "Click Arm Lift Limit Switch";
+      if (robot.arm.isArmLiftMinLimitSwitch()) {
+        item.status = "Lifting Arm";
+        robot.arm.m_armLiftMotor.set(0.1);
       } else {
         item.state = 1;
-        item.status = "Release Arm Lift Limit Switch";
+        item.status = "Click Arm Lift Limit Switch";
+        robot.arm.m_armLiftMotor.set(0.0);
       }
-    } else if ((item.state == 1) && !robot.arm.isArmExtendMinLimitSwitch()) {
+    } else if ((item.state == 1) && robot.arm.isArmExtendMinLimitSwitch()) {
       item.state = 2;
+      item.status = "Release Arm Lift Limit Switch";
+    } else if ((item.state == 2) && !robot.arm.isArmExtendMinLimitSwitch()) {
+      item.state = 3;
       item.status = "Arm Lift Limit Switch complete";
       item.setComplete(true);
     }
@@ -590,7 +592,6 @@ public class TestChecklist {
       item.state = 2;
       item.status = "Arm Raised to Max Height - Measure";
       item.setComplete(true);
-      resetDoStepWidget();
     }
     return item.isComplete();
   }
@@ -609,7 +610,6 @@ public class TestChecklist {
       item.state = 2;
       item.status = "Arm Extended to Max Length - Measure";
       item.setComplete(true);
-      resetDoStepWidget();
     }
     return item.isComplete();
   }
@@ -633,7 +633,6 @@ public class TestChecklist {
       item.state = 3;
       item.status = "Arm Set to Zero Position";
       item.setComplete(true);
-      resetDoStepWidget();
     }
     return item.isComplete();
   }
@@ -659,13 +658,10 @@ public class TestChecklist {
         item.state = 1;
         item.status = "Compressor Enabled - waiting for full pressure";
       }
-    } else if (item.state == 1) {
-      if (!robot.arm.m_pH.getPressureSwitch()) {
-        item.state = 2;
-        item.status = "Compressor check complete";
-        item.setComplete(true);
-        resetDoStepWidget();
-      }
+    } else if ((item.state == 1) && !robot.arm.m_pH.getPressureSwitch()) {
+      item.state = 2;
+      item.status = "Compressor check complete";
+      item.setComplete(true);
     }
     return item.isComplete();
   }
@@ -679,7 +675,6 @@ public class TestChecklist {
         item.state = 1;
         item.status = "Arm Raised to Max Height - Measure";
         item.setComplete(true);
-        resetDoStepWidget();
       }
     }
     return item.isComplete();
@@ -704,7 +699,6 @@ public class TestChecklist {
       item.state = 3;
       item.status = "Actuator Test Complete";
       item.setComplete(true);
-      resetDoStepWidget();
     }
     return item.isComplete();
   }
@@ -730,12 +724,9 @@ public class TestChecklist {
         item.state = 1;
         item.status = "Press all Driver controller buttons/axis";
       }
-    } else if (item.state == 1) {
-      if (robot.oi.testResults(OperatorInterface.DRIVER)) {
-        item.state = 2;
-        item.setComplete(true);
-        resetDoStepWidget();
-      }
+    } else if ((item.state == 1) && robot.oi.testResults(OperatorInterface.DRIVER)) {
+      item.state = 2;
+      item.setComplete(true);
     }
     return item.isComplete();
   }
@@ -750,12 +741,9 @@ public class TestChecklist {
         item.state = 1;
         item.status = "Press all Operator controller buttons/axis";
       }
-    } else if (item.state == 1) {
-      if (robot.oi.testResults(OperatorInterface.OPERATOR)) {
-        item.state = 2;
-        item.setComplete(true);
-        resetDoStepWidget();
-      }
+    } else if ((item.state == 1) && robot.oi.testResults(OperatorInterface.OPERATOR)) {
+      item.state = 2;
+      item.setComplete(true);
     }
     return item.isComplete();
   }
