@@ -157,10 +157,17 @@ public class Arm extends SubsystemBase {
       double liftPos = this.getArmLiftPosition();
       double extendPos = this.getArmExtendPosition();
       double newExtendSetpoint = m_armExtendSetpoint;
+      double newLiftSetPoint = m_armLiftSetpoint;
+      boolean goUp = (newLiftSetPoint - liftPos) > 1.0;
+
+      double checkLiftPos = goUp ? liftPos : Math.max(liftPos - 15, 0.0);
 
       Pair<Double, Double> lastPair = new Pair<Double, Double>(0.0, 0.0);
       for (Pair<Double, Double> pair : liftProfile) {
-        if (liftPos <= pair.getFirst()) {
+        if (checkLiftPos <= pair.getFirst()) {
+          if (!goUp && (extendPos > pair.getSecond())) {
+            newLiftSetPoint = Math.max(pair.getFirst(), m_armLiftSetpoint);
+          }
           double htPct = (liftPos - lastPair.getFirst()) / (pair.getFirst() - lastPair.getFirst());
           newExtendSetpoint =
               Math.floor(
@@ -171,29 +178,32 @@ public class Arm extends SubsystemBase {
         }
         lastPair = pair;
       }
-      boolean liftDone = Math.abs(liftPos - m_armLiftSetpoint) <= 1.0;
+      if (this.isGripClawOpen()) {
+        newLiftSetPoint = Math.max(newLiftSetPoint, ArmConstants.armLiftClawSafetyHeight);
+      }
+
+      boolean liftDone = Math.abs(liftPos - newLiftSetPoint) <= 1.0;
       boolean extendDone = Math.abs(extendPos - newExtendSetpoint) <= 1.0;
-      boolean goUp = (m_armLiftSetpoint - liftPos) > 1.0;
-      boolean inSafeZoneHt = (liftPos >= 104.0);
-      boolean inSafeZoneLn = (extendPos < 180.0);
+      boolean inSafeZoneHt = (liftPos >= ArmConstants.armLiftExtendSafetyHeight); //  104.0);
+      boolean inSafeZoneLn = inSafeZoneHt || (extendPos <= ArmConstants.armExtendSafetyLength); //  180.0);
 
       if (!liftDone && goUp) {
-        m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
+        m_armLiftController.setReference(newLiftSetPoint, CANSparkMax.ControlType.kPosition);
         m_armExtendController.setReference(
             inSafeZoneHt ? newExtendSetpoint : extendPos, CANSparkMax.ControlType.kPosition);
-        // System.out.println("goUp: ht:" + liftPos + " ln:" + extendPos + " lift:" +
-        // m_armLiftSetpoint + " ext:" + newExtendSetpoint);
+        System.out.println("goUp: ht:" + liftPos + " ln:" + extendPos + " lift:" +
+        newLiftSetPoint + " ext:" + newExtendSetpoint);
       } else if (!extendDone && !goUp) {
         m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
         m_armLiftController.setReference(
-            inSafeZoneLn ? m_armLiftSetpoint : liftPos, CANSparkMax.ControlType.kPosition);
-        // System.out.println("extend: ht:" + liftPos + " ln:" + extendPos + " lift:" +
-        // m_armLiftSetpoint + " ext:" + newExtendSetpoint);
+            inSafeZoneLn ? newLiftSetPoint : liftPos, CANSparkMax.ControlType.kPosition);
+        System.out.println("extend: ht:" + liftPos + " ln:" + extendPos + " lift:" +
+        newLiftSetPoint + " ext:" + newExtendSetpoint);
       } else if (!liftDone || !extendDone) {
-        m_armLiftController.setReference(m_armLiftSetpoint, CANSparkMax.ControlType.kPosition);
+        m_armLiftController.setReference(newLiftSetPoint, CANSparkMax.ControlType.kPosition);
         m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
-        // System.out.println("liftDone: ht:" + liftPos + " ln:" + extendPos + " lift:" +
-        // m_armLiftSetpoint + " ext:" + newExtendSetpoint);
+        System.out.println("liftDone: ht:" + liftPos + " ln:" + extendPos + " lift:" +
+        newLiftSetPoint + " ext:" + newExtendSetpoint);
       }
     }
   }
