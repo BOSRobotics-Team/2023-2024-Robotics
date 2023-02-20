@@ -395,6 +395,7 @@ public class Arm extends SubsystemBase {
     armLay.addNumber("Extend Position", m_armExtendEncoder::getPosition);
     armLay.addNumber("Extend SetPoint", () -> m_armExtendSetpoint);
     armLay.addBoolean("Extend LimitSwitch", this::isArmExtendMinLimitSwitch);
+    armLay.addBoolean("Target Cones", () -> m_targetCones);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("ARM");
