@@ -167,7 +167,8 @@ public class RobotContainer {
     oi.getArmPosition1().onTrue(Commands.runOnce(() -> arm.setArmPosition(1), arm));
     oi.getArmPosition2().onTrue(Commands.runOnce(() -> arm.setArmPosition(2), arm));
     oi.getArmPosition3().onTrue(Commands.runOnce(() -> arm.setArmPosition(3), arm));
-    oi.getArmTargetToggle().onTrue(Commands.runOnce(() -> arm.targetCones(!arm.isTargetCone()), arm));
+    oi.getArmTargetToggle()
+        .onTrue(Commands.runOnce(() -> arm.targetCones(!arm.isTargetCone()), arm));
   }
 
   /**
@@ -188,10 +189,14 @@ public class RobotContainer {
     // SmartDashboard Buttons
     SmartDashboard.putData("Auto mode", chooser);
     SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
-    SmartDashboard.putData("SetArmPosition (Home)", Commands.runOnce(() -> arm.setArmPosition(0), arm));
-    SmartDashboard.putData("SetArmPosition (Floor)", Commands.runOnce(() -> arm.setArmPosition(1), arm));
-    SmartDashboard.putData("SetArmPosition (Middle)", Commands.runOnce(() -> arm.setArmPosition(2), arm));
-    SmartDashboard.putData("SetArmPosition (Top)", Commands.runOnce(() -> arm.setArmPosition(3), arm));
+    SmartDashboard.putData(
+        "SetArmPosition (Home)", Commands.runOnce(() -> arm.setArmPosition(0), arm));
+    SmartDashboard.putData(
+        "SetArmPosition (Floor)", Commands.runOnce(() -> arm.setArmPosition(1), arm));
+    SmartDashboard.putData(
+        "SetArmPosition (Middle)", Commands.runOnce(() -> arm.setArmPosition(2), arm));
+    SmartDashboard.putData(
+        "SetArmPosition (Top)", Commands.runOnce(() -> arm.setArmPosition(3), arm));
 
     Shuffleboard.getTab("MAIN").add(chooser).withSize(2, 1);
   }

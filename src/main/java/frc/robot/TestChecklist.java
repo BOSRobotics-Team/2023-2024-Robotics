@@ -273,8 +273,9 @@ public class TestChecklist {
       if (checklistStep < TESTS_COMPLETE) {
         checklistStep += 1;
       }
-      if (isMain || (checklistStep == TESTS_COMPLETE))
+      if (isMain || (checklistStep == TESTS_COMPLETE)) {
         return;
+      }
     }
   }
 

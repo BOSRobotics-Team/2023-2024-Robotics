@@ -105,7 +105,7 @@ public class Arm extends SubsystemBase {
           new SingleJointedArmSimWrapper(
               new SingleJointedArmSim(
                   DCMotor.getNEO(1),
-                  768.0,
+                  ArmConstants.armLiftGearRatio,
                   SingleJointedArmSim.estimateMOI(Units.inchesToMeters(30.0), 5.0),
                   Units.inchesToMeters(30.0),
                   0.0,
@@ -116,7 +116,13 @@ public class Arm extends SubsystemBase {
       mExtendSim =
           new ElevatorSimWrapper(
               new ElevatorSim(
-                  DCMotor.getNEO(1), 80.0, 3.0, Units.inchesToMeters(1.0), 0.0, 550.0, false),
+                  DCMotor.getNEO(1),
+                  ArmConstants.armExtendGearRatio,
+                  3.0,
+                  Units.inchesToMeters(1.0),
+                  0.0,
+                  550.0,
+                  false),
               new RevMotorControllerSimWrapper(m_armExtendMotor),
               RevEncoderSimWrapper.create(m_armExtendMotor));
     }
@@ -127,9 +133,15 @@ public class Arm extends SubsystemBase {
 
   void initLiftProfile() {
     liftProfile.clear();
+
+    liftProfile.add(new Pair<Double, Double>(0.0, 0.0));
     for (double[] pairs : ArmConstants.armLiftProfile) {
       liftProfile.add(new Pair<Double, Double>(pairs[0], pairs[1]));
     }
+    liftProfile.add(
+        new Pair<Double, Double>(
+            ArmConstants.armLiftMaxPosition, ArmConstants.armExtendMaxPosition));
+
     // String liftProfileStr = RobotPreferences.ArmLift.liftProfileStr();
     // if (!liftProfileStr.isEmpty()) {
     //   liftProfile.clear();
@@ -137,7 +149,8 @@ public class Arm extends SubsystemBase {
     //     String[] items = pair.split(":");
     //     if (items.length > 1) {
     //       liftProfile.add(
-    //           new Pair<Double, Double>(Double.parseDouble(items[0]), Double.parseDouble(items[1])));
+    //           new Pair<Double, Double>(Double.parseDouble(items[0]),
+    // Double.parseDouble(items[1])));
     //     }
     //   }
     // }
@@ -158,53 +171,82 @@ public class Arm extends SubsystemBase {
       double extendPos = this.getArmExtendPosition();
       double newExtendSetpoint = m_armExtendSetpoint;
       double newLiftSetPoint = m_armLiftSetpoint;
-      boolean goUp = (newLiftSetPoint - liftPos) > 1.0;
 
-      double checkLiftPos = goUp ? liftPos : Math.max(liftPos - 15, 0.0);
+      // boolean goUp = (newLiftSetPoint - liftPos) > ArmConstants.armLiftMoveThreshold;
+      boolean goDn = (newLiftSetPoint - liftPos) < ArmConstants.armLiftMoveThreshold;
 
       Pair<Double, Double> lastPair = new Pair<Double, Double>(0.0, 0.0);
       for (Pair<Double, Double> pair : liftProfile) {
-        if (checkLiftPos <= pair.getFirst()) {
-          if (!goUp && (extendPos > pair.getSecond())) {
-            newLiftSetPoint = Math.max(pair.getFirst(), m_armLiftSetpoint);
-          }
-          double htPct = (liftPos - lastPair.getFirst()) / (pair.getFirst() - lastPair.getFirst());
+        if ((lastPair.getFirst() <= liftPos) && (liftPos <= pair.getFirst())) {
           newExtendSetpoint =
-              Math.floor(
-                  Math.min(
-                      MathUtil.interpolate(lastPair.getSecond(), pair.getSecond(), htPct),
-                      m_armExtendSetpoint));
+              Math.min(newExtendSetpoint, goDn ? lastPair.getSecond() : pair.getSecond());
+        }
+        if ((lastPair.getSecond() <= extendPos) && (extendPos <= pair.getSecond())) {
+          if (goDn) {
+            newLiftSetPoint = Math.min(liftPos, lastPair.getFirst());
+          }
           break;
         }
         lastPair = pair;
       }
+      // double htPct = (liftPos - lastPair.getFirst()) / (pair.getFirst() - lastPair.getFirst());
+      // newExtendSetpoint =
+      //     Math.floor(
+      //         Math.min(
+      //             MathUtil.interpolate(lastPair.getSecond(), pair.getSecond(), htPct),
+      //             m_armExtendSetpoint));
+
       if (this.isGripClawOpen()) {
         newLiftSetPoint = Math.max(newLiftSetPoint, ArmConstants.armLiftClawSafetyHeight);
       }
 
-      boolean liftDone = Math.abs(liftPos - newLiftSetPoint) <= 1.0;
-      boolean extendDone = Math.abs(extendPos - newExtendSetpoint) <= 1.0;
-      boolean inSafeZoneHt = (liftPos >= ArmConstants.armLiftExtendSafetyHeight); //  104.0);
-      boolean inSafeZoneLn = inSafeZoneHt || (extendPos <= ArmConstants.armExtendSafetyLength); //  180.0);
+      // boolean inSafeZoneHt = true; //(liftPos >= ArmConstants.armLiftExtendSafetyHeight); //
+      // 104.0);
+      // boolean inSafeZoneLn = inSafeZoneHt || (extendPos <= ArmConstants.armExtendSafetyLength);
+      // //  180.0);
 
-      if (!liftDone && goUp) {
+      boolean liftDone = Math.abs(liftPos - newLiftSetPoint) <= ArmConstants.armLiftMoveThreshold;
+      if (!liftDone) {
         m_armLiftController.setReference(newLiftSetPoint, CANSparkMax.ControlType.kPosition);
-        m_armExtendController.setReference(
-            inSafeZoneHt ? newExtendSetpoint : extendPos, CANSparkMax.ControlType.kPosition);
-        System.out.println("goUp: ht:" + liftPos + " ln:" + extendPos + " lift:" +
-        newLiftSetPoint + " ext:" + newExtendSetpoint);
-      } else if (!extendDone && !goUp) {
-        m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
-        m_armLiftController.setReference(
-            inSafeZoneLn ? newLiftSetPoint : liftPos, CANSparkMax.ControlType.kPosition);
-        System.out.println("extend: ht:" + liftPos + " ln:" + extendPos + " lift:" +
-        newLiftSetPoint + " ext:" + newExtendSetpoint);
-      } else if (!liftDone || !extendDone) {
-        m_armLiftController.setReference(newLiftSetPoint, CANSparkMax.ControlType.kPosition);
-        m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
-        System.out.println("liftDone: ht:" + liftPos + " ln:" + extendPos + " lift:" +
-        newLiftSetPoint + " ext:" + newExtendSetpoint);
+        System.out.println(
+            "armLift - pos:"
+                + liftPos
+                + " setPt:"
+                + m_armLiftSetpoint
+                + " newPt:"
+                + newLiftSetPoint);
       }
+      boolean extendDone =
+          Math.abs(extendPos - newExtendSetpoint) <= ArmConstants.armExtendMoveThreshold;
+      if (!extendDone) {
+        m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
+        System.out.println(
+            "armExtend - pos:"
+                + extendPos
+                + " setPt:"
+                + m_armExtendSetpoint
+                + " newPt:"
+                + newExtendSetpoint);
+      }
+
+      // if (!liftDone && goUp) {
+      //   m_armLiftController.setReference(newLiftSetPoint, CANSparkMax.ControlType.kPosition);
+      //   m_armExtendController.setReference(
+      //       inSafeZoneHt ? newExtendSetpoint : extendPos, CANSparkMax.ControlType.kPosition);
+      //   System.out.println("goUp: ht:" + liftPos + " ln:" + extendPos + " lift:" +
+      //   newLiftSetPoint + " ext:" + newExtendSetpoint);
+      // } else if (!extendDone && !goUp) {
+      //   m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
+      //   m_armLiftController.setReference(
+      //       inSafeZoneLn ? newLiftSetPoint : liftPos, CANSparkMax.ControlType.kPosition);
+      //   System.out.println("extend: ht:" + liftPos + " ln:" + extendPos + " lift:" +
+      //   newLiftSetPoint + " ext:" + newExtendSetpoint);
+      // } else if (!liftDone || !extendDone) {
+      //   m_armLiftController.setReference(newLiftSetPoint, CANSparkMax.ControlType.kPosition);
+      //   m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
+      //   System.out.println("liftDone: ht:" + liftPos + " ln:" + extendPos + " lift:" +
+      //   newLiftSetPoint + " ext:" + newExtendSetpoint);
+      // }
     }
   }
 
@@ -215,7 +257,7 @@ public class Arm extends SubsystemBase {
       m_armExtendSetpoint = 0.0;
 
       m_Resetting = 2;
-      m_armLiftMotor.set(-0.1);
+      m_armLiftMotor.set(ArmConstants.armLiftResetOutput);
     }
     if ((m_Resetting == 2) && m_armLiftLimit.isPressed()) {
       m_armLiftEncoder.setPosition(0.0);
@@ -228,7 +270,7 @@ public class Arm extends SubsystemBase {
 
   public void resetArm() {
     m_Resetting = 1;
-    m_armExtendMotor.set(-0.2);
+    m_armExtendMotor.set(ArmConstants.armExtendResetOutput);
   }
 
   public boolean isResetting() {
@@ -258,7 +300,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isArmRaised() {
-    return Math.abs(getArmLiftPosition() - m_armLiftSetpoint) < 1.0;
+    return Math.abs(getArmLiftPosition() - m_armLiftSetpoint) < ArmConstants.armLiftMoveThreshold;
   }
 
   public void setArmExtendPosition(double position) {
@@ -284,7 +326,8 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isArmExtended() {
-    return Math.abs(getArmExtendPosition() - m_armExtendSetpoint) < 1.0;
+    return Math.abs(getArmExtendPosition() - m_armExtendSetpoint)
+        < ArmConstants.armExtendMoveThreshold;
   }
 
   public void gripOpen() {
@@ -315,11 +358,11 @@ public class Arm extends SubsystemBase {
     return m_armLiftLimit.isPressed();
   }
 
-public boolean isTargetCone() {
-  return m_targetCones;
-}
+  public boolean isTargetCone() {
+    return m_targetCones;
+  }
 
-  public void targetCones( boolean enable ) {
+  public void targetCones(boolean enable) {
     m_targetCones = enable;
   }
 
@@ -335,8 +378,9 @@ public boolean isTargetCone() {
   }
 
   public void setArmPosition(int pos) {
-    if ((pos >= 0) && (pos < 4)) { 
-      double[] position = m_targetCones ? ArmConstants.armPositionCone[pos] : ArmConstants.armPositionCube[pos];
+    if ((pos >= 0) && (pos < ArmConstants.armPositionCone.length)) {
+      double[] position =
+          m_targetCones ? ArmConstants.armPositionCone[pos] : ArmConstants.armPositionCube[pos];
       this.setArmLiftPosition(position[0]);
       this.setArmExtendPosition(position[1]);
     }

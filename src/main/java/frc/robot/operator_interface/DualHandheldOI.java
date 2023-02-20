@@ -71,5 +71,4 @@ public class DualHandheldOI extends SingleHandheldOI {
   public Trigger getArmTargetToggle() {
     return new Trigger(operator::getRightBumper);
   }
-
 }
