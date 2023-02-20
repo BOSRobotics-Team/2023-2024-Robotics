@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GyroIONavX implements GyroIO {
   private AHRS gyro = null;
@@ -129,29 +128,28 @@ public class GyroIONavX implements GyroIO {
   }
 
   public void logPeriodic() {
-    /* Smart dash plots */
-
-    SmartDashboard.putBoolean("IMU_Connected", gyro.isConnected());
-    // SmartDashboard.putBoolean( "IMU_IsCalibrating",    gyro.isCalibrating());
-    SmartDashboard.putNumber("IMU_Yaw", gyro.getYaw());
-    SmartDashboard.putNumber("IMU_Pitch", gyro.getPitch());
-    SmartDashboard.putNumber("IMU_Roll", gyro.getRoll());
+    // Smart dash plots
+    // SmartDashboard.putBoolean("IMU_Connected", gyro.isConnected());
+    // // SmartDashboard.putBoolean( "IMU_IsCalibrating",    gyro.isCalibrating());
+    // SmartDashboard.putNumber("IMU_Yaw", gyro.getYaw());
+    // SmartDashboard.putNumber("IMU_Pitch", gyro.getPitch());
+    // SmartDashboard.putNumber("IMU_Roll", gyro.getRoll());
 
     /* Display tilt-corrected, Magnetometer-based heading (requires magnetometer calibration to be useful)                                   */
-    SmartDashboard.putNumber("IMU_CompassHeading", gyro.getCompassHeading());
+    // SmartDashboard.putNumber("IMU_CompassHeading", gyro.getCompassHeading());
 
     /* Display 9-axis Heading (requires magnetometer calibration to be useful)  */
-    SmartDashboard.putNumber("IMU_FusedHeading", gyro.getFusedHeading());
+    // SmartDashboard.putNumber("IMU_FusedHeading", gyro.getFusedHeading());
 
     /* These functions are compatible w/the WPI Gyro Class */
-    SmartDashboard.putNumber("IMU_TotalYaw", gyro.getAngle());
-    SmartDashboard.putNumber("IMU_YawRateDPS", gyro.getRate());
+    // SmartDashboard.putNumber("IMU_TotalYaw", gyro.getAngle());
+    // SmartDashboard.putNumber("IMU_YawRateDPS", gyro.getRate());
 
     /* Display Processed Acceleration Data (Linear Acceleration, Motion Detect) */
     //          SmartDashboard.putNumber(  "IMU_Accel_X",          gyro.getWorldLinearAccelX());
     //          SmartDashboard.putNumber(  "IMU_Accel_Y",          gyro.getWorldLinearAccelY());
-    SmartDashboard.putBoolean("IMU_IsMoving", gyro.isMoving());
-    SmartDashboard.putBoolean("IMU_IsRotating", gyro.isRotating());
+    // SmartDashboard.putBoolean("IMU_IsMoving", gyro.isMoving());
+    // SmartDashboard.putBoolean("IMU_IsRotating", gyro.isRotating());
 
     /* Display estimates of velocity/displacement.  Note that these values are  */
     /* not expected to be accurate enough for estimating robot position on a    */

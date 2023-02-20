@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.gyro.GyroIO;
@@ -647,7 +646,7 @@ public class SwerveDriveTrain extends SubsystemBase {
       tab.addNumber("CoG X", () -> this.centerGravity.getX());
       tab.addNumber("CoG Y", () -> this.centerGravity.getY());
 
-      SmartDashboard.putData("Field", m_field);
+      // SmartDashboard.putData("Field", m_field);
     }
 
     if (TESTING) {

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -187,16 +186,16 @@ public class RobotContainer {
     chooser.setDefaultOption("Do Nothing", Commands.none());
 
     // SmartDashboard Buttons
-    SmartDashboard.putData("Auto mode", chooser);
-    SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
-    SmartDashboard.putData(
-        "SetArmPosition (Home)", Commands.runOnce(() -> arm.setArmPosition(0), arm));
-    SmartDashboard.putData(
-        "SetArmPosition (Floor)", Commands.runOnce(() -> arm.setArmPosition(1), arm));
-    SmartDashboard.putData(
-        "SetArmPosition (Middle)", Commands.runOnce(() -> arm.setArmPosition(2), arm));
-    SmartDashboard.putData(
-        "SetArmPosition (Top)", Commands.runOnce(() -> arm.setArmPosition(3), arm));
+    // SmartDashboard.putData("Auto mode", chooser);
+    // SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
+    // SmartDashboard.putData(
+    //     "SetArmPosition (Home)", Commands.runOnce(() -> arm.setArmPosition(0), arm));
+    // SmartDashboard.putData(
+    //     "SetArmPosition (Floor)", Commands.runOnce(() -> arm.setArmPosition(1), arm));
+    // SmartDashboard.putData(
+    //     "SetArmPosition (Middle)", Commands.runOnce(() -> arm.setArmPosition(2), arm));
+    // SmartDashboard.putData(
+    //     "SetArmPosition (Top)", Commands.runOnce(() -> arm.setArmPosition(3), arm));
 
     Shuffleboard.getTab("MAIN").add(chooser).withSize(2, 1);
   }
