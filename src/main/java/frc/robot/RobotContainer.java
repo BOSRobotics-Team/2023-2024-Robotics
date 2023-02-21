@@ -3,8 +3,8 @@ package frc.robot;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
-// import edu.wpi.first.cameraserver.CameraServer;
-// import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -70,11 +70,11 @@ public class RobotContainer {
     SwerveModuleIO brModule;
 
     if (RobotBase.isReal()) {
-      // cam0 = CameraServer.startAutomaticCapture(0);
+      cam0 = CameraServer.startAutomaticCapture(0);
       // cam1 = CameraServer.startAutomaticCapture(1);
       // cam2 = CameraServer.startAutomaticCapture(2);
 
-      // cam0.setConnectVerbose(0);
+      cam0.setConnectVerbose(0);
       // cam1.setConnectVerbose(0);
       // cam2.setConnectVerbose(0);
 

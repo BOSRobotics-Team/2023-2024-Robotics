@@ -208,25 +208,13 @@ public class Arm extends SubsystemBase {
       boolean liftDone = Math.abs(liftPos - newLiftSetPoint) <= ArmConstants.armLiftMoveThreshold;
       if (!liftDone) {
         m_armLiftController.setReference(newLiftSetPoint, CANSparkMax.ControlType.kPosition);
-        System.out.println(
-            "armLift - pos:"
-                + liftPos
-                + " setPt:"
-                + m_armLiftSetpoint
-                + " newPt:"
-                + newLiftSetPoint);
+        System.out.println("armLift - pos:" + liftPos + " setPt:" + m_armLiftSetpoint + " newPt:" + newLiftSetPoint);
       }
       boolean extendDone =
           Math.abs(extendPos - newExtendSetpoint) <= ArmConstants.armExtendMoveThreshold;
       if (!extendDone) {
         m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
-        System.out.println(
-            "armExtend - pos:"
-                + extendPos
-                + " setPt:"
-                + m_armExtendSetpoint
-                + " newPt:"
-                + newExtendSetpoint);
+        System.out.println("armExtend - pos:" + extendPos + " setPt:" + m_armExtendSetpoint + " newPt:" + newExtendSetpoint);
       }
 
       // if (!liftDone && goUp) {
