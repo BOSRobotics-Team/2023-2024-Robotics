@@ -173,7 +173,7 @@ public class Arm extends SubsystemBase {
       double newLiftSetPoint = m_armLiftSetpoint;
 
       // boolean goUp = (newLiftSetPoint - liftPos) > ArmConstants.armLiftMoveThreshold;
-      boolean goDn = (newLiftSetPoint - liftPos) < ArmConstants.armLiftMoveThreshold;
+      boolean goDn = (newLiftSetPoint - liftPos) < -ArmConstants.armLiftMoveThreshold;
 
       Pair<Double, Double> lastPair = new Pair<Double, Double>(0.0, 0.0);
       for (Pair<Double, Double> pair : liftProfile) {
@@ -183,7 +183,7 @@ public class Arm extends SubsystemBase {
         }
         if ((lastPair.getSecond() <= extendPos) && (extendPos <= pair.getSecond())) {
           if (goDn) {
-            newLiftSetPoint = Math.min(liftPos, lastPair.getFirst());
+            newLiftSetPoint = Math.min(liftPos, Math.max(newLiftSetPoint, lastPair.getFirst()));
           }
           break;
         }
@@ -196,9 +196,9 @@ public class Arm extends SubsystemBase {
       //             MathUtil.interpolate(lastPair.getSecond(), pair.getSecond(), htPct),
       //             m_armExtendSetpoint));
 
-      if (this.isGripClawOpen()) {
-        newLiftSetPoint = Math.max(newLiftSetPoint, ArmConstants.armLiftClawSafetyHeight);
-      }
+      // if (this.isGripClawOpen()) {
+      //   newLiftSetPoint = Math.max(newLiftSetPoint, ArmConstants.armLiftClawSafetyHeight);
+      // }
 
       // boolean inSafeZoneHt = true; //(liftPos >= ArmConstants.armLiftExtendSafetyHeight); //
       // 104.0);

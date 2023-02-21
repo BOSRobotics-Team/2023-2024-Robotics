@@ -8,8 +8,8 @@ public final class ArmConstants {
   public static final double armLiftKIZ = 0.0;
   public static final double armLiftKFF = 0.000156;
   public static final double armLiftGearRatio = 768.0; // 1:768
-  public static final double armLiftMaxOutput = 0.4;
-  public static final double armLiftMinOutput = -0.4;
+  public static final double armLiftMaxOutput = 0.65;
+  public static final double armLiftMinOutput = -0.65;
   public static final double armLiftResetOutput = -0.1;
   public static final double armLiftMaxRPM = 5700.0;
   public static final double armLiftMinPosition = 0.0;
@@ -22,8 +22,8 @@ public final class ArmConstants {
   public static final double armExtendKIZ = 0.0;
   public static final double armExtendKFF = 0.000156;
   public static final double armExtendGearRatio = 48.0; // 1:48
-  public static final double armExtendMaxOutput = 0.5;
-  public static final double armExtendMinOutput = -0.5;
+  public static final double armExtendMaxOutput = 0.85;
+  public static final double armExtendMinOutput = -0.85;
   public static final double armExtendResetOutput = -0.1;
   public static final double armExtendMaxRPM = 5700.0;
   public static final double armExtendMinPosition = 0.0;
