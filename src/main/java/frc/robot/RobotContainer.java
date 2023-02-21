@@ -54,7 +54,7 @@ public class RobotContainer {
   private final TestChecklist test;
 
   /* Cameras */
-  // public UsbCamera cam0;
+  public UsbCamera cam0;
   // public UsbCamera cam1;
   // public UsbCamera cam2;
 
