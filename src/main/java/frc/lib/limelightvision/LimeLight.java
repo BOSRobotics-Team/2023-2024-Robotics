@@ -17,7 +17,7 @@ public class LimeLight {
 
   class PeriodicRunnable implements java.lang.Runnable {
     public void run() {
-      resetPilelineLatency();
+      resetPipelineLatency();
       try {
         Thread.sleep(50);
       } catch (InterruptedException e) {
@@ -117,7 +117,7 @@ public class LimeLight {
     return tl.getDouble(0.0);
   }
 
-  private void resetPilelineLatency() {
+  private void resetPipelineLatency() {
     m_table.getEntry("tl").setValue(0.0);
   }
   // Setters

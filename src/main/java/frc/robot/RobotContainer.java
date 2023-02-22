@@ -3,10 +3,11 @@ package frc.robot;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
+// import edu.wpi.first.cameraserver.CameraServer;
+// import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.gyro.*;
+import frc.lib.limelightvision.LimelightHelpers;
 import frc.lib.swerve.*;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
@@ -54,7 +56,7 @@ public class RobotContainer {
   private final TestChecklist test;
 
   /* Cameras */
-  public UsbCamera cam0;
+  // public UsbCamera cam0;
   // public UsbCamera cam1;
   // public UsbCamera cam2;
 
@@ -70,13 +72,10 @@ public class RobotContainer {
     SwerveModuleIO brModule;
 
     if (RobotBase.isReal()) {
-      cam0 = CameraServer.startAutomaticCapture(0);
-      // cam1 = CameraServer.startAutomaticCapture(1);
-      // cam2 = CameraServer.startAutomaticCapture(2);
-
-      cam0.setConnectVerbose(0);
-      // cam1.setConnectVerbose(0);
-      // cam2.setConnectVerbose(0);
+      // Make sure you only configure port forwarding once in your robot code.
+      for (int port = 5800; port <= 5805; port++) {
+        PortForwarder.add(port, Constants.LIMELIGHTURL, port);
+      }
 
       flModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod0);
       frModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod1);
@@ -104,6 +103,21 @@ public class RobotContainer {
     updateOI();
     configureAutoCommands();
     configureAutoPaths();
+
+    // cam0 = CameraServer.startAutomaticCapture(0);
+    // cam0.setConnectVerbose(0);
+
+    // cam1 = CameraServer.startAutomaticCapture(1);
+    // cam1.setConnectVerbose(0);
+
+    // cam2 = CameraServer.startAutomaticCapture(2);
+    // cam2.setConnectVerbose(0);
+
+    LimelightHelpers.setLEDMode_ForceOff(Constants.LIMELIGHTNAME); // setLEDMode_PipelineControl
+    LimelightHelpers.setCameraMode_Driver(Constants.LIMELIGHTNAME); // setCameraMode_Processor
+    LimelightHelpers.setStreamMode_Standard(Constants.LIMELIGHTNAME);
+    // LimelightHelpers.setStreamMode_PiPMain("");
+    // LimelightHelpers.setStreamMode_PiPSecondary("");
   }
 
   /**
