@@ -11,6 +11,9 @@ public final class Constants {
   public static final int GYRO_ID = 20; // DriveGyro.DRIVEGYRO_NAVX;
   public static final int GYRO_DIRECTION = GyroIO.DRIVEGYRO_CCW; // Always ensure Gyro is CCW+ CW-
 
+  public static final String LIMELIGHTNAME = "limelight";
+  public static final String LIMELIGHTURL = "limelight.local";
+
   public static final int PNEUMATICSHUB_ID = 29;
   public static final int SOLENOID_FWD_CHANNEL = 0;
   public static final int SOLENOID_REV_CHANNEL = 1;
