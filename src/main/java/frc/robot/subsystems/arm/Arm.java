@@ -172,7 +172,7 @@ public class Arm extends SubsystemBase {
       double newExtendSetpoint = m_armExtendSetpoint;
       double newLiftSetPoint = m_armLiftSetpoint;
 
-      // boolean goUp = (newLiftSetPoint - liftPos) > ArmConstants.armLiftMoveThreshold;
+      boolean goUp = (newLiftSetPoint - liftPos) > ArmConstants.armLiftMoveThreshold;
       boolean goDn = (newLiftSetPoint - liftPos) < -ArmConstants.armLiftMoveThreshold;
 
       Pair<Double, Double> lastPair = new Pair<Double, Double>(0.0, 0.0);
@@ -189,6 +189,11 @@ public class Arm extends SubsystemBase {
         }
         lastPair = pair;
       }
+      boolean inSafeZoneHt = (liftPos >= ArmConstants.armLiftExtendSafetyHeight);
+      if (goUp && !inSafeZoneHt) {
+        newExtendSetpoint = Math.min(newExtendSetpoint, extendPos);
+      }
+
       // double htPct = (liftPos - lastPair.getFirst()) / (pair.getFirst() - lastPair.getFirst());
       // newExtendSetpoint =
       //     Math.floor(
@@ -208,25 +213,29 @@ public class Arm extends SubsystemBase {
       boolean liftDone = Math.abs(liftPos - newLiftSetPoint) <= ArmConstants.armLiftMoveThreshold;
       if (!liftDone) {
         m_armLiftController.setReference(newLiftSetPoint, CANSparkMax.ControlType.kPosition);
-        System.out.println(
-            "armLift - pos:"
-                + liftPos
-                + " setPt:"
-                + m_armLiftSetpoint
-                + " newPt:"
-                + newLiftSetPoint);
+        if (DEBUGGING) {
+          System.out.println(
+              "armLift - pos:"
+                  + liftPos
+                  + " setPt:"
+                  + m_armLiftSetpoint
+                  + " newPt:"
+                  + newLiftSetPoint);
+        }
       }
       boolean extendDone =
           Math.abs(extendPos - newExtendSetpoint) <= ArmConstants.armExtendMoveThreshold;
       if (!extendDone) {
         m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
-        System.out.println(
+        if (DEBUGGING) {
+          System.out.println(
             "armExtend - pos:"
                 + extendPos
                 + " setPt:"
                 + m_armExtendSetpoint
                 + " newPt:"
                 + newExtendSetpoint);
+        }
       }
 
       // if (!liftDone && goUp) {
