@@ -2,6 +2,30 @@ package frc.lib.swerve;
 
 /** Swerve module hardware abstraction interface. */
 public interface SwerveModuleIO {
+  public static class SwerveModuleID {
+    public int moduleNumber; // the module number (0-3); primarily used for logging
+    public String canBusID; // name of the CAN bus
+    public int driveMotorID; // the CAN ID of the drive motor
+    public int angleMotorID; // the CAN ID of the angle motor
+    public int canCoderID; // the CAN ID of the CANcoder
+    public double angleOffsetDeg; // the absolute offset of the angle encoder in degrees
+
+    public SwerveModuleID(
+        int moduleNumber,
+        String canBusID,
+        int driveMotorID,
+        int angleMotorID,
+        int canCoderID,
+        double angleOffsetDeg) {
+      this.moduleNumber = moduleNumber;
+      this.canBusID = canBusID;
+      this.driveMotorID = driveMotorID;
+      this.angleMotorID = angleMotorID;
+      this.canCoderID = canCoderID;
+      this.angleOffsetDeg = angleOffsetDeg;
+    }
+  }
+
   public static class SwerveModuleIOInputs {
     double drivePositionDeg = 0.0;
     double driveDistanceMeters = 0.0;
@@ -18,7 +42,9 @@ public interface SwerveModuleIO {
     double[] angleTempCelsius = new double[] {};
   }
   /** return the module number */
-  public default int getModuleNumber() { return 0; }
+  public default int getModuleNumber() {
+    return 0;
+  }
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(SwerveModuleIOInputs inputs) {}
@@ -37,4 +63,16 @@ public interface SwerveModuleIO {
 
   /** Enable or disable brake mode on the turn motor. */
   public default void setAngleBrakeMode(boolean enable) {}
+
+  public default boolean isDriveMotorConnected() {
+    return false;
+  }
+
+  public default boolean isAngleMotorConnected() {
+    return false;
+  }
+
+  public default boolean isAngleEncoderConnected() {
+    return false;
+  }
 }

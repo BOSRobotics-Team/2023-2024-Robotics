@@ -2,7 +2,6 @@ package frc.robot.autos;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-
 import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
 
 /**
@@ -32,15 +31,16 @@ public class FollowPath extends PPSwerveControllerCommand {
    *     and odometry will not be re-initialized in order to ensure a smooth transition between
    *     trajectories
    */
-  public FollowPath(PathPlannerTrajectory trajectory, SwerveDriveTrain subsystem, boolean initialPath) {
+  public FollowPath(
+      PathPlannerTrajectory trajectory, SwerveDriveTrain subsystem, boolean initialPath) {
     super(
         trajectory,
         subsystem::getPose,
-        SwerveDriveTrain.swerveKinematics,
+        subsystem.swerveKinematics,
         subsystem.getAutoXController(),
         subsystem.getAutoYController(),
         subsystem.getAutoThetaController(),
-        subsystem::setModuleStates,
+        subsystem::setSwerveModuleStates,
         subsystem);
 
     this.drivetrain = subsystem;

@@ -1,6 +1,8 @@
 package frc.robot.operator_interface;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class for selecting the appropriate OI implementations based on the connected joysticks.
@@ -8,10 +10,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class OISelector {
   private static String[] lastJoystickNames = new String[] {null, null, null, null, null, null};
   private static final String noOperatorInterfaceWarning = "No operator controller(s) connected.";
-  private static final String dualJoystickOperatorInterfaces = "Dual Joysticks connected.";
-  private static final String singleJoystickOperatorInterfaces = "Single Joystick connected.";
-  private static final String dualXBoxOperatorInterfaces = "Dual XBox operator controllers connected.";
   private static final String singleXBoxOperatorInterfaces = "XBox operator controller connected.";
+  private static final String dualXBoxOperatorInterfaces =
+      "Dual XBox operator controllers connected.";
+  private static final String singleJoystickOperatorInterfaces = "Single Joystick connected.";
+  private static final String dualJoystickOperatorInterfaces = "Dual Joysticks connected.";
+  private static final String dualJoystickXBoxOperatorInterfaces =
+      "Dual Joysticks and XBox controller connected.";
 
   private OISelector() {}
 
@@ -23,7 +28,7 @@ public class OISelector {
     boolean joysticksChanged = false;
 
     for (int port = 0; port < DriverStation.kJoystickPorts; port++) {
-      String name = DriverStation.getJoystickName(port);
+      String name = DriverStation.getJoystickName(port) + DriverStation.getJoystickType(port);
       if (!name.equals(lastJoystickNames[port])) {
         lastJoystickNames[port] = name;
         joysticksChanged = true;
@@ -37,42 +42,39 @@ public class OISelector {
    * joysticks.
    */
   public static OperatorInterface findOperatorInterface() {
-    Integer joy0 = null;
-    Integer joy1 = null;
-    Integer xbox0 = null;
-    Integer xbox1 = null;
+    List<Integer> joyList = new ArrayList<Integer>();
+    List<Integer> xboxList = new ArrayList<Integer>();
 
     for (int port = 0; port < DriverStation.kJoystickPorts; port++) {
-      if (DriverStation.getJoystickIsXbox(port)) {
-        if (xbox0 == null) {
-          xbox0 = port;
-        } else if (xbox1 == null) {
-          xbox1 = port;
-        }
-      } else if (!DriverStation.getJoystickName(port).equals("")) {
-        if (joy0 == null) {
-          joy0 = port;
-        } else if (joy1 == null) {
-          joy1 = port;
+      String name = DriverStation.getJoystickName(port).toLowerCase();
+      if (!name.equals("")) {
+        if (name.contains("xbox") || name.contains("pad") || name.contains("keyboard")) {
+          xboxList.add(port);
+        } else {
+          joyList.add(port);
         }
       }
     }
-
-    if (joy0 != null && joy1 != null) {
-      System.out.println(dualJoystickOperatorInterfaces);
-      return new DualJoysticksOI(joy0, joy1);
-    } else if (xbox0 != null && xbox1 != null) {
-      System.out.println(dualXBoxOperatorInterfaces);
-      return new DualHandheldOI(xbox0, xbox1);
-    } else if (joy0 != null) {
+    if (joyList.size() > 1) {
+      if (xboxList.size() > 0) {
+        System.out.println(dualJoystickXBoxOperatorInterfaces);
+        return new DualJoystickXboxOI(joyList.get(0), joyList.get(1), xboxList.get(0));
+      } else {
+        System.out.println(dualJoystickOperatorInterfaces);
+        return new DualJoysticksOI(joyList.get(0), joyList.get(1));
+      }
+    } else if (joyList.size() > 0) {
       System.out.println(singleJoystickOperatorInterfaces);
-      return new SingleHandheldOI(joy0) {};
-    } else if (xbox0 != null) {
+      return new SingleHandheldOI(joyList.get(0));
+    } else if (xboxList.size() > 1) {
+      System.out.println(dualXBoxOperatorInterfaces);
+      return new DualHandheldOI(xboxList.get(0), xboxList.get(1));
+    } else if (xboxList.size() > 0) {
       System.out.println(singleXBoxOperatorInterfaces);
-      return new SingleHandheldOI(xbox0) {};
+      return new SingleHandheldOI(xboxList.get(0));
     } else {
       DriverStation.reportWarning(noOperatorInterfaceWarning, false);
       return new OperatorInterface() {};
     }
-  }    
+  }
 }
