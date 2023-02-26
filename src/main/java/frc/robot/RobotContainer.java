@@ -6,7 +6,7 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 // import edu.wpi.first.cameraserver.CameraServer;
 // import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
+// import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -33,7 +33,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
+// import java.util.List;
 import java.util.Map;
 
 /**
@@ -119,6 +119,12 @@ public class RobotContainer {
     LimelightHelpers.setStreamMode_Standard(Constants.LIMELIGHTNAME);
     // LimelightHelpers.setStreamMode_PiPMain("");
     // LimelightHelpers.setStreamMode_PiPSecondary("");
+
+    
+    ShuffleboardTab tab = Shuffleboard.getTab("MAIN");
+    tab.add(chooser).withSize(2, 1);
+    tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
+    tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
   }
 
   /**
@@ -183,10 +189,6 @@ public class RobotContainer {
     oi.getArmPosition3().onTrue(Commands.runOnce(() -> arm.setArmPosition(3), arm));
     oi.getArmTargetToggle()
         .onTrue(Commands.runOnce(() -> arm.targetCones(!arm.isTargetCone()), arm));
-
-    ShuffleboardTab tab = Shuffleboard.getTab("MAIN");
-    tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
-    tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
   }
 
   /**
@@ -215,8 +217,6 @@ public class RobotContainer {
     //     "SetArmPosition (Middle)", Commands.runOnce(() -> arm.setArmPosition(2), arm));
     // SmartDashboard.putData(
     //     "SetArmPosition (Top)", Commands.runOnce(() -> arm.setArmPosition(3), arm));
-
-    Shuffleboard.getTab("MAIN").add(chooser).withSize(2, 1);
   }
 
   private void configureAutoPaths() {
@@ -243,9 +243,10 @@ public class RobotContainer {
                         AUTO_EVENT_MAP);
       chooser.addOption(entry.getKey(), autoPath);
     }
+    chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
 
     
-    try {
+/*    try {
       DirectoryStream<Path> stream =
           Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("paths"));
       for (Path file : stream) {
@@ -258,7 +259,6 @@ public class RobotContainer {
     } catch (IOException ex) {
       DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());
     }
-    chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
     for (Map.Entry<String, Trajectory> entry : trajectoryList.entrySet()) {
       chooser.addOption(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
     }
@@ -283,7 +283,7 @@ public class RobotContainer {
                 auto1Paths.get(1).getMarkers(),
                 AUTO_EVENT_MAP));
     // demonstration of PathPlanner path group with event markers
-    chooser.addOption("Test Path", autoTest);
+    chooser.addOption("Test Path", autoTest); */
   }
 
   public void simulationInit() {}

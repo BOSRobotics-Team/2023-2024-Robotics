@@ -148,12 +148,12 @@ public class SingleHandheldOI implements OperatorInterface {
     if (updateRotateScale && povVal == -1) {
       updateRotateScale = false;
     }
-    if (!updateRotateScale && povVal == 0) {
-      rotateScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
+    if (!updateRotateScale && povVal == 90) {
+      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
       updateRotateScale = true;
-    } else if (!updateRotateScale && povVal == 180) {
-      rotateScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
+    } else if (!updateRotateScale && povVal == 270) {
+      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
       updateRotateScale = true;
     }

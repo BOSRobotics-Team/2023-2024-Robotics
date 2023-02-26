@@ -1,10 +1,10 @@
 package frc.robot;
 
 public final class AutoConstants {
-  public static final double kMaxSpeedMetersPerSecond = 3;
-  public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-  public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-  public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+  public static final double kMaxSpeedMetersPerSecond = 0.25;
+  public static final double kMaxAccelerationMetersPerSecondSquared = 0.25;
+  public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI * 0.25;
+  public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI * 0.25;
 
   public static final double kPXController = 1;
   public static final double kIXController = 0;
