@@ -63,6 +63,7 @@ public class RobotContainer {
 
   /* Auto paths */
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
+  public static Map<String, PathPlannerTrajectory> pptrajectoryList = new HashMap<String, PathPlannerTrajectory>();
   public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -101,7 +102,6 @@ public class RobotContainer {
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 
-    updateOI();
     configureAutoCommands();
     configureAutoPaths();
 
@@ -220,6 +220,31 @@ public class RobotContainer {
   }
 
   private void configureAutoPaths() {
+    try {
+      DirectoryStream<Path> stream =
+          Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("pathplanner"));
+      for (Path file : stream) {
+        if (!Files.isDirectory(file)) {
+          String name = file.getFileName().toString().replaceFirst("[.][^.]+$", "");
+          pptrajectoryList.put(
+              name,
+              PathPlanner.loadPath(name,
+                AutoConstants.kMaxSpeedMetersPerSecond,
+                AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+        }
+      }
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open pptrajectory: ", ex.getStackTrace());
+    }
+    for (Map.Entry<String, PathPlannerTrajectory> entry : pptrajectoryList.entrySet()) {
+      Command autoPath = new FollowPathWithEvents(
+                        new FollowPath(entry.getValue(), driveTrain, true),
+                        entry.getValue().getMarkers(), 
+                        AUTO_EVENT_MAP);
+      chooser.addOption(entry.getKey(), autoPath);
+    }
+
+    
     try {
       DirectoryStream<Path> stream =
           Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("paths"));
