@@ -242,7 +242,7 @@ public class Drivetrain extends SubsystemBase {
         new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
   }
 
-  public void resetOdometry(Pose2d pose) {
+  public void resetPose(Pose2d pose) {
     setGyroOffset(pose.getRotation().getDegrees());
 
     getModulePositions();

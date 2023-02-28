@@ -20,7 +20,7 @@ public class driveToTrajectory extends SequentialCommandGroup {
             driveTrain);
 
     addCommands(
-        Commands.runOnce(() -> driveTrain.resetOdometry(trajectory.getInitialPose()), driveTrain),
+        Commands.runOnce(() -> driveTrain.resetPose(trajectory.getInitialPose()), driveTrain),
         swerveControllerCommand);
   }
 }

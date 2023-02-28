@@ -2,7 +2,9 @@ package frc.robot;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+// import com.pathplanner.lib.commands.FollowPathWithEvents;
 // import edu.wpi.first.cameraserver.CameraServer;
 // import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -13,7 +15,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+// import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -34,6 +36,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 // import java.util.List;
 import java.util.Map;
 
@@ -54,16 +57,17 @@ public class RobotContainer {
   public final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
   public final Drivetrain driveTrain;
   public final Arm arm;
-
-  private final TestChecklist test;
+  public final TestChecklist test;
 
   /* Cameras */
   // public UsbCamera cam0;
 
   /* Auto paths */
+  public SwerveAutoBuilder autoBuilder;
+
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
-  public static Map<String, PathPlannerTrajectory> pptrajectoryList =
-      new HashMap<String, PathPlannerTrajectory>();
+  public static Map<String, List<PathPlannerTrajectory>> pptrajectoryList =
+      new HashMap<String, List<PathPlannerTrajectory>>();
   public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -199,6 +203,19 @@ public class RobotContainer {
     // Add commands to Autonomous Sendable Chooser
     chooser.setDefaultOption("Do Nothing", Commands.none());
 
+    // Create the AutoBuilder. This only needs to be created once when robot code starts, not every time you want to create an auto command. A good place to put this is in RobotContainer along with your subsystems.
+    autoBuilder = new SwerveAutoBuilder(
+      driveTrain::getPose, // Pose2d supplier
+      driveTrain::resetPose, // Pose2d consumer, used to reset odometry at the beginning of auto
+      driveTrain.kinematics, // SwerveDriveKinematics
+        new PIDConstants(AutoConstants.kPXController, AutoConstants.kIXController, AutoConstants.kDXController), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+        new PIDConstants(AutoConstants.kPThetaController, AutoConstants.kIThetaController, AutoConstants.kDThetaController), // PID constants to correct for rotation error (used to create the rotation controller)
+        driveTrain::setSwerveModuleStates, // Module states consumer used to output to the drive subsystem
+        AUTO_EVENT_MAP,
+        true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+        driveTrain // The drive subsystem. Used to properly set the requirements of path following commands
+    );
+
     // SmartDashboard Buttons
     // SmartDashboard.putData("Auto mode", chooser);
     // SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
@@ -226,7 +243,7 @@ public class RobotContainer {
           String name = file.getFileName().toString().replaceFirst("[.][^.]+$", "");
           pptrajectoryList.put(
               name,
-              PathPlanner.loadPath(
+              PathPlanner.loadPathGroup(
                   name,
                   AutoConstants.kMaxSpeedMetersPerSecond,
                   AutoConstants.kMaxAccelerationMetersPerSecondSquared));
@@ -235,19 +252,22 @@ public class RobotContainer {
     } catch (IOException ex) {
       DriverStation.reportError("Unable to open pptrajectory: ", ex.getStackTrace());
     }
-    for (Map.Entry<String, PathPlannerTrajectory> entry : pptrajectoryList.entrySet()) {
-      Command autoPathBlue =
-          new FollowPathWithEvents(
-              new FollowPath(entry.getValue(), driveTrain, true),
-              entry.getValue().getMarkers(),
-              AUTO_EVENT_MAP);
-      Command autoPathRed =
-        new FollowPathWithEvents(
-            new FollowPath(PathPlannerTrajectory.transformTrajectoryForAlliance(entry.getValue(), Alliance.Red), driveTrain, true),
-            entry.getValue().getMarkers(),
-            AUTO_EVENT_MAP);
-      chooser.addOption(entry.getKey(), Commands.either(autoPathBlue, autoPathRed, () -> DriverStation.getAlliance() == Alliance.Blue));
+    for (Map.Entry<String, List<PathPlannerTrajectory>> entry : pptrajectoryList.entrySet()) {
+      chooser.addOption(entry.getKey(), autoBuilder.fullAuto(entry.getValue()));
     }
+    // for (Map.Entry<String, PathPlannerTrajectory> entry : pptrajectoryList.entrySet()) {
+    //   Command autoPathBlue =
+    //       new FollowPathWithEvents(
+    //           new FollowPath(entry.getValue(), driveTrain, true),
+    //           entry.getValue().getMarkers(),
+    //           AUTO_EVENT_MAP);
+    //   Command autoPathRed =
+    //     new FollowPathWithEvents(
+    //         new FollowPath(PathPlannerTrajectory.transformTrajectoryForAlliance(entry.getValue(), Alliance.Red), driveTrain, true),
+    //         entry.getValue().getMarkers(),
+    //         AUTO_EVENT_MAP);
+    //   chooser.addOption(entry.getKey(), Commands.either(autoPathBlue, autoPathRed, () -> DriverStation.getAlliance() == Alliance.Blue));
+    // }
     chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
 
     /*    try {
