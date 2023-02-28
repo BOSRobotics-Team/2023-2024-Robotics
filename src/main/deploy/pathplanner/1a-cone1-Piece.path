@@ -1,0 +1,110 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 2.1214237883021223,
+        "y": 5.028378784030296
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.33505983416008,
+        "y": 5.028378784030296
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "ConePosition1"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "after",
+        "waitTime": 1.0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.8754704782136837,
+        "y": 5.046597547740551
+      },
+      "prevControl": {
+        "x": 1.8550742498650794,
+        "y": 5.046597547740551
+      },
+      "nextControl": {
+        "x": 1.895866706562288,
+        "y": 5.046597547740551
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "DropPiece"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 0.5
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 4.161925323850648,
+        "y": 4.873519292493131
+      },
+      "prevControl": {
+        "x": 3.7263440709634734,
+        "y": 4.873519292493131
+      },
+      "nextControl": {
+        "x": 4.708488235158288,
+        "y": 4.873519292493131
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.5850208973145214,
+        "y": 4.600237836839311
+      },
+      "prevControl": {
+        "x": 5.865379730759461,
+        "y": 4.709550419100839
+      },
+      "nextControl": null,
+      "holonomicAngle": 0.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 1.2,
+      "names": [
+        "ZeroArm"
+      ]
+    }
+  ]
+}

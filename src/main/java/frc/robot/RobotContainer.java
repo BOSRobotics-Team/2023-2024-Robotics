@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -58,8 +59,6 @@ public class RobotContainer {
 
   /* Cameras */
   // public UsbCamera cam0;
-  // public UsbCamera cam1;
-  // public UsbCamera cam2;
 
   /* Auto paths */
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
@@ -108,12 +107,6 @@ public class RobotContainer {
 
     // cam0 = CameraServer.startAutomaticCapture(0);
     // cam0.setConnectVerbose(0);
-
-    // cam1 = CameraServer.startAutomaticCapture(1);
-    // cam1.setConnectVerbose(0);
-
-    // cam2 = CameraServer.startAutomaticCapture(2);
-    // cam2.setConnectVerbose(0);
 
     LimelightHelpers.setLEDMode_ForceOff(Constants.LIMELIGHTNAME); // setLEDMode_PipelineControl
     LimelightHelpers.setCameraMode_Driver(Constants.LIMELIGHTNAME); // setCameraMode_Processor
@@ -209,17 +202,22 @@ public class RobotContainer {
     // SmartDashboard Buttons
     // SmartDashboard.putData("Auto mode", chooser);
     // SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
-    // SmartDashboard.putData(
-    //     "SetArmPosition (Home)", Commands.runOnce(() -> arm.setArmPosition(0), arm));
-    // SmartDashboard.putData(
-    //     "SetArmPosition (Floor)", Commands.runOnce(() -> arm.setArmPosition(1), arm));
-    // SmartDashboard.putData(
-    //     "SetArmPosition (Middle)", Commands.runOnce(() -> arm.setArmPosition(2), arm));
-    // SmartDashboard.putData(
-    //     "SetArmPosition (Top)", Commands.runOnce(() -> arm.setArmPosition(3), arm));
   }
 
   private void configureAutoPaths() {
+    for (int pos = 1; pos <= 3; ++pos) {
+      AUTO_EVENT_MAP.put("CubePosition" + pos, Commands.sequence(
+        Commands.runOnce(() -> arm.targetCones(false), arm),
+        new PositionArm(arm, pos)));
+    }
+    for (int pos = 1; pos <= 3; ++pos) {
+      AUTO_EVENT_MAP.put("ConePosition" + pos, Commands.sequence(
+        Commands.runOnce(() -> arm.targetCones(true), arm),
+        new PositionArm(arm, pos)));
+    }
+    AUTO_EVENT_MAP.put("DropPiece", new Grip(arm, false));
+    AUTO_EVENT_MAP.put("ZeroArm", new PositionArm(arm, 0));
+                    
     try {
       DirectoryStream<Path> stream =
           Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("pathplanner"));
@@ -238,18 +236,17 @@ public class RobotContainer {
       DriverStation.reportError("Unable to open pptrajectory: ", ex.getStackTrace());
     }
     for (Map.Entry<String, PathPlannerTrajectory> entry : pptrajectoryList.entrySet()) {
-      Command autoPath =
+      Command autoPathBlue =
           new FollowPathWithEvents(
               new FollowPath(entry.getValue(), driveTrain, true),
               entry.getValue().getMarkers(),
               AUTO_EVENT_MAP);
-      chooser.addOption(entry.getKey(), autoPath);
-      autoPath =
-          new FollowPathWithEvents(
-              new FollowPath(PathPlannerTrajectory.transformTrajectoryForAlliance(entry.getValue(), DriverStation.getAlliance()), driveTrain, true),
-              entry.getValue().getMarkers(),
-              AUTO_EVENT_MAP);
-      chooser.addOption(entry.getKey() + " - Red", autoPath);
+      Command autoPathRed =
+        new FollowPathWithEvents(
+            new FollowPath(PathPlannerTrajectory.transformTrajectoryForAlliance(entry.getValue(), Alliance.Red), driveTrain, true),
+            entry.getValue().getMarkers(),
+            AUTO_EVENT_MAP);
+      chooser.addOption(entry.getKey(), Commands.either(autoPathBlue, autoPathRed, () -> DriverStation.getAlliance() == Alliance.Blue));
     }
     chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
 
