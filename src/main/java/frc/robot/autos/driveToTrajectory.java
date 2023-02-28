@@ -4,15 +4,15 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class driveToTrajectory extends SequentialCommandGroup {
-  public driveToTrajectory(SwerveDriveTrain driveTrain, Trajectory trajectory) {
+  public driveToTrajectory(Drivetrain driveTrain, Trajectory trajectory) {
     SwerveControllerCommand swerveControllerCommand =
         new SwerveControllerCommand(
             trajectory,
             driveTrain::getPose,
-            driveTrain.swerveKinematics,
+            driveTrain.kinematics,
             driveTrain.getAutoXController(),
             driveTrain.getAutoYController(),
             driveTrain.getAutoProfiledThetaController(),

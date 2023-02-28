@@ -4,12 +4,12 @@ import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotPreferences;
-import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
+import frc.robot.subsystems.drivetrain.DriveTrainConstants;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.function.DoubleSupplier;
 
 public class TeleopSwerve extends CommandBase {
-  private SwerveDriveTrain driveTrain;
+  private Drivetrain driveTrain;
   private DoubleSupplier translationSup;
   private DoubleSupplier strafeSup;
   private DoubleSupplier rotationSup;
@@ -17,7 +17,7 @@ public class TeleopSwerve extends CommandBase {
   private DoubleSupplier rotateFactorSup;
 
   public TeleopSwerve(
-      SwerveDriveTrain driveTrain,
+      Drivetrain driveTrain,
       DoubleSupplier translationSup,
       DoubleSupplier strafeSup,
       DoubleSupplier rotationSup,
@@ -37,9 +37,8 @@ public class TeleopSwerve extends CommandBase {
   public void execute() {
     /* Get Values, Deadband*/
     double deadBand = STICK_DEADBAND;
-    double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * scaleFactorSup.getAsDouble();
-    double maxRotate =
-        RobotPreferences.Swerve.maxAngularVelocity.get() * rotateFactorSup.getAsDouble();
+    double maxSpeed = DriveTrainConstants.maxSpeed * scaleFactorSup.getAsDouble();
+    double maxRotate = DriveTrainConstants.maxAngularVelocity * rotateFactorSup.getAsDouble();
 
     double translationVal = this.scaleController(translationSup.getAsDouble(), deadBand) * maxSpeed;
     double strafeVal = this.scaleController(strafeSup.getAsDouble(), deadBand) * maxSpeed;

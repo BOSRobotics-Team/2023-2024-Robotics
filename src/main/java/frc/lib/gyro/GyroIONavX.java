@@ -10,23 +10,20 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class GyroIONavX implements GyroIO {
   private AHRS gyro = null;
-  private boolean ccwHeading = false;
-  private double headingOffset = 0.0;
 
   public GyroIONavX() {
     gyro = new AHRS();
-    ccwHeading = false;
     initLogging();
   }
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
     inputs.connected = this.isConnected();
+    inputs.positionDeg = 360.0 - gyro.getYaw(); // degrees
+    inputs.velocityDegPerSec = -gyro.getRate(); // degrees per second
     inputs.yawDeg = gyro.getYaw(); // degrees
     inputs.pitchDeg = gyro.getPitch(); // degrees
     inputs.rollDeg = gyro.getRoll(); // degrees
-    inputs.headingDeg = this.getAngle(); // degrees
-    inputs.headingRateDegPerSec = this.getRate(); // degrees per second
   }
 
   @Override
@@ -34,75 +31,10 @@ public class GyroIONavX implements GyroIO {
     return gyro.isConnected();
   }
 
-  @Override
-  public void setGyroDirection(int direction) {
-    ccwHeading = (direction == DRIVEGYRO_CCW);
-  }
-
-  @Override
-  public int getGyroDirection() {
-    return ccwHeading ? DRIVEGYRO_CCW : DRIVEGYRO_CW;
-  }
-
-  /**
-   * Set the robot's heading offset.
-   *
-   * @param offsetDegrees The offset to set to, in degrees on [-180, 180].
-   */
-  @Override
-  public void setHeadingOffset(final double offsetDegrees) {
-    headingOffset = offsetDegrees;
-  }
-
-  /**
-   * Get the robot's heading offset.
-   *
-   * @return The offset to set to, in degrees on [-180, 180].
-   */
-  @Override
-  public double getHeadingOffset() {
-    return headingOffset;
-  }
-
-  @Override
-  public void calibrate() {}
-
-  @Override
-  public void close() {
-    gyro.close();
-  }
-
   /** Zero the robot's heading. */
   @Override
   public void reset() {
     gyro.reset();
-    headingOffset = 0.0;
-  }
-
-  @Override
-  public double getAngle() {
-    double heading = ccwHeading ? 360.0 - gyro.getAngle() : gyro.getAngle();
-    return heading + headingOffset;
-  }
-
-  @Override
-  public double getRate() {
-    return -gyro.getRate();
-  }
-
-  @Override
-  public double getYaw() {
-    return gyro.getYaw();
-  }
-
-  @Override
-  public double getPitch() {
-    return gyro.getPitch();
-  }
-
-  @Override
-  public double getRoll() {
-    return gyro.getRoll();
   }
 
   public void initLogging() {

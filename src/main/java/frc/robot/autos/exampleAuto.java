@@ -6,11 +6,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.List;
 
 public class exampleAuto extends SequentialCommandGroup {
-  public exampleAuto(SwerveDriveTrain driveTrain) {
+  public exampleAuto(Drivetrain driveTrain) {
     // An example trajectory to follow.  All units in meters.
     Trajectory exampleTrajectory =
         TrajectoryGenerator.generateTrajectory(
@@ -20,7 +20,7 @@ public class exampleAuto extends SequentialCommandGroup {
             List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
             // End 3 meters straight ahead of where we started, facing forward
             new Pose2d(3, 0, new Rotation2d(0)),
-            SwerveDriveTrain.trajectoryConfig);
+            Drivetrain.trajectoryConfig);
 
     addCommands(new driveToTrajectory(driveTrain, exampleTrajectory));
   }

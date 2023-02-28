@@ -2,7 +2,7 @@ package frc.robot.autos;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /**
  * This command, when executed, instructs the drivetrain subsystem to follow the specified
@@ -16,7 +16,7 @@ import frc.robot.subsystems.drivetrain.SwerveDriveTrain;
  * <p>At End: stops the drivetrain
  */
 public class FollowPath extends PPSwerveControllerCommand {
-  private SwerveDriveTrain drivetrain;
+  private Drivetrain drivetrain;
   private PathPlannerTrajectory trajectory;
   private boolean initialPath;
 
@@ -32,11 +32,11 @@ public class FollowPath extends PPSwerveControllerCommand {
    *     trajectories
    */
   public FollowPath(
-      PathPlannerTrajectory trajectory, SwerveDriveTrain subsystem, boolean initialPath) {
+      PathPlannerTrajectory trajectory, Drivetrain subsystem, boolean initialPath) {
     super(
         trajectory,
         subsystem::getPose,
-        subsystem.swerveKinematics,
+        subsystem.kinematics,
         subsystem.getAutoXController(),
         subsystem.getAutoYController(),
         subsystem.getAutoThetaController(),

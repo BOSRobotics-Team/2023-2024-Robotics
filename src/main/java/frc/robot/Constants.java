@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
-import frc.lib.gyro.*;
 
 public final class Constants {
   public static final boolean DEBUGGING = false;
@@ -9,7 +8,6 @@ public final class Constants {
 
   public static final String GYRO_CAN_BUS = "Swerve";
   public static final int GYRO_ID = 20; // DriveGyro.DRIVEGYRO_NAVX;
-  public static final int GYRO_DIRECTION = GyroIO.DRIVEGYRO_CCW; // Always ensure Gyro is CCW+ CW-
 
   public static final String LIMELIGHTNAME = "limelight";
   public static final String LIMELIGHTURL = "limelight.local";

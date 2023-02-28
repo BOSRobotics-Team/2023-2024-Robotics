@@ -51,7 +51,7 @@ public class RobotContainer {
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
   public final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
-  public final SwerveDriveTrain driveTrain;
+  public final Drivetrain driveTrain;
   public final Arm arm;
 
   private final TestChecklist test;
@@ -63,7 +63,8 @@ public class RobotContainer {
 
   /* Auto paths */
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
-  public static Map<String, PathPlannerTrajectory> pptrajectoryList = new HashMap<String, PathPlannerTrajectory>();
+  public static Map<String, PathPlannerTrajectory> pptrajectoryList =
+      new HashMap<String, PathPlannerTrajectory>();
   public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -90,7 +91,7 @@ public class RobotContainer {
       brModule = new SwerveModuleIOSim(DriveTrainConstants.mod3.moduleNumber);
     }
     driveTrain =
-        new SwerveDriveTrain(
+        new Drivetrain(
             gyro,
             new SwerveModule(flModule),
             new SwerveModule(frModule),
@@ -120,7 +121,6 @@ public class RobotContainer {
     // LimelightHelpers.setStreamMode_PiPMain("");
     // LimelightHelpers.setStreamMode_PiPSecondary("");
 
-    
     ShuffleboardTab tab = Shuffleboard.getTab("MAIN");
     tab.add(chooser).withSize(2, 1);
     tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
@@ -228,25 +228,26 @@ public class RobotContainer {
           String name = file.getFileName().toString().replaceFirst("[.][^.]+$", "");
           pptrajectoryList.put(
               name,
-              PathPlanner.loadPath(name,
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+              PathPlanner.loadPath(
+                  name,
+                  AutoConstants.kMaxSpeedMetersPerSecond,
+                  AutoConstants.kMaxAccelerationMetersPerSecondSquared));
         }
       }
     } catch (IOException ex) {
       DriverStation.reportError("Unable to open pptrajectory: ", ex.getStackTrace());
     }
     for (Map.Entry<String, PathPlannerTrajectory> entry : pptrajectoryList.entrySet()) {
-      Command autoPath = new FollowPathWithEvents(
-                        new FollowPath(entry.getValue(), driveTrain, true),
-                        entry.getValue().getMarkers(), 
-                        AUTO_EVENT_MAP);
+      Command autoPath =
+          new FollowPathWithEvents(
+              new FollowPath(entry.getValue(), driveTrain, true),
+              entry.getValue().getMarkers(),
+              AUTO_EVENT_MAP);
       chooser.addOption(entry.getKey(), autoPath);
     }
     chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
 
-    
-/*    try {
+    /*    try {
       DirectoryStream<Path> stream =
           Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("paths"));
       for (Path file : stream) {

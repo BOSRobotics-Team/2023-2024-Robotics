@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import frc.lib.gyro.GyroIO.GyroIOInputs;
 import frc.lib.util.PreferencesValue;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -310,9 +312,8 @@ public class TestChecklist {
     double extendVal = MathUtil.applyDeadband(robot.oi.getArmExtend(), STICK_DEADBAND);
     robot.arm.teleop(liftVal, extendVal);
 
-    double maxSpeed = RobotPreferences.Swerve.maxSpeed.get() * robot.oi.getDriveScaling();
-    double maxRotate =
-        RobotPreferences.Swerve.maxAngularVelocity.get() * robot.oi.getRotateScaling();
+    double maxSpeed = DriveTrainConstants.maxSpeed * robot.oi.getDriveScaling();
+    double maxRotate = DriveTrainConstants.maxAngularVelocity * robot.oi.getRotateScaling();
     double translationVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), STICK_DEADBAND);
     double strafeVal = MathUtil.applyDeadband(robot.oi.getTranslateY(), STICK_DEADBAND);
     double rotationVal = MathUtil.applyDeadband(robot.oi.getRotate(), STICK_DEADBAND);
@@ -458,7 +459,10 @@ public class TestChecklist {
         item.status = "Rotate robot 90 degrees";
       }
     } else if (item.state == 1) {
-      if (Math.abs(robot.gyro.getAngle() - 90.0) < 0.1) {
+      GyroIOInputs inputs = new GyroIOInputs();
+      robot.gyro.updateInputs(inputs);
+
+      if (Math.abs(inputs.positionDeg - 90.0) < 0.1) {
         item.state = 2;
         item.status = "Gyro test complete";
         item.setComplete(true);
@@ -478,7 +482,10 @@ public class TestChecklist {
         item.status = "Lift robot 30 degrees";
       }
     } else if (item.state == 1) {
-      if (Math.abs(robot.gyro.getPitch() - 30.0) < 0.1) {
+      GyroIOInputs inputs = new GyroIOInputs();
+      robot.gyro.updateInputs(inputs);
+
+      if (Math.abs(inputs.pitchDeg - 30.0) < 0.1) {
         item.state = 2;
         item.status = "Gyro test complete";
         item.setComplete(true);

@@ -18,7 +18,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import frc.lib.math.Conversions;
-import frc.robot.RobotPreferences;
 import frc.robot.subsystems.drivetrain.*;
 
 /**
@@ -60,9 +59,7 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
     this.angleOffsetDeg = angleOffsetDeg;
     this.feedForward =
         new SimpleMotorFeedforward(
-            RobotPreferences.Swerve.driveKS.get(),
-            RobotPreferences.Swerve.driveKV.get(),
-            RobotPreferences.Swerve.driveKA.get());
+            DriveTrainConstants.driveKS, DriveTrainConstants.driveKV, DriveTrainConstants.driveKA);
 
     configAngleEncoder(canCoderID, canBusID);
     configAngleMotor(angleMotorID, canBusID);
@@ -88,7 +85,6 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
 
     angleEncoder.configFactoryDefault();
 
-    /* Swerve CANCoder Configuration */
     CANCoderConfiguration config = new CANCoderConfiguration();
     config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
     config.sensorDirection = DriveTrainConstants.canCoderInvert;
@@ -105,14 +101,14 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
     config.supplyCurrLimit =
         new SupplyCurrentLimitConfiguration(
             DriveTrainConstants.angleEnableCurrentLimit,
-            RobotPreferences.Swerve.angleContinuousCurrentLimit.get(),
-            RobotPreferences.Swerve.anglePeakCurrentLimit.get(),
-            RobotPreferences.Swerve.anglePeakCurrentDuration.get());
+            DriveTrainConstants.angleContinuousCurrentLimit,
+            DriveTrainConstants.anglePeakCurrentLimit,
+            DriveTrainConstants.anglePeakCurrentDuration);
     ;
-    config.slot0.kP = RobotPreferences.Swerve.angleKP.get();
-    config.slot0.kI = RobotPreferences.Swerve.angleKI.get();
-    config.slot0.kD = RobotPreferences.Swerve.angleKD.get();
-    config.slot0.kF = RobotPreferences.Swerve.angleKF.get();
+    config.slot0.kP = DriveTrainConstants.angleKP;
+    config.slot0.kI = DriveTrainConstants.angleKI;
+    config.slot0.kD = DriveTrainConstants.angleKD;
+    config.slot0.kF = DriveTrainConstants.angleKF;
 
     mAngleMotor.configFactoryDefault();
     mAngleMotor.configAllSettings(config, TIMEOUT_MS);
@@ -149,16 +145,16 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
     config.supplyCurrLimit =
         new SupplyCurrentLimitConfiguration(
             DriveTrainConstants.driveEnableCurrentLimit,
-            RobotPreferences.Swerve.driveContinuousCurrentLimit.get(),
-            RobotPreferences.Swerve.drivePeakCurrentLimit.get(),
-            RobotPreferences.Swerve.drivePeakCurrentDuration.get());
+            DriveTrainConstants.driveContinuousCurrentLimit,
+            DriveTrainConstants.drivePeakCurrentLimit,
+            DriveTrainConstants.drivePeakCurrentDuration);
     ;
-    config.slot0.kP = RobotPreferences.Swerve.driveKP.get();
-    config.slot0.kI = RobotPreferences.Swerve.driveKI.get();
-    config.slot0.kD = RobotPreferences.Swerve.driveKD.get();
-    config.slot0.kF = RobotPreferences.Swerve.driveKF.get();
-    config.openloopRamp = RobotPreferences.Swerve.openLoopRamp.get();
-    config.closedloopRamp = RobotPreferences.Swerve.closedLoopRamp.get();
+    config.slot0.kP = DriveTrainConstants.driveKP;
+    config.slot0.kI = DriveTrainConstants.driveKI;
+    config.slot0.kD = DriveTrainConstants.driveKD;
+    config.slot0.kF = DriveTrainConstants.driveKF;
+    config.openloopRamp = DriveTrainConstants.openLoopRamp;
+    config.closedloopRamp = DriveTrainConstants.closedLoopRamp;
 
     mDriveMotor.configFactoryDefault();
     mDriveMotor.configAllSettings(config, TIMEOUT_MS);

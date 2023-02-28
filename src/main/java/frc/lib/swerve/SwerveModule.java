@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.lib.swerve.SwerveModuleIO.SwerveModuleIOInputs;
-import frc.robot.RobotPreferences;
+import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 
 public class SwerveModule {
   private final SwerveModuleIO io;
@@ -23,8 +23,9 @@ public class SwerveModule {
   public SwerveModule(SwerveModuleIO io) {
     this.io = io;
     this.moduleNumber = io.getModuleNumber();
-    this.lastAngle = getState().angle.getDegrees();
-    this.maxVelocity = RobotPreferences.Swerve.maxSpeed.get();
+    this.maxVelocity = DriveTrainConstants.maxSpeed;
+
+    lastAngle = getState().angle.getDegrees();
 
     this.initLogging();
   }
@@ -44,8 +45,19 @@ public class SwerveModule {
     }
   }
 
+  /**
+   * Set this swerve module to the specified speed and angle.
+   *
+   * @param desiredState the desired state of the module
+   * @param isOpenLoop if true, the drive motor will be set to the calculated fraction of the max
+   *     velocity; if false, the drive motor will set to the specified velocity using a closed-loop
+   *     controller (PID).
+   * @param forceAngle if true, the module will be forced to rotate to the specified angle; if
+   *     false, the module will not rotate if the velocity is less than 1% of the max velocity.
+   */
   public void setDesiredState(
       SwerveModuleState desiredState, boolean isOpenLoop, boolean forceAngle) {
+
     // this optimization is specific to CTRE hardware; perhaps this responsibility should be demoted
     // to the hardware-specific classes.
     desiredState = CTREModuleState.optimize(desiredState, getState().angle);
@@ -63,13 +75,13 @@ public class SwerveModule {
     }
   }
 
-  private void setAngle(SwerveModuleState desiredState, boolean isForceAngle) {
+  private void setAngle(SwerveModuleState desiredState, boolean forceAngle) {
     // Unless the angle is forced (e.g., X-stance), don't rotate the module if speed is less then
     // 1%. This prevents jittering if the controller isn't tuned perfectly. Perhaps more
     // importantly, it allows for smooth repeated movement as the wheel direction doesn't reset
     // during pauses (e.g., multi-segmented auto paths).
     double angle;
-    if (!isForceAngle && Math.abs(desiredState.speedMetersPerSecond) <= (maxVelocity * 0.01)) {
+    if (!forceAngle && Math.abs(desiredState.speedMetersPerSecond) <= (maxVelocity * 0.01)) {
       angle = lastAngle;
     } else {
       angle = desiredState.angle.getDegrees();
@@ -88,7 +100,7 @@ public class SwerveModule {
    */
   public void setVoltageForCharacterization(double voltage) {
     io.setAnglePosition(0.0);
-    this.lastAngle = 0.0;
+    lastAngle = 0.0;
     io.setDriveMotorPercentage(voltage / 12.0);
   }
 
@@ -164,11 +176,5 @@ public class SwerveModule {
   /** Return if the CANCoder is connected. */
   public boolean isAngleEncoderConnected() {
     return io.isAngleEncoderConnected();
-  }
-
-  public void resetToAbsolute() {
-    //        double absolutePosition = Conversions.degreesToFalcon(getCanCoder().getDegrees() -
-    // angleOffset.getDegrees(), Constants.Swerve.angleGearRatio);
-    //        mAngleMotor.setSelectedSensorPosition(absolutePosition);
   }
 }

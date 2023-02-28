@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotPreferences;
 import java.util.ArrayList;
 import java.util.List;
 import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
@@ -67,13 +66,13 @@ public class Arm extends SubsystemBase {
     m_armLiftLimit = m_armLiftMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
     // set PID coefficients
-    m_armLiftController.setP(RobotPreferences.ArmLift.armKP.get());
-    m_armLiftController.setI(RobotPreferences.ArmLift.armKI.get());
-    m_armLiftController.setD(RobotPreferences.ArmLift.armKD.get());
-    m_armLiftController.setIZone(RobotPreferences.ArmLift.armKIZ.get());
-    m_armLiftController.setFF(RobotPreferences.ArmLift.armKFF.get());
+    m_armLiftController.setP(ArmConstants.armLiftKP);
+    m_armLiftController.setI(ArmConstants.armLiftKI);
+    m_armLiftController.setD(ArmConstants.armLiftKD);
+    m_armLiftController.setIZone(ArmConstants.armLiftKIZ);
+    m_armLiftController.setFF(ArmConstants.armLiftKFF);
     m_armLiftController.setOutputRange(
-        RobotPreferences.ArmLift.armMinOutput.get(), RobotPreferences.ArmLift.armMaxOutput.get());
+        ArmConstants.armLiftMinOutput, ArmConstants.armLiftMaxOutput);
 
     // m_armLiftEncoder.setPositionConversionFactor(RobotPreferences.ArmLift.armGearRatio.get()
     // * RobotPreferences.ArmLift.armMetersPerRotation.get());
@@ -87,14 +86,13 @@ public class Arm extends SubsystemBase {
         m_armExtendMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
     // set PID coefficients
-    m_armExtendController.setP(RobotPreferences.ArmExtend.armKP.get());
-    m_armExtendController.setI(RobotPreferences.ArmExtend.armKI.get());
-    m_armExtendController.setD(RobotPreferences.ArmExtend.armKD.get());
-    m_armExtendController.setIZone(RobotPreferences.ArmExtend.armKIZ.get());
-    m_armExtendController.setFF(RobotPreferences.ArmExtend.armKFF.get());
+    m_armExtendController.setP(ArmConstants.armExtendKP);
+    m_armExtendController.setI(ArmConstants.armExtendKI);
+    m_armExtendController.setD(ArmConstants.armExtendKD);
+    m_armExtendController.setIZone(ArmConstants.armExtendKIZ);
+    m_armExtendController.setFF(ArmConstants.armExtendKFF);
     m_armExtendController.setOutputRange(
-        RobotPreferences.ArmExtend.armMinOutput.get(),
-        RobotPreferences.ArmExtend.armMaxOutput.get());
+        ArmConstants.armExtendMinOutput, ArmConstants.armExtendMaxOutput);
 
     // m_armExtendEncoder.setPositionConversionFactor(RobotPreferences.Arm.armExtendGearRatio.get()
     // * RobotPreferences.Arm.armExtendMetersPerRotation.get());
@@ -229,12 +227,12 @@ public class Arm extends SubsystemBase {
         m_armExtendController.setReference(newExtendSetpoint, CANSparkMax.ControlType.kPosition);
         if (DEBUGGING) {
           System.out.println(
-            "armExtend - pos:"
-                + extendPos
-                + " setPt:"
-                + m_armExtendSetpoint
-                + " newPt:"
-                + newExtendSetpoint);
+              "armExtend - pos:"
+                  + extendPos
+                  + " setPt:"
+                  + m_armExtendSetpoint
+                  + " newPt:"
+                  + newExtendSetpoint);
         }
       }
 
@@ -290,9 +288,7 @@ public class Arm extends SubsystemBase {
     if (!isResetting()) {
       m_armLiftSetpoint =
           MathUtil.clamp(
-              position,
-              RobotPreferences.ArmLift.armMinPosition.get(),
-              RobotPreferences.ArmLift.armMaxPosition.get());
+              position, ArmConstants.armLiftMinPosition, ArmConstants.armLiftMaxPosition);
     }
   }
 
@@ -303,9 +299,7 @@ public class Arm extends SubsystemBase {
   public void raiseArm(double pctHeight) {
     this.setArmLiftPosition(
         MathUtil.interpolate(
-            RobotPreferences.ArmLift.armMinPosition.get(),
-            RobotPreferences.ArmLift.armMaxPosition.get(),
-            pctHeight));
+            ArmConstants.armLiftMinPosition, ArmConstants.armLiftMaxPosition, pctHeight));
   }
 
   public boolean isArmRaised() {
@@ -316,9 +310,7 @@ public class Arm extends SubsystemBase {
     if (!isResetting()) {
       m_armExtendSetpoint =
           MathUtil.clamp(
-              position,
-              RobotPreferences.ArmExtend.armMinPosition.get(),
-              RobotPreferences.ArmExtend.armMaxPosition.get());
+              position, ArmConstants.armExtendMinPosition, ArmConstants.armExtendMaxPosition);
     }
   }
 
@@ -329,9 +321,7 @@ public class Arm extends SubsystemBase {
   public void extendArm(double pctLength) {
     this.setArmExtendPosition(
         MathUtil.interpolate(
-            RobotPreferences.ArmExtend.armMinPosition.get(),
-            RobotPreferences.ArmExtend.armMaxPosition.get(),
-            pctLength));
+            ArmConstants.armExtendMinPosition, ArmConstants.armExtendMaxPosition, pctLength));
   }
 
   public boolean isArmExtended() {

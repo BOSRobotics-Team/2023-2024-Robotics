@@ -14,13 +14,9 @@ public class GyroIOPigeon2 implements GyroIO {
   private final double[] xyzDps = new double[3];
   private final double[] yprdeg = new double[3];
 
-  private boolean ccwHeading = false;
-  private double headingOffset = 0.0;
-
   public GyroIOPigeon2(int id, String canBus) {
     gyro = new WPI_Pigeon2(id, canBus);
     gyro.configFactoryDefault();
-    ccwHeading = true;
 
     initLogging();
   }
@@ -31,11 +27,11 @@ public class GyroIOPigeon2 implements GyroIO {
     gyro.getYawPitchRoll(yprdeg);
 
     inputs.connected = this.isConnected();
+    inputs.positionDeg = yprdeg[0];
+    inputs.velocityDegPerSec = xyzDps[2]; // degrees per second
     inputs.yawDeg = yprdeg[0]; // degrees
     inputs.pitchDeg = yprdeg[1]; // degrees
     inputs.rollDeg = yprdeg[2]; // degrees
-    inputs.headingDeg = headingOffset + (ccwHeading ? yprdeg[0] : -yprdeg[0]);
-    inputs.headingRateDegPerSec = xyzDps[2]; // degrees per second
   }
 
   @Override
@@ -43,74 +39,10 @@ public class GyroIOPigeon2 implements GyroIO {
     return gyro.getLastError().equals(ErrorCode.OK);
   }
 
-  @Override
-  public void setGyroDirection(int direction) {
-    ccwHeading = (direction == DRIVEGYRO_CCW);
-  }
-
-  @Override
-  public int getGyroDirection() {
-    return ccwHeading ? DRIVEGYRO_CCW : DRIVEGYRO_CW;
-  }
-
-  /**
-   * Set the robot's heading offset.
-   *
-   * @param offsetDegrees The offset to set to, in degrees on [-180, 180].
-   */
-  @Override
-  public void setHeadingOffset(final double offsetDegrees) {
-    headingOffset = offsetDegrees;
-  }
-
-  /**
-   * Get the robot's heading offset.
-   *
-   * @return The offset to set to, in degrees on [-180, 180].
-   */
-  @Override
-  public double getHeadingOffset() {
-    return headingOffset;
-  }
-
-  @Override
-  public void calibrate() {}
-
-  @Override
-  public void close() {
-    gyro.close();
-  }
-
   /** Zero the robot's heading. */
   @Override
   public void reset() {
     gyro.reset();
-    headingOffset = 0.0;
-  }
-
-  @Override
-  public double getAngle() {
-    return headingOffset + (ccwHeading ? gyro.getYaw() : -gyro.getYaw());
-  }
-
-  @Override
-  public double getRate() {
-    return gyro.getRate();
-  }
-
-  @Override
-  public double getYaw() {
-    return gyro.getYaw();
-  }
-
-  @Override
-  public double getPitch() {
-    return gyro.getPitch();
-  }
-
-  @Override
-  public double getRoll() {
-    return gyro.getRoll();
   }
 
   public void initLogging() {

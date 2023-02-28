@@ -1,7 +1,5 @@
 package frc.lib.gyro;
 
-import edu.wpi.first.wpilibj.interfaces.Gyro;
-
 /**
  * Gyro hardware abstraction interface
  *
@@ -15,17 +13,15 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
  * determining the robot's rotation from the gryo when connected and via the swwerve module
  * positions when not connected.
  */
-public interface GyroIO extends Gyro {
-  public static final int DRIVEGYRO_CCW = 0; // set gyro yaw to ccw for angle direction
-  public static final int DRIVEGYRO_CW = 1; // set gyro yaw to clockwise for angle direction
+public interface GyroIO {
 
   public static class GyroIOInputs {
     public boolean connected = false;
-    public double headingDeg = 0.0;
+    public double positionDeg = 0.0;
+    public double velocityDegPerSec = 0.0;
     public double yawDeg = 0.0;
     public double pitchDeg = 0.0;
     public double rollDeg = 0.0;
-    public double headingRateDegPerSec = 0.0;
   }
 
   /**
@@ -39,40 +35,6 @@ public interface GyroIO extends Gyro {
     return false;
   }
 
-  public default void setGyroDirection(int direction) {}
-
-  public default int getGyroDirection() {
-    return DRIVEGYRO_CCW;
-  }
-
-  /**
-   * Set the robot's heading offset.
-   *
-   * @param offsetDegrees The offset to set to, in degrees on [-180, 180].
-   */
-  public default void setHeadingOffset(final double offsetDegrees) {}
-
-  /**
-   * Get the robot's heading offset.
-   *
-   * @return The offset to set to, in degrees on [-180, 180].
-   */
-  public default double getHeadingOffset() {
-    return 0.0;
-  }
-
   /** Zero the robot's heading. */
   public default void reset() {}
-
-  public default double getYaw() {
-    return 0.0;
-  }
-
-  public default double getPitch() {
-    return 0.0;
-  }
-
-  public default double getRoll() {
-    return 0.0;
-  }
 }

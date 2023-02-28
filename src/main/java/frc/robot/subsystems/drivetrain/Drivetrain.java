@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+// import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -23,50 +23,40 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+// import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.gyro.GyroIO;
 import frc.lib.gyro.GyroIO.GyroIOInputs;
 import frc.lib.swerve.SwerveModule;
 import frc.lib.util.RobotOdometry;
-import frc.robot.RobotPreferences;
+import frc.robot.AutoConstants;
 
-public class SwerveDriveTrain extends SubsystemBase {
-  private enum DriveMode {
-    NORMAL,
-    X,
-    CHARACTERIZATION
-  };
-
+public class Drivetrain extends SubsystemBase {
   private final GyroIO gyro;
   private final GyroIOInputs gyroInputs = new GyroIOInputs();
 
   private final PIDController autoXController =
       new PIDController(
-          RobotPreferences.Auto.pXController.get(),
-          RobotPreferences.Auto.iXController.get(),
-          RobotPreferences.Auto.dXController.get());
+          AutoConstants.kPXController, AutoConstants.kIXController, AutoConstants.kDXController);
   private final PIDController autoYController =
       new PIDController(
-          RobotPreferences.Auto.pYController.get(),
-          RobotPreferences.Auto.iYController.get(),
-          RobotPreferences.Auto.dYController.get());
+          AutoConstants.kPYController, AutoConstants.kIYController, AutoConstants.kDYController);
   private final PIDController autoThetaController =
       new PIDController(
-          RobotPreferences.Auto.pThetaController.get(),
-          RobotPreferences.Auto.iThetaController.get(),
-          RobotPreferences.Auto.dThetaController.get());
+          AutoConstants.kPThetaController,
+          AutoConstants.kIThetaController,
+          AutoConstants.kDThetaController);
   private final ProfiledPIDController autoProfiledThetaController =
       new ProfiledPIDController(
-          RobotPreferences.Auto.pThetaController.get(),
-          RobotPreferences.Auto.iThetaController.get(),
-          RobotPreferences.Auto.dThetaController.get(),
-          SwerveDriveTrain.kThetaControllerConstraints);
+          AutoConstants.kPThetaController,
+          AutoConstants.kIThetaController,
+          AutoConstants.kDThetaController,
+          Drivetrain.kThetaControllerConstraints);
 
   /* Swerve Kinematics
    * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
-  public final SwerveDriveKinematics swerveKinematics = DriveTrainConstants.swerveKinematics;
+  public final SwerveDriveKinematics kinematics = DriveTrainConstants.swerveKinematics;
 
   private final SwerveModule[] swerveModules = new SwerveModule[4]; // FL, FR, BL, BR
 
@@ -99,6 +89,8 @@ public class SwerveDriveTrain extends SubsystemBase {
 
   private boolean isFieldRelative;
 
+  private double gyroOffset;
+
   private ChassisSpeeds chassisSpeeds;
 
   private SwerveDrivePoseEstimator poseEstimator;
@@ -107,22 +99,22 @@ public class SwerveDriveTrain extends SubsystemBase {
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
 
-  private SwerveDriveOdometry swerveOdometry;
-  private Field2d m_field = new Field2d();
+  // private SwerveDriveOdometry swerveOdometry;
+  // private Field2d m_field = new Field2d();
 
   public static final TrajectoryConfig trajectoryConfig =
       new TrajectoryConfig(
-              RobotPreferences.Auto.maxSpeedMetersPerSecond.get(),
-              RobotPreferences.Auto.maxAccelerationMetersPerSecondSquared.get())
+              AutoConstants.kMaxSpeedMetersPerSecond,
+              AutoConstants.kMaxAccelerationMetersPerSecondSquared)
           .setKinematics(DriveTrainConstants.swerveKinematics);
 
   /* Constraint for the motion profilied robot angle controller */
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(
-          RobotPreferences.Auto.maxAngularSpeedRadiansPerSecond.get(),
-          RobotPreferences.Auto.maxAngularSpeedRadiansPerSecondSquared.get());
+          AutoConstants.kMaxAngularSpeedRadiansPerSecond,
+          AutoConstants.kMaxAngularSpeedRadiansPerSecondSquared);
 
-  public SwerveDriveTrain(
+  public Drivetrain(
       GyroIO gyro, SwerveModule mod0, SwerveModule mod1, SwerveModule mod2, SwerveModule mod3) {
     this.gyro = gyro;
     this.swerveModules[0] = mod0;
@@ -135,19 +127,19 @@ public class SwerveDriveTrain extends SubsystemBase {
 
     this.centerGravity = new Translation2d();
 
-    gyro.setGyroDirection(GYRO_DIRECTION);
-    zeroGyro();
-    setGyroOffset(RobotPreferences.Swerve.startAngleDegrees.get());
+    this.zeroGyroscope();
 
     this.isFieldRelative = true;
+
+    this.gyroOffset = 0;
 
     this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
 
-    getModulePositions();
-    this.swerveOdometry =
-        new SwerveDriveOdometry(swerveKinematics, getRotation(), swerveModulePositions);
+    // getModulePositions();
+    // this.swerveOdometry =
+    //     new SwerveDriveOdometry(swerveKinematics, getRotation(), swerveModulePositions);
     initLogging();
   }
 
@@ -172,7 +164,7 @@ public class SwerveDriveTrain extends SubsystemBase {
    */
   public Rotation2d getRotation() {
     if (gyroInputs.connected) {
-      return Rotation2d.fromDegrees(gyroInputs.headingDeg);
+      return Rotation2d.fromDegrees(gyroInputs.positionDeg + this.gyroOffset);
     } else {
       return estimatedPoseWithoutGyro.getRotation();
     }
@@ -190,9 +182,9 @@ public class SwerveDriveTrain extends SubsystemBase {
     //      taking effect. As a result, it is recommended to never set the yaw and
     //      adjust the local offset instead.
     if (gyroInputs.connected) {
-      gyro.setHeadingOffset(expectedYaw - gyroInputs.headingDeg);
+      this.gyroOffset = expectedYaw - gyroInputs.positionDeg;
     } else {
-      gyro.setHeadingOffset(0.0);
+      this.gyroOffset = 0;
       this.estimatedPoseWithoutGyro =
           new Pose2d(
               estimatedPoseWithoutGyro.getX(),
@@ -237,11 +229,6 @@ public class SwerveDriveTrain extends SubsystemBase {
    *
    * @param state the specified PathPlanner state to which is set the odometry
    */
-  public void resetOdometry(Pose2d pose) {
-    getModulePositions();
-    this.swerveOdometry.resetPosition(getRotation(), swerveModulePositions, pose);
-  }
-
   public void resetOdometry(PathPlannerState state) {
     setGyroOffset(state.holonomicRotation.getDegrees());
 
@@ -253,6 +240,17 @@ public class SwerveDriveTrain extends SubsystemBase {
         this.getRotation(),
         swerveModulePositions,
         new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    setGyroOffset(pose.getRotation().getDegrees());
+
+    getModulePositions();
+
+    estimatedPoseWithoutGyro = pose;
+    poseEstimator.resetPosition(this.getRotation(), swerveModulePositions, pose);
+    // getModulePositions();
+    // this.swerveOdometry.resetPosition(getRotation(), swerveModulePositions, pose);
   }
 
   public void resetPoseRotationToGyro() {
@@ -283,17 +281,18 @@ public class SwerveDriveTrain extends SubsystemBase {
    * @param translationYSupplier the desired velocity in the y direction (m/s)
    * @param rotationSupplier the desired rotational velcoity (rad/s)
    */
-  public void drive(double translation, double strafe, double rotation) {
+  public void drive(double xVelocity, double yVelocity, double rotationalVelocity) {
     switch (driveMode) {
       case NORMAL:
         if (isFieldRelative) {
           chassisSpeeds =
-              ChassisSpeeds.fromFieldRelativeSpeeds(translation, strafe, rotation, getRotation());
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  xVelocity, yVelocity, rotationalVelocity, getRotation());
         } else {
-          chassisSpeeds = new ChassisSpeeds(translation, strafe, rotation);
+          chassisSpeeds = new ChassisSpeeds(xVelocity, yVelocity, rotationalVelocity);
         }
         SwerveModuleState[] swerveModuleStates =
-            swerveKinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
+            kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
         this.setSwerveModuleStates(swerveModuleStates, true, false);
         break;
 
@@ -317,13 +316,19 @@ public class SwerveDriveTrain extends SubsystemBase {
    */
   public void stop() {
     chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-    SwerveModuleState[] states =
-        swerveKinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
     this.setSwerveModuleStates(states);
   }
 
+  /**
+   * This method is invoked each iteration of the scheduler. Typically, when using a command-based
+   * model, subsystems don't override the periodic method. However, the drivetrain needs to
+   * continually update the odometry of the robot, update and log the gyro and swerve module inputs,
+   * update brake mode, and update the tunable values.
+   */
   @Override
   public void periodic() {
+
     // update and log gyro inputs
     gyro.updateInputs(gyroInputs);
 
@@ -350,7 +355,7 @@ public class SwerveDriveTrain extends SubsystemBase {
         previous.distanceMeters = current.distanceMeters;
       }
 
-      Twist2d twist = swerveKinematics.toTwist2d(moduleDeltas);
+      Twist2d twist = kinematics.toTwist2d(moduleDeltas);
 
       estimatedPoseWithoutGyro = estimatedPoseWithoutGyro.exp(twist);
     }
@@ -358,6 +363,7 @@ public class SwerveDriveTrain extends SubsystemBase {
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(), this.getRotation(), swerveModulePositions);
 
+    // update the brake mode based on the robot's velocity and state (enabled/disabled)
     updateBrakeMode();
 
     // // update tunables
@@ -376,8 +382,8 @@ public class SwerveDriveTrain extends SubsystemBase {
     // Logger.getInstance().recordOutput("SwerveModuleStates", states);
     // Logger.getInstance().recordOutput(SUBSYSTEM_NAME + "/gyroOffset", this.gyroOffset);
 
-    this.swerveOdometry.update(getRotation(), swerveModulePositions);
-    m_field.setRobotPose(this.swerveOdometry.getPoseMeters());
+    // this.swerveOdometry.update(getRotation(), swerveModulePositions);
+    // m_field.setRobotPose(this.swerveOdometry.getPoseMeters());
   }
 
   /**
@@ -393,7 +399,7 @@ public class SwerveDriveTrain extends SubsystemBase {
       boolean stillMoving = false;
       for (SwerveModule mod : swerveModules) {
         if (Math.abs(mod.getState().speedMetersPerSecond)
-            > RobotPreferences.Swerve.maxCoastVelocity_MPS.get()) {
+            > DriveTrainConstants.maxCoastVelocity_MPS) {
           stillMoving = true;
         }
       }
@@ -423,18 +429,17 @@ public class SwerveDriveTrain extends SubsystemBase {
    */
   /* Used by SwerveControllerCommand */
   public void setSwerveModuleStates(
-      SwerveModuleState[] desiredStates, boolean isOpenLoop, boolean isForceAngle) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, RobotPreferences.Swerve.maxSpeed.get());
+      SwerveModuleState[] states, boolean isOpenLoop, boolean forceAngle) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveTrainConstants.maxSpeed);
 
     for (SwerveModule mod : this.swerveModules) {
-      mod.setDesiredState(desiredStates[mod.getModuleNumber()], isOpenLoop, isForceAngle);
+      mod.setDesiredState(states[mod.getModuleNumber()], isOpenLoop, forceAngle);
     }
   }
 
   /* Used by SwerveControllerCommand in Auto */
-  public void setSwerveModuleStates(SwerveModuleState[] desiredStates) {
-    this.setSwerveModuleStates(desiredStates, false, false);
+  public void setSwerveModuleStates(SwerveModuleState[] states) {
+    this.setSwerveModuleStates(states, false, false);
   }
 
   /**
@@ -469,9 +474,7 @@ public class SwerveDriveTrain extends SubsystemBase {
    */
   public void setXStance() {
     chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-    SwerveModuleState[] states =
-        swerveKinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
-
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
     states[0].angle = new Rotation2d(Math.PI / 2 - Math.atan(TRACKWIDTH / WHEELBASE));
     states[1].angle = new Rotation2d(Math.PI / 2 + Math.atan(TRACKWIDTH / WHEELBASE));
     states[2].angle = new Rotation2d(Math.PI / 2 + Math.atan(TRACKWIDTH / WHEELBASE));
@@ -480,14 +483,14 @@ public class SwerveDriveTrain extends SubsystemBase {
   }
 
   public void getModulePositions() {
-    for (SwerveModule mod : this.swerveModules) {
-      swerveModulePositions[mod.getModuleNumber()] = mod.getPosition();
+    for (int i = 0; i < 4; i++) {
+      swerveModulePositions[i] = swerveModules[i].getPosition();
     }
   }
 
   public void getModuleStates() {
-    for (SwerveModule mod : this.swerveModules) {
-      swerveModuleStates[mod.getModuleNumber()] = mod.getState();
+    for (int i = 0; i < 4; i++) {
+      swerveModuleStates[i] = swerveModules[i].getState();
     }
   }
 
@@ -505,14 +508,6 @@ public class SwerveDriveTrain extends SubsystemBase {
   /** Resets the robot's center of gravity about which it will rotate to the center of the robot. */
   public void resetCenterGrav() {
     setCenterGrav(0.0, 0.0);
-  }
-
-  public void zeroGyro() {
-    gyro.reset();
-  }
-
-  public double getRotationDegrees() {
-    return this.getRotation().getDegrees();
   }
 
   /**
@@ -620,6 +615,14 @@ public class SwerveDriveTrain extends SubsystemBase {
     }
   }
 
+  public void zeroGyro() {
+    gyro.reset();
+  }
+
+  public double getRotationDegrees() {
+    return this.getRotation().getDegrees();
+  }
+
   public SwerveModule getSwerveModule(int moduleNumber) {
     return swerveModules[moduleNumber];
   }
@@ -654,5 +657,11 @@ public class SwerveDriveTrain extends SubsystemBase {
       tab.add("Enable XStance", Commands.runOnce(this::enableXstance, this));
       tab.add("Disable XStance", Commands.runOnce(this::disableXstance, this));
     }
+  }
+
+  private enum DriveMode {
+    NORMAL,
+    X,
+    CHARACTERIZATION
   }
 }
