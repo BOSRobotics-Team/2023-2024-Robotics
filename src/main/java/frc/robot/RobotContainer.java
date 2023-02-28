@@ -244,6 +244,12 @@ public class RobotContainer {
               entry.getValue().getMarkers(),
               AUTO_EVENT_MAP);
       chooser.addOption(entry.getKey(), autoPath);
+      autoPath =
+          new FollowPathWithEvents(
+              new FollowPath(PathPlannerTrajectory.transformTrajectoryForAlliance(entry.getValue(), DriverStation.getAlliance()), driveTrain, true),
+              entry.getValue().getMarkers(),
+              AUTO_EVENT_MAP);
+      chooser.addOption(entry.getKey() + " - Red", autoPath);
     }
     chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
 
