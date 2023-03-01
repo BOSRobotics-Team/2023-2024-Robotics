@@ -203,18 +203,35 @@ public class RobotContainer {
     // Add commands to Autonomous Sendable Chooser
     chooser.setDefaultOption("Do Nothing", Commands.none());
 
-    // Create the AutoBuilder. This only needs to be created once when robot code starts, not every time you want to create an auto command. A good place to put this is in RobotContainer along with your subsystems.
-    autoBuilder = new SwerveAutoBuilder(
-      driveTrain::getPose, // Pose2d supplier
-      driveTrain::resetPose, // Pose2d consumer, used to reset odometry at the beginning of auto
-      driveTrain.kinematics, // SwerveDriveKinematics
-        new PIDConstants(AutoConstants.kPXController, AutoConstants.kIXController, AutoConstants.kDXController), // PID constants to correct for translation error (used to create the X and Y PID controllers)
-        new PIDConstants(AutoConstants.kPThetaController, AutoConstants.kIThetaController, AutoConstants.kDThetaController), // PID constants to correct for rotation error (used to create the rotation controller)
-        driveTrain::setSwerveModuleStates, // Module states consumer used to output to the drive subsystem
-        AUTO_EVENT_MAP,
-        true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-        driveTrain // The drive subsystem. Used to properly set the requirements of path following commands
-    );
+    // Create the AutoBuilder. This only needs to be created once when robot code starts, not every
+    // time you want to create an auto command. A good place to put this is in RobotContainer along
+    // with your subsystems.
+    autoBuilder =
+        new SwerveAutoBuilder(
+            driveTrain::getPose, // Pose2d supplier
+            driveTrain
+                ::resetPose, // Pose2d consumer, used to reset odometry at the beginning of auto
+            driveTrain.kinematics, // SwerveDriveKinematics
+            new PIDConstants(
+                AutoConstants.kPXController,
+                AutoConstants.kIXController,
+                AutoConstants
+                    .kDXController), // PID constants to correct for translation error (used to
+            // create the X and Y PID controllers)
+            new PIDConstants(
+                AutoConstants.kPThetaController,
+                AutoConstants.kIThetaController,
+                AutoConstants
+                    .kDThetaController), // PID constants to correct for rotation error (used to
+            // create the rotation controller)
+            driveTrain::setSwerveModuleStates, // Module states consumer used to output to the drive
+            // subsystem
+            AUTO_EVENT_MAP,
+            true, // Should the path be automatically mirrored depending on alliance color.
+            // Optional, defaults to true
+            driveTrain // The drive subsystem. Used to properly set the requirements of path
+            // following commands
+            );
 
     // SmartDashboard Buttons
     // SmartDashboard.putData("Auto mode", chooser);
@@ -223,18 +240,20 @@ public class RobotContainer {
 
   private void configureAutoPaths() {
     for (int pos = 1; pos <= 3; ++pos) {
-      AUTO_EVENT_MAP.put("CubePosition" + pos, Commands.sequence(
-        Commands.runOnce(() -> arm.targetCones(false), arm),
-        new PositionArm(arm, pos)));
+      AUTO_EVENT_MAP.put(
+          "CubePosition" + pos,
+          Commands.sequence(
+              Commands.runOnce(() -> arm.targetCones(false), arm), new PositionArm(arm, pos)));
     }
     for (int pos = 1; pos <= 3; ++pos) {
-      AUTO_EVENT_MAP.put("ConePosition" + pos, Commands.sequence(
-        Commands.runOnce(() -> arm.targetCones(true), arm),
-        new PositionArm(arm, pos)));
+      AUTO_EVENT_MAP.put(
+          "ConePosition" + pos,
+          Commands.sequence(
+              Commands.runOnce(() -> arm.targetCones(true), arm), new PositionArm(arm, pos)));
     }
     AUTO_EVENT_MAP.put("DropPiece", new Grip(arm, false));
     AUTO_EVENT_MAP.put("ZeroArm", new PositionArm(arm, 0));
-                    
+
     try {
       DirectoryStream<Path> stream =
           Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("pathplanner"));
@@ -263,10 +282,12 @@ public class RobotContainer {
     //           AUTO_EVENT_MAP);
     //   Command autoPathRed =
     //     new FollowPathWithEvents(
-    //         new FollowPath(PathPlannerTrajectory.transformTrajectoryForAlliance(entry.getValue(), Alliance.Red), driveTrain, true),
+    //         new FollowPath(PathPlannerTrajectory.transformTrajectoryForAlliance(entry.getValue(),
+    // Alliance.Red), driveTrain, true),
     //         entry.getValue().getMarkers(),
     //         AUTO_EVENT_MAP);
-    //   chooser.addOption(entry.getKey(), Commands.either(autoPathBlue, autoPathRed, () -> DriverStation.getAlliance() == Alliance.Blue));
+    //   chooser.addOption(entry.getKey(), Commands.either(autoPathBlue, autoPathRed, () ->
+    // DriverStation.getAlliance() == Alliance.Blue));
     // }
     chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
 

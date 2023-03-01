@@ -2,8 +2,8 @@ package frc.robot;
 
 import static frc.robot.Constants.*;
 
-import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.REVLibError;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -603,11 +603,14 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click 'Step' to Raise Arm to Max Height";
       } else {
-        robot.arm.m_armLiftController.setReference(ArmConstants.armLiftMaxPosition, ControlType.kPosition);
+        robot.arm.m_armLiftController.setReference(
+            ArmConstants.armLiftMaxPosition, ControlType.kPosition);
         item.state = 1;
         item.status = "Raising Arm";
       }
-    } else if ((item.state == 1) && (Math.abs(robot.arm.getArmLiftPosition() - ArmConstants.armLiftMaxPosition) < ArmConstants.armLiftMoveThreshold)) {
+    } else if ((item.state == 1)
+        && (Math.abs(robot.arm.getArmLiftPosition() - ArmConstants.armLiftMaxPosition)
+            < ArmConstants.armLiftMoveThreshold)) {
       item.state = 2;
       item.status = "Arm Raised to Max Height - Measure";
       item.setComplete(true);
@@ -621,11 +624,14 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click 'Step' to Extend Arm to Max Length";
       } else {
-        robot.arm.m_armExtendController.setReference(ArmConstants.armExtendMaxPosition, ControlType.kPosition);
+        robot.arm.m_armExtendController.setReference(
+            ArmConstants.armExtendMaxPosition, ControlType.kPosition);
         item.state = 1;
         item.status = "Extending Arm";
       }
-    } else if ((item.state == 1) && (Math.abs(robot.arm.getArmExtendPosition() - ArmConstants.armExtendMaxPosition) < ArmConstants.armExtendMoveThreshold)) {
+    } else if ((item.state == 1)
+        && (Math.abs(robot.arm.getArmExtendPosition() - ArmConstants.armExtendMaxPosition)
+            < ArmConstants.armExtendMoveThreshold)) {
       item.state = 2;
       item.status = "Arm Extended to Max Length - Measure";
       item.setComplete(true);
@@ -644,11 +650,13 @@ public class TestChecklist {
         item.state = 1;
         item.status = "Retracting Arm";
       }
-    } else if ((item.state == 1) && (robot.arm.getArmExtendPosition() < ArmConstants.armExtendMoveThreshold)) {
+    } else if ((item.state == 1)
+        && (robot.arm.getArmExtendPosition() < ArmConstants.armExtendMoveThreshold)) {
       robot.arm.m_armLiftController.setReference(0.0, ControlType.kPosition);
       item.state = 2;
       item.status = "Lowering Arm";
-    } else if ((item.state == 2) && (robot.arm.getArmLiftPosition() < ArmConstants.armLiftMoveThreshold)) {
+    } else if ((item.state == 2)
+        && (robot.arm.getArmLiftPosition() < ArmConstants.armLiftMoveThreshold)) {
       item.state = 3;
       item.status = "Arm Set to Zero Position";
       item.setComplete(true);
