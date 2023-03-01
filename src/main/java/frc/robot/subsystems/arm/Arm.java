@@ -39,13 +39,13 @@ public class Arm extends SubsystemBase {
 
   public final SimableCANSparkMax m_armLiftMotor =
       new SimableCANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
-  private final SparkMaxPIDController m_armLiftController;
+  public final SparkMaxPIDController m_armLiftController;
   public final RelativeEncoder m_armLiftEncoder;
   public final SparkMaxLimitSwitch m_armLiftLimit;
 
   public final SimableCANSparkMax m_armExtendMotor =
       new SimableCANSparkMax(ARM_EXTEND_MOTOR_ID, MotorType.kBrushless);
-  private final SparkMaxPIDController m_armExtendController;
+  public final SparkMaxPIDController m_armExtendController;
   public final RelativeEncoder m_armExtendEncoder;
   public final SparkMaxLimitSwitch m_armExtendLimit;
 

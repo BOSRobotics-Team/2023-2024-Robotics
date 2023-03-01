@@ -3,6 +3,7 @@ package frc.robot;
 import static frc.robot.Constants.*;
 
 import com.revrobotics.REVLibError;
+import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import frc.lib.gyro.GyroIO.GyroIOInputs;
 import frc.lib.util.PreferencesValue;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.arm.ArmConstants;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 import java.util.List;
 import java.util.Map;
@@ -456,13 +458,14 @@ public class TestChecklist {
       } else {
         robot.gyro.reset();
         item.state = 1;
-        item.status = "Rotate robot 90 degrees";
+        item.status = "Rotate robot about Yaw";
       }
     } else if (item.state == 1) {
       GyroIOInputs inputs = new GyroIOInputs();
       robot.gyro.updateInputs(inputs);
+      item.status = "Yaw: " + inputs.positionDeg;
 
-      if (Math.abs(inputs.positionDeg - 90.0) < 0.1) {
+      if (getDoStep()) {
         item.state = 2;
         item.status = "Gyro test complete";
         item.setComplete(true);
@@ -479,13 +482,14 @@ public class TestChecklist {
       } else {
         robot.gyro.reset();
         item.state = 1;
-        item.status = "Lift robot 30 degrees";
+        item.status = "Lift robot to check Pitch";
       }
     } else if (item.state == 1) {
       GyroIOInputs inputs = new GyroIOInputs();
       robot.gyro.updateInputs(inputs);
+      item.status = "Pitch: " + inputs.pitchDeg;
 
-      if (Math.abs(inputs.pitchDeg - 30.0) < 0.1) {
+      if (getDoStep()) {
         item.state = 2;
         item.status = "Gyro test complete";
         item.setComplete(true);
@@ -509,7 +513,7 @@ public class TestChecklist {
     if (item.state == 0) {
       if (robot.arm.isArmExtendMinLimitSwitch()) {
         item.status = "Extending Arm";
-        robot.arm.m_armExtendMotor.set(0.1);
+        robot.arm.m_armExtendMotor.set(-ArmConstants.armExtendResetOutput);
       } else {
         item.state = 1;
         item.status = "Click Arm Extend Limit Switch";
@@ -531,16 +535,16 @@ public class TestChecklist {
     if (item.state == 0) {
       if (robot.arm.isArmLiftMinLimitSwitch()) {
         item.status = "Lifting Arm";
-        robot.arm.m_armLiftMotor.set(0.1);
+        robot.arm.m_armLiftMotor.set(-ArmConstants.armLiftResetOutput);
       } else {
         item.state = 1;
         item.status = "Click Arm Lift Limit Switch";
         robot.arm.m_armLiftMotor.set(0.0);
       }
-    } else if ((item.state == 1) && robot.arm.isArmExtendMinLimitSwitch()) {
+    } else if ((item.state == 1) && robot.arm.isArmLiftMinLimitSwitch()) {
       item.state = 2;
       item.status = "Release Arm Lift Limit Switch";
-    } else if ((item.state == 2) && !robot.arm.isArmExtendMinLimitSwitch()) {
+    } else if ((item.state == 2) && !robot.arm.isArmLiftMinLimitSwitch()) {
       item.state = 3;
       item.status = "Arm Lift Limit Switch complete";
       item.setComplete(true);
@@ -565,19 +569,26 @@ public class TestChecklist {
         item.status = "Click 'Step' to Start Arm Calibration";
       } else {
         resetTeleopWidget();
-        robot.arm.resetArm();
         item.state = 1;
         item.status = "Calibrating Extend Arm";
+        if (!robot.arm.isArmExtendMinLimitSwitch()) {
+          robot.arm.m_armExtendMotor.set(ArmConstants.armExtendResetOutput);
+        }
       }
     } else if (item.state == 1) {
-      robot.arm.doResetting();
-      if (robot.arm.m_armExtendLimit.isPressed()) {
+      if (robot.arm.isArmExtendMinLimitSwitch()) {
+        robot.arm.m_armExtendMotor.set(0.0);
+        robot.arm.m_armExtendEncoder.setPosition(0.0);
         item.state = 2;
         item.status = "Calibrating Lift Arm";
+        if (!robot.arm.isArmLiftMinLimitSwitch()) {
+          robot.arm.m_armLiftMotor.set(ArmConstants.armLiftResetOutput);
+        }
       }
     } else if (item.state == 2) {
-      robot.arm.doResetting();
-      if (robot.arm.m_armLiftLimit.isPressed()) {
+      if (robot.arm.isArmLiftMinLimitSwitch()) {
+        robot.arm.m_armLiftMotor.set(0.0);
+        robot.arm.m_armLiftEncoder.setPosition(0.0);
         item.state = 3;
         item.status = "Calibrating Arm Complete";
         item.setComplete(true);
@@ -592,11 +603,11 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click 'Step' to Raise Arm to Max Height";
       } else {
-        robot.arm.raiseArm(1.0);
+        robot.arm.m_armLiftController.setReference(ArmConstants.armLiftMaxPosition, ControlType.kPosition);
         item.state = 1;
         item.status = "Raising Arm";
       }
-    } else if ((item.state == 1) && robot.arm.isArmRaised()) {
+    } else if ((item.state == 1) && (Math.abs(robot.arm.getArmLiftPosition() - ArmConstants.armLiftMaxPosition) < ArmConstants.armLiftMoveThreshold)) {
       item.state = 2;
       item.status = "Arm Raised to Max Height - Measure";
       item.setComplete(true);
@@ -610,11 +621,11 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click 'Step' to Extend Arm to Max Length";
       } else {
-        robot.arm.extendArm(1.0);
+        robot.arm.m_armExtendController.setReference(ArmConstants.armExtendMaxPosition, ControlType.kPosition);
         item.state = 1;
         item.status = "Extending Arm";
       }
-    } else if ((item.state == 1) && robot.arm.isArmExtended()) {
+    } else if ((item.state == 1) && (Math.abs(robot.arm.getArmExtendPosition() - ArmConstants.armExtendMaxPosition) < ArmConstants.armExtendMoveThreshold)) {
       item.state = 2;
       item.status = "Arm Extended to Max Length - Measure";
       item.setComplete(true);
@@ -629,15 +640,15 @@ public class TestChecklist {
       if (!getDoStep()) {
         item.status = "Click 'Step' to reset Arm to Zero";
       } else {
-        robot.arm.extendArm(0.0);
+        robot.arm.m_armExtendController.setReference(0.0, ControlType.kPosition);
         item.state = 1;
         item.status = "Retracting Arm";
       }
-    } else if ((item.state == 1) && robot.arm.isArmExtended()) {
+    } else if ((item.state == 1) && (robot.arm.getArmExtendPosition() < ArmConstants.armExtendMoveThreshold)) {
+      robot.arm.m_armLiftController.setReference(0.0, ControlType.kPosition);
       item.state = 2;
-      robot.arm.raiseArm(0.0);
       item.status = "Lowering Arm";
-    } else if ((item.state == 2) && robot.arm.isArmRaised()) {
+    } else if ((item.state == 2) && (robot.arm.getArmLiftPosition() < ArmConstants.armLiftMoveThreshold)) {
       item.state = 3;
       item.status = "Arm Set to Zero Position";
       item.setComplete(true);
