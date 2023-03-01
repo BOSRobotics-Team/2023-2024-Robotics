@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-// import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.gyro.GyroIO;
@@ -100,7 +100,7 @@ public class Drivetrain extends SubsystemBase {
   private double characterizationVoltage = 0.0;
 
   // private SwerveDriveOdometry swerveOdometry;
-  // private Field2d m_field = new Field2d();
+  private Field2d m_field = new Field2d();
 
   public static final TrajectoryConfig trajectoryConfig =
       new TrajectoryConfig(
@@ -249,7 +249,6 @@ public class Drivetrain extends SubsystemBase {
 
     estimatedPoseWithoutGyro = pose;
     poseEstimator.resetPosition(this.getRotation(), swerveModulePositions, pose);
-    // getModulePositions();
     // this.swerveOdometry.resetPosition(getRotation(), swerveModulePositions, pose);
   }
 
@@ -384,6 +383,7 @@ public class Drivetrain extends SubsystemBase {
 
     // this.swerveOdometry.update(getRotation(), swerveModulePositions);
     // m_field.setRobotPose(this.swerveOdometry.getPoseMeters());
+    m_field.setRobotPose(poseEstimator.getEstimatedPosition());
   }
 
   /**
@@ -636,6 +636,7 @@ public class Drivetrain extends SubsystemBase {
     layout.addNumber("DriveTrain/Gyroscope Roll", this::getRoll);
     layout.addBoolean("DriveTrain/X-Stance On?", this::isXstance);
     layout.addBoolean("DriveTrain/Field-Relative Enabled?", this::getFieldRelative);
+    layout.add(m_field);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");

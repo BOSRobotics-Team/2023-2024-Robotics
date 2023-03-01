@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.robot.Robot;
 
 public class GyroIOPigeon2 implements GyroIO {
   private final WPI_Pigeon2 gyro;
@@ -36,7 +37,10 @@ public class GyroIOPigeon2 implements GyroIO {
 
   @Override
   public boolean isConnected() {
-    return gyro.getLastError().equals(ErrorCode.OK);
+    if (Robot.isReal()) {
+      return gyro.getLastError().equals(ErrorCode.OK);
+    }
+    return false;
   }
 
   /** Zero the robot's heading. */

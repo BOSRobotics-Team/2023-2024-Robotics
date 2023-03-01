@@ -5,16 +5,6 @@
         "header": {
           "open": true
         }
-      },
-      "SPARK MAX [30]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [31]": {
-        "header": {
-          "open": true
-        }
       }
     }
   },
@@ -36,6 +26,7 @@
       "/LiveWindow/Ungrouped/Pigeon 2 [20]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/Shuffleboard/DriveTrain/DriveTrain": "Subsystem",
+      "/Shuffleboard/MAIN/DriveTrain/Field": "Field2d",
       "/Shuffleboard/MAIN/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Auto mode": "String Chooser",
       "/SmartDashboard/Calibrate Arm": "Command",
@@ -44,11 +35,33 @@
       "/SmartDashboard/SetArmPosition (Home)": "Command",
       "/SmartDashboard/SetArmPosition (Middle)": "Command",
       "/SmartDashboard/SetArmPosition (Top)": "Command"
+    },
+    "windows": {
+      "/Shuffleboard/MAIN/DriveTrain/Field": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
     "transitory": {
       "LiveWindow": {
+        "open": true
+      },
+      "Shuffleboard": {
+        "MAIN": {
+          "DriveTrain": {
+            "DriveTrain": {
+              "open": true
+            },
+            "open": true
+          },
+          "SendableChooser[0]": {
+            "open": true
+          },
+          "open": true
+        },
         "open": true
       },
       "SmartDashboard": {
