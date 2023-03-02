@@ -251,7 +251,8 @@ public class RobotContainer {
           Commands.sequence(
               Commands.runOnce(() -> arm.targetCones(true), arm), new PositionArm(arm, pos)));
     }
-    AUTO_EVENT_MAP.put("DropPiece", new Grip(arm, false));
+    AUTO_EVENT_MAP.put("DropPiece", new Grip(arm, true));
+    AUTO_EVENT_MAP.put("GrabPiece", new Grip(arm, false));
     AUTO_EVENT_MAP.put("ZeroArm", new PositionArm(arm, 0));
 
     try {
