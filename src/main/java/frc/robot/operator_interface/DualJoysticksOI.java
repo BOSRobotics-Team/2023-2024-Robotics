@@ -12,9 +12,9 @@ public class DualJoysticksOI implements OperatorInterface {
   private final Trigger[] translateJoystickButtons;
   private final Trigger[] rotateJoystickButtons;
 
-  private double driveScaleFactor = 0.5;
+  private double driveScaleFactor = 0.8;
   private boolean updateDriveScale = false;
-  private double rotateScaleFactor = 1.0;
+  private double rotateScaleFactor = 0.8;
   private boolean updateRotateScale = false;
   protected boolean tests[][] = new boolean[3][20];
 
@@ -120,7 +120,7 @@ public class DualJoysticksOI implements OperatorInterface {
   @Override
   public double getDriveScaling() {
     if (translateJoystickButtons[1].getAsBoolean()) {
-      return 0.1;
+      return 0.25;
     }
     int povVal = translateJoystick.getHID().getPOV();
     if (updateDriveScale && povVal == -1) {
