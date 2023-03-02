@@ -119,6 +119,9 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public double getDriveScaling() {
+    if (translateJoystickButtons[1].getAsBoolean()) {
+      return 0.1;
+    }
     int povVal = translateJoystick.getHID().getPOV();
     if (updateDriveScale && povVal == -1) {
       updateDriveScale = false;
@@ -137,6 +140,9 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public double getRotateScaling() {
+    if (rotateJoystickButtons[1].getAsBoolean()) {
+      return 0.3;
+    }
     int povVal = rotateJoystick.getHID().getPOV();
 
     if (updateRotateScale && povVal == -1) {
