@@ -31,7 +31,7 @@ public class RaiseArm extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return !m_arm.isArmRaised();
+    return m_arm.isArmRaised();
   }
 
   @Override

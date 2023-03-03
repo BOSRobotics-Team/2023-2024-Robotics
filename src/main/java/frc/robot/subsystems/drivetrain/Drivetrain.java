@@ -383,7 +383,7 @@ public class Drivetrain extends SubsystemBase {
 
     // this.swerveOdometry.update(getRotation(), swerveModulePositions);
     // m_field.setRobotPose(this.swerveOdometry.getPoseMeters());
-    m_field.setRobotPose(poseEstimator.getEstimatedPosition());
+    // m_field.setRobotPose(poseEstimator.getEstimatedPosition());
   }
 
   /**
@@ -636,7 +636,6 @@ public class Drivetrain extends SubsystemBase {
     layout.addNumber("DriveTrain/Gyroscope Roll", this::getRoll);
     layout.addBoolean("DriveTrain/X-Stance On?", this::isXstance);
     layout.addBoolean("DriveTrain/Field-Relative Enabled?", this::getFieldRelative);
-    layout.add(m_field);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");
@@ -649,8 +648,7 @@ public class Drivetrain extends SubsystemBase {
           "Pose Est Rot", () -> poseEstimator.getEstimatedPosition().getRotation().getDegrees());
       tab.addNumber("CoG X", () -> this.centerGravity.getX());
       tab.addNumber("CoG Y", () -> this.centerGravity.getY());
-
-      // SmartDashboard.putData("Field", m_field);
+      tab.add(m_field);
     }
 
     if (TESTING) {

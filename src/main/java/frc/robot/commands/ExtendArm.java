@@ -31,7 +31,7 @@ public class ExtendArm extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return !m_arm.isArmExtended();
+    return m_arm.isArmExtended();
   }
 
   @Override
