@@ -45,6 +45,58 @@ public class SwerveModule {
     }
   }
 
+  // /**
+  //  * Minimize the change in heading the desired swerve module state would require by potentially
+  //  * reversing the direction the wheel spins. Customized from WPILib's version to include placing in
+  //  * appropriate scope for CTRE onboard control.
+  //  *
+  //  * @param desiredState The desired state.
+  //  * @param currentAngle The current module angle.
+  //  */
+  // public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
+  //   double targetAngle =
+  //       placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
+  //   double targetSpeed = desiredState.speedMetersPerSecond;
+  //   double delta = targetAngle - currentAngle.getDegrees();
+
+  //   if (Math.abs(delta) > 90) {
+  //     targetSpeed = -targetSpeed;
+  //     targetAngle = delta > 90 ? (targetAngle - 180) : (targetAngle + 180);
+  //   }
+  //   return new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));
+  // }
+
+  /**
+   * @param scopeReference Current Angle
+   * @param newAngle Target Angle
+   * @return Closest angle within scope
+   */
+  private static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
+    double lowerBound;
+    double upperBound;
+    double lowerOffset = scopeReference % 360;
+
+    if (lowerOffset >= 0) {
+      lowerBound = scopeReference - lowerOffset;
+      upperBound = scopeReference + (360 - lowerOffset);
+    } else {
+      upperBound = scopeReference - lowerOffset;
+      lowerBound = scopeReference - (360 + lowerOffset);
+    }
+    while (newAngle < lowerBound) {
+      newAngle += 360;
+    }
+    while (newAngle > upperBound) {
+      newAngle -= 360;
+    }
+    if (newAngle - scopeReference > 180) {
+      newAngle -= 360;
+    } else if (newAngle - scopeReference < -180) {
+      newAngle += 360;
+    }
+    return newAngle;
+  }
+
   /**
    * Set this swerve module to the specified speed and angle.
    *
@@ -55,12 +107,22 @@ public class SwerveModule {
    * @param forceAngle if true, the module will be forced to rotate to the specified angle; if
    *     false, the module will not rotate if the velocity is less than 1% of the max velocity.
    */
-  public void setDesiredState(
-      SwerveModuleState desiredState, boolean isOpenLoop, boolean forceAngle) {
+  public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean forceAngle) {
 
     // this optimization is specific to CTRE hardware; perhaps this responsibility should be demoted
     // to the hardware-specific classes.
-    desiredState = CTREModuleState.optimize(desiredState, getState().angle);
+    // desiredState = CTREModuleState.optimize(desiredState, getState().angle);
+
+    double currentAngleDegrees = getState().angle.getDegrees();
+    double targetAngle = placeInAppropriate0To360Scope(currentAngleDegrees, desiredState.angle.getDegrees());
+    double targetSpeed = desiredState.speedMetersPerSecond;
+
+    double delta = targetAngle - currentAngleDegrees;
+    if (Math.abs(delta) > 90) {
+      targetSpeed = -targetSpeed;
+      targetAngle = delta > 90 ? (targetAngle - 180) : (targetAngle + 180);
+    }
+    desiredState = new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));
 
     setSpeed(desiredState, isOpenLoop);
     setAngle(desiredState, forceAngle);

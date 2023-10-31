@@ -11,7 +11,7 @@ import frc.lib.swerve.SwerveModuleIO.SwerveModuleID;
 public final class DriveTrainConstants {
 
   public static final COTSFalconSwerveConstants moduleType =
-      COTSFalconSwerveConstants.SDSMK4(COTSFalconSwerveConstants.driveGearRatios.SDSMK4_L2);
+      COTSFalconSwerveConstants.SDSMK4_L2();
 
   public static final SwerveModuleID mod0 =
       new SwerveModuleID(
