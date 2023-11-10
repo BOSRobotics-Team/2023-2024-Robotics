@@ -3,11 +3,11 @@ package frc.robot.commands;
 import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.arm.Arm;
 import java.util.function.DoubleSupplier;
 
-public class TeleopArm extends CommandBase {
+public class TeleopArm extends Command {
   private Arm arm;
   private DoubleSupplier liftSup;
   private DoubleSupplier extendSup;

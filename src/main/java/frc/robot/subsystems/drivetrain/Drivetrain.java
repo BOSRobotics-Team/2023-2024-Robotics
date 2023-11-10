@@ -2,9 +2,13 @@ package frc.robot.subsystems.drivetrain;
 
 import static frc.robot.Constants.*;
 
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerTrajectory.State;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,8 +19,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 // import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -24,13 +26,16 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.gyro.GyroIO;
 import frc.lib.gyro.GyroIO.GyroIOInputs;
+import frc.lib.limelightvision.LimelightHelpers;
 import frc.lib.swerve.SwerveModule;
 import frc.lib.util.RobotOdometry;
 import frc.robot.AutoConstants;
+import frc.robot.Constants;
 
 public class Drivetrain extends SubsystemBase {
   private final GyroIO gyro;
@@ -47,18 +52,16 @@ public class Drivetrain extends SubsystemBase {
           AutoConstants.kPThetaController,
           AutoConstants.kIThetaController,
           AutoConstants.kDThetaController);
-  private final ProfiledPIDController autoProfiledThetaController =
-      new ProfiledPIDController(
-          AutoConstants.kPThetaController,
-          AutoConstants.kIThetaController,
-          AutoConstants.kDThetaController,
-          Drivetrain.kThetaControllerConstraints);
 
   /* Swerve Kinematics
    * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
-  public final SwerveDriveKinematics kinematics = DriveTrainConstants.swerveKinematics;
+  //  private final double trackwidthMeters = DriveTrainConstants.getTrackwidth;
+  //  private final double wheelbaseMeters = DriveTrainConstants.getWheelbase;
+   public final SwerveDriveKinematics kinematics = DriveTrainConstants.swerveKinematics;
 
   private final SwerveModule[] swerveModules = new SwerveModule[4]; // FL, FR, BL, BR
+
+  private final Field2d m_field = new Field2d();
 
   private Translation2d centerGravity;
 
@@ -84,7 +87,6 @@ public class Drivetrain extends SubsystemBase {
         new SwerveModuleState(),
         new SwerveModuleState()
       };
-
   private Pose2d estimatedPoseWithoutGyro = new Pose2d();
 
   private boolean isFieldRelative;
@@ -99,22 +101,7 @@ public class Drivetrain extends SubsystemBase {
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
 
-  // private SwerveDriveOdometry swerveOdometry;
-  private Field2d m_field = new Field2d();
-
-  public static final TrajectoryConfig trajectoryConfig =
-      new TrajectoryConfig(
-              AutoConstants.kMaxSpeedMetersPerSecond,
-              AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-          .setKinematics(DriveTrainConstants.swerveKinematics);
-
-  /* Constraint for the motion profilied robot angle controller */
-  public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-      new TrapezoidProfile.Constraints(
-          AutoConstants.kMaxAngularSpeedRadiansPerSecond,
-          AutoConstants.kMaxAngularSpeedRadiansPerSecondSquared);
-
-  public Drivetrain(
+  public Drivetrain (
       GyroIO gyro, SwerveModule mod0, SwerveModule mod1, SwerveModule mod2, SwerveModule mod3) {
     this.gyro = gyro;
     this.swerveModules[0] = mod0;
@@ -123,7 +110,6 @@ public class Drivetrain extends SubsystemBase {
     this.swerveModules[3] = mod3;
 
     this.autoThetaController.enableContinuousInput(-Math.PI, Math.PI);
-    this.autoProfiledThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     this.centerGravity = new Translation2d();
 
@@ -140,6 +126,23 @@ public class Drivetrain extends SubsystemBase {
     // getModulePositions();
     // this.swerveOdometry =
     //     new SwerveDriveOdometry(swerveKinematics, getRotation(), swerveModulePositions);
+
+// Configure the AutoBuilder last
+    AutoBuilder.configureHolonomic(
+        this::getPose, // Robot pose supplier
+        this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::driveChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+            4.5, // Max module speed, in m/s
+            0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+            new ReplanningConfig() // Default path replanning config. See the API for the options here
+        ),
+        this // Reference to this subsystem to set requirements
+    );
+
     initLogging();
   }
 
@@ -166,30 +169,24 @@ public class Drivetrain extends SubsystemBase {
     if (gyroInputs.connected) {
       return Rotation2d.fromDegrees(gyroInputs.positionDeg + this.gyroOffset);
     } else {
+      DriverStation.reportWarning(
+          "Getting estimated pose for rotation - Gyro "
+              + (gyroInputs.positionDeg + this.gyroOffset)
+              + " degrees",
+          false);
       return estimatedPoseWithoutGyro.getRotation();
     }
   }
 
   /**
-   * Sets the rotation of the robot to the specified value. This method should only be invoked when
-   * the rotation of the robot is known (e.g., at the start of an autonomous path). Zero degrees is
-   * facing away from the driver station; CCW is positive.
-   *
-   * @param expectedYaw the rotation of the robot (in degrees)
+   * 
+   * @return The tilt of the robot
    */
-  public void setGyroOffset(double expectedYaw) {
-    // There is a delay between setting the yaw on the Gyro and that change
-    //      taking effect. As a result, it is recommended to never set the yaw and
-    //      adjust the local offset instead.
+  public Rotation2d getTilt() {
     if (gyroInputs.connected) {
-      this.gyroOffset = expectedYaw - gyroInputs.positionDeg;
+      return Rotation2d.fromDegrees(gyroInputs.pitchDeg);
     } else {
-      this.gyroOffset = 0;
-      this.estimatedPoseWithoutGyro =
-          new Pose2d(
-              estimatedPoseWithoutGyro.getX(),
-              estimatedPoseWithoutGyro.getY(),
-              Rotation2d.fromDegrees(expectedYaw));
+      return Rotation2d.fromDegrees(0.0);
     }
   }
 
@@ -206,6 +203,32 @@ public class Drivetrain extends SubsystemBase {
       return gyroInputs.rollDeg;
     } else {
       return 0.0;
+    }
+  }
+
+  /**
+   * Sets the rotation of the robot to the specified value. This method should only be invoked when
+   * the rotation of the robot is known (e.g., at the start of an autonomous path). Zero degrees is
+   * facing away from the driver station; CCW is positive.
+   *
+   * @param expectedYaw the rotation of the robot (in degrees)
+   */
+  public void setGyroOffset(double expectedYaw) {
+    // There is a delay between setting the yaw on the Gyro and that change
+    //      taking effect. As a result, it is recommended to never set the yaw and
+    //      adjust the local offset instead.
+
+    DriverStation.reportWarning("Set expected yaw " + expectedYaw, false);
+
+    if (gyroInputs.connected) {
+      this.gyroOffset = expectedYaw - gyroInputs.positionDeg;
+    } else {
+      this.gyroOffset = 0;
+      this.estimatedPoseWithoutGyro =
+          new Pose2d(
+              estimatedPoseWithoutGyro.getX(),
+              estimatedPoseWithoutGyro.getY(),
+              Rotation2d.fromDegrees(expectedYaw));
     }
   }
 
@@ -229,17 +252,30 @@ public class Drivetrain extends SubsystemBase {
    *
    * @param state the specified PathPlanner state to which is set the odometry
    */
-  public void resetOdometry(PathPlannerState state) {
-    setGyroOffset(state.holonomicRotation.getDegrees());
+  public void resetOdometry(State state) {
+    setGyroOffset(state.targetHolonomicRotation.getDegrees());
 
     getModulePositions();
 
     estimatedPoseWithoutGyro =
-        new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation);
+        new Pose2d(state.positionMeters, state.targetHolonomicRotation);
     poseEstimator.resetPosition(
         this.getRotation(),
         swerveModulePositions,
-        new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
+        new Pose2d(state.positionMeters, state.targetHolonomicRotation));
+  }
+
+  public void resetOdometry(Pose2d state) {
+    setGyroOffset(state.getRotation().getDegrees());
+
+    getModulePositions();
+
+    estimatedPoseWithoutGyro =
+        new Pose2d(state.getX(), state.getY(), state.getRotation());
+    poseEstimator.resetPosition(
+        this.getRotation(),
+        swerveModulePositions,
+        new Pose2d(state.getX(), state.getY(), state.getRotation()));
   }
 
   public void resetPose(Pose2d pose) {
@@ -250,6 +286,10 @@ public class Drivetrain extends SubsystemBase {
     estimatedPoseWithoutGyro = pose;
     poseEstimator.resetPosition(this.getRotation(), swerveModulePositions, pose);
     // this.swerveOdometry.resetPosition(getRotation(), swerveModulePositions, pose);
+  }
+
+  private boolean hasLimelight() {
+    return LimelightHelpers.getFiducialID(Constants.LIMELIGHTNAME) != -1;
   }
 
   public void resetPoseRotationToGyro() {
@@ -292,6 +332,9 @@ public class Drivetrain extends SubsystemBase {
         }
         SwerveModuleState[] swerveModuleStates =
             kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
+        SwerveDriveKinematics.desaturateWheelSpeeds(
+              swerveModuleStates, DriveTrainConstants.maxSpeed);// getRobotMaxVelocity());
+  
         this.setSwerveModuleStates(swerveModuleStates, true, false);
         break;
 
@@ -302,6 +345,32 @@ public class Drivetrain extends SubsystemBase {
         }
         break;
 
+      case X:
+        this.setXStance();
+
+        break;
+    }
+  }
+
+  public void driveChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    switch (driveMode) {
+      case NORMAL:
+        SwerveModuleState[] swerveModuleStates =
+          kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
+        SwerveDriveKinematics.desaturateWheelSpeeds(
+          swerveModuleStates, DriveTrainConstants.maxSpeed);
+
+        for (SwerveModule swerveModule : swerveModules) {
+          swerveModule.setDesiredState(
+            swerveModuleStates[swerveModule.getModuleNumber()], true, false);
+        }
+        break;
+      case CHARACTERIZATION:
+    // In characterization mode, drive at the specified voltage (and turn to zero degrees)
+        for (SwerveModule swerveModule : swerveModules) {
+          swerveModule.setVoltageForCharacterization(characterizationVoltage);
+        }
+        break;
       case X:
         this.setXStance();
 
@@ -362,6 +431,16 @@ public class Drivetrain extends SubsystemBase {
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(), this.getRotation(), swerveModulePositions);
 
+    if (this.hasLimelight()) {
+      Pose2d limelightPose2d = LimelightHelpers.getBotPose2d(Constants.LIMELIGHTNAME);
+      double tl = LimelightHelpers.getLatency_Pipeline(Constants.LIMELIGHTNAME);
+
+      poseEstimator.addVisionMeasurement(limelightPose2d, Timer.getFPGATimestamp() - tl / 1000);
+      SmartDashboard.putBoolean("HasLimelight", true);
+    } else {
+      SmartDashboard.putBoolean("HasLimelight", false);
+    }
+
     // update the brake mode based on the robot's velocity and state (enabled/disabled)
     updateBrakeMode();
 
@@ -383,7 +462,7 @@ public class Drivetrain extends SubsystemBase {
 
     // this.swerveOdometry.update(getRotation(), swerveModulePositions);
     // m_field.setRobotPose(this.swerveOdometry.getPoseMeters());
-    // m_field.setRobotPose(poseEstimator.getEstimatedPosition());
+    m_field.setRobotPose(poseEstimator.getEstimatedPosition());
   }
 
   /**
@@ -528,6 +607,10 @@ public class Drivetrain extends SubsystemBase {
     return chassisSpeeds.vyMetersPerSecond;
   }
 
+  public ChassisSpeeds getChassisSpeeds() {
+    return chassisSpeeds;
+  }
+
   /**
    * Puts the drivetrain into the x-stance orientation. In this orientation the wheels are aligned
    * to make an 'X'. This makes it more difficult for other robots to push the robot, which is
@@ -577,15 +660,6 @@ public class Drivetrain extends SubsystemBase {
    */
   public PIDController getAutoThetaController() {
     return autoThetaController;
-  }
-
-  /**
-   * Returns the PID controller used to control the robot's rotation during autonomous.
-   *
-   * @return the PID controller used to control the robot's rotation during autonomous
-   */
-  public ProfiledPIDController getAutoProfiledThetaController() {
-    return autoProfiledThetaController;
   }
 
   /** Runs forwards at the commanded voltage. */

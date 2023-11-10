@@ -5,31 +5,30 @@ import static frc.robot.Constants.*;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SimableCANSparkMax;
+//import com.revrobotics.SimableCANSparkMax;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
+//import edu.wpi.first.math.system.plant.DCMotor;
+//import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+//import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+//import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 import java.util.List;
-import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
-import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
-import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
-import org.snobotv2.sim_wrappers.ISimWrapper;
-import org.snobotv2.sim_wrappers.SingleJointedArmSimWrapper;
+// import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
+// import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
+// import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
+// import org.snobotv2.sim_wrappers.ISimWrapper;
+// import org.snobotv2.sim_wrappers.SingleJointedArmSimWrapper;
 
 /** */
 public class Arm extends SubsystemBase {
@@ -37,20 +36,20 @@ public class Arm extends SubsystemBase {
   public final DoubleSolenoid m_gripper =
       m_pH.makeDoubleSolenoid(SOLENOID_FWD_CHANNEL, SOLENOID_REV_CHANNEL);
 
-  public final SimableCANSparkMax m_armLiftMotor =
-      new SimableCANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
+  public final CANSparkMax m_armLiftMotor =
+      new CANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
   public final SparkMaxPIDController m_armLiftController;
   public final RelativeEncoder m_armLiftEncoder;
   public final SparkMaxLimitSwitch m_armLiftLimit;
 
-  public final SimableCANSparkMax m_armExtendMotor =
-      new SimableCANSparkMax(ARM_EXTEND_MOTOR_ID, MotorType.kBrushless);
+  public final CANSparkMax m_armExtendMotor =
+      new CANSparkMax(ARM_EXTEND_MOTOR_ID, MotorType.kBrushless);
   public final SparkMaxPIDController m_armExtendController;
   public final RelativeEncoder m_armExtendEncoder;
   public final SparkMaxLimitSwitch m_armExtendLimit;
 
-  private ISimWrapper mLiftSim;
-  private ISimWrapper mExtendSim;
+  // private ISimWrapper mLiftSim;
+  // private ISimWrapper mExtendSim;
 
   private double m_armLiftSetpoint = 0;
   private double m_armExtendSetpoint = 0;
@@ -98,32 +97,32 @@ public class Arm extends SubsystemBase {
     // * RobotPreferences.Arm.armExtendMetersPerRotation.get());
     m_armExtendSetpoint = m_armExtendEncoder.getPosition();
 
-    if (RobotBase.isSimulation()) {
-      mLiftSim =
-          new SingleJointedArmSimWrapper(
-              new SingleJointedArmSim(
-                  DCMotor.getNEO(1),
-                  ArmConstants.armLiftGearRatio,
-                  SingleJointedArmSim.estimateMOI(Units.inchesToMeters(30.0), 5.0),
-                  Units.inchesToMeters(30.0),
-                  0.0,
-                  60.0,
-                  true),
-              new RevMotorControllerSimWrapper(m_armLiftMotor),
-              RevEncoderSimWrapper.create(m_armLiftMotor));
-      mExtendSim =
-          new ElevatorSimWrapper(
-              new ElevatorSim(
-                  DCMotor.getNEO(1),
-                  ArmConstants.armExtendGearRatio,
-                  3.0,
-                  Units.inchesToMeters(1.0),
-                  0.0,
-                  550.0,
-                  false),
-              new RevMotorControllerSimWrapper(m_armExtendMotor),
-              RevEncoderSimWrapper.create(m_armExtendMotor));
-    }
+    // if (RobotBase.isSimulation()) {
+    //   mLiftSim =
+    //       new SingleJointedArmSimWrapper(
+    //           new SingleJointedArmSim(
+    //               DCMotor.getNEO(1),
+    //               ArmConstants.armLiftGearRatio,
+    //               SingleJointedArmSim.estimateMOI(Units.inchesToMeters(30.0), 5.0),
+    //               Units.inchesToMeters(30.0),
+    //               0.0,
+    //               60.0,
+    //               true),
+    //           new RevMotorControllerSimWrapper(m_armLiftMotor),
+    //           RevEncoderSimWrapper.create(m_armLiftMotor));
+    //   mExtendSim =
+    //       new ElevatorSimWrapper(
+    //           new ElevatorSim(
+    //               DCMotor.getNEO(1),
+    //               ArmConstants.armExtendGearRatio,
+    //               3.0,
+    //               Units.inchesToMeters(1.0),
+    //               0.0,
+    //               550.0,
+    //               false),
+    //           new RevMotorControllerSimWrapper(m_armExtendMotor),
+    //           RevEncoderSimWrapper.create(m_armExtendMotor));
+    // }
 
     initLiftProfile();
     initLogging();
@@ -156,8 +155,8 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    mLiftSim.update();
-    mExtendSim.update();
+    // mLiftSim.update();
+    // mExtendSim.update();
   }
 
   @Override

@@ -3,12 +3,12 @@ package frc.robot.commands;
 import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.function.DoubleSupplier;
 
-public class TeleopSwerve extends CommandBase {
+public class TeleopSwerve extends Command {
   private Drivetrain driveTrain;
   private DoubleSupplier translationSup;
   private DoubleSupplier strafeSup;
