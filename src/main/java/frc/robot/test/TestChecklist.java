@@ -15,12 +15,11 @@ public class TestChecklist {
   private static TestChecklist instance;
 
   public RobotContainer m_container;
-  private Subsystem[] m_subsystems;
+  private Class<? extends Subsystem>[] m_subsystems;
   private Class<? extends Subsystem> GetSubsystem(String name){
-    Subsystem result = null;
-    for (Subsystem subsystem : m_subsystems) {
-      if (subsystem.getClass().getName() == name)
-        return subsystem.getClass();
+    for (Class<? extends Subsystem> subsystem : m_subsystems) {
+      if (subsystem.getName() == name)
+        return subsystem;
     }
     return null;
   }
@@ -30,7 +29,7 @@ public class TestChecklist {
   private String m_currentTest;
   private boolean m_runTests = false;
 
-  public TestChecklist(RobotContainer container, Subsystem... subsystems) {
+  public TestChecklist(RobotContainer container, Class<? extends Subsystem>... subsystems) {
     instance = this;
     m_subsystems = subsystems;
   }
