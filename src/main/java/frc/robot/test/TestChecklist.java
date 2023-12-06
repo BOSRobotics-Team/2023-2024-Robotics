@@ -1,3 +1,7 @@
+// Note : I will add Comments later
+// I know it looks like a complete mess
+
+
 package frc.robot.test;
 
 import java.io.*;
@@ -13,6 +17,7 @@ import frc.robot.RobotContainer;
 public class TestChecklist {
 
   private static TestChecklist instance;
+  public static TestChecklist GetInstance() { return instance; }
 
   public RobotContainer m_container;
   private Class<? extends Subsystem>[] m_subsystems;
@@ -33,16 +38,15 @@ public class TestChecklist {
     instance = this;
     m_subsystems = subsystems;
   }
-  public static TestChecklist GetInstance() { return instance; }
 
-  public String GetValueFromJSON(String test, String value) {
+  public String GetValueFromJSON(String test, String key) {
     try {
 
       JSONParser parser = new JSONParser();
       Object obj = parser.parse(m_testDirectory + "\\" + test + ".json");
 
       JSONObject jsonObject = (JSONObject)obj;
-      return (String)jsonObject.get(value);
+      return (String)jsonObject.get(key);
 
     } 
     catch(Exception e) {
