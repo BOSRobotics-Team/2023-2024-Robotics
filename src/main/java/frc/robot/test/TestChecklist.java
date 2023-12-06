@@ -63,6 +63,7 @@ public class TestChecklist {
       jsonObject.put(key, value);
 
       writer.write(jsonObject.toJSONString());
+      writer.close();
 
     } 
     catch(Exception e) { System.out.println(e.getMessage()); }
