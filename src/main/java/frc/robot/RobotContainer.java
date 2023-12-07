@@ -28,6 +28,8 @@ import frc.robot.commands.*;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.drivetrain.*;
+import frc.robot.test.TestChecklist;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,17 +47,17 @@ public class RobotContainer {
   public OperatorInterface oi = new OperatorInterface() {};
 
   /* Subsystems */
-  public final PowerDistribution power = new PowerDistribution();
-  public final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
-  public final Drivetrain driveTrain;
-  public final Arm arm;
-  public final TestChecklist test;
+  private final PowerDistribution power = new PowerDistribution();
+  private final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+  private final Drivetrain driveTrain;
+  private final Arm arm;
+  private final TestChecklist test;
 
   /* Cameras */
   // public UsbCamera cam0;
 
   /* Auto paths */
-//  public SwerveAutoBuilder autoBuilder;
+  //  public SwerveAutoBuilder autoBuilder;
 
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
   public static Map<String, List<PathPlannerTrajectory>> pptrajectoryList =
@@ -93,7 +95,7 @@ public class RobotContainer {
             new SwerveModule(blModule),
             new SwerveModule(brModule));
     arm = new Arm();
-    test = new TestChecklist(this);
+    test = new TestChecklist(this, driveTrain, arm);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -199,7 +201,6 @@ public class RobotContainer {
     SmartDashboard.putData("Auto chooser", autoChooser);
     // SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
   }
-
   private void configureAutoPaths() {
     for (int pos = 1; pos <= 3; ++pos) {
       NamedCommands.registerCommand("CubePosition" + pos, Commands.sequence(
@@ -293,18 +294,16 @@ public class RobotContainer {
   }
 
   public void simulationInit() {}
-
   public void simulationPeriodic() {}
 
   public void testInit() {
-    this.test.testInit();
+    this.test.initialize();
   }
-
   public void testPeriodic() {
-    this.test.testPeriodic();
+    this.test.execute();
+  }
+  public void testExit() {
+    this.test.exit();
   }
 
-  public void testExit() {
-    this.test.testExit();
-  }
 }
