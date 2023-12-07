@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 // import edu.wpi.first.cameraserver.CameraServer;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,7 +39,7 @@ import java.util.Map;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private SendableChooser<Command> chooser = new SendableChooser<>();
+  private SendableChooser<Command> autoChooser;
 
   /* Operator Interface */
   public OperatorInterface oi = new OperatorInterface() {};
@@ -109,7 +111,7 @@ public class RobotContainer {
     // LimelightHelpers.setStreamMode_PiPSecondary("");
 
     ShuffleboardTab tab = Shuffleboard.getTab("MAIN");
-    tab.add(chooser).withSize(2, 1);
+    tab.add(autoChooser).withSize(2, 1);
     tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
   }
@@ -184,47 +186,17 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return chooser.getSelected();
+    return autoChooser.getSelected();
   }
 
   /** Use this method to define your commands for autonomous mode. */
   private void configureAutoCommands() {
 
     // Add commands to Autonomous Sendable Chooser
-    chooser.setDefaultOption("Do Nothing", Commands.none());
-/*
-    // Create the AutoBuilder. This only needs to be created once when robot code starts, not every
-    // time you want to create an auto command. A good place to put this is in RobotContainer along
-    // with your subsystems.
-    autoBuilder =
-        new SwerveAutoBuilder(
-            driveTrain::getPose, // Pose2d supplier
-            driveTrain
-                ::resetPose, // Pose2d consumer, used to reset odometry at the beginning of auto
-            driveTrain.kinematics, // SwerveDriveKinematics
-            new PIDConstants(
-                AutoConstants.kPXController,
-                AutoConstants.kIXController,
-                AutoConstants
-                    .kDXController), // PID constants to correct for translation error (used to
-            // create the X and Y PID controllers)
-            new PIDConstants(
-                AutoConstants.kPThetaController,
-                AutoConstants.kIThetaController,
-                AutoConstants
-                    .kDThetaController), // PID constants to correct for rotation error (used to
-            // create the rotation controller)
-            driveTrain::setSwerveModuleStates, // Module states consumer used to output to the drive
-            // subsystem
-            AUTO_EVENT_MAP,
-            true, // Should the path be automatically mirrored depending on alliance color.
-            // Optional, defaults to true
-            driveTrain // The drive subsystem. Used to properly set the requirements of path
-            // following commands
-            );
-*/
+    autoChooser = AutoBuilder.buildAutoChooser();
+
     // SmartDashboard Buttons
-    // SmartDashboard.putData("Auto mode", chooser);
+    SmartDashboard.putData("Auto chooser", autoChooser);
     // SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
   }
 
