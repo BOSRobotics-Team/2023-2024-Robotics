@@ -28,7 +28,6 @@ import frc.robot.commands.*;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.drivetrain.*;
-import frc.robot.test.TestChecklist;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +50,6 @@ public class RobotContainer {
   private final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
   private final Drivetrain driveTrain;
   private final Arm arm;
-  private final TestChecklist test;
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -95,7 +93,6 @@ public class RobotContainer {
             new SwerveModule(blModule),
             new SwerveModule(brModule));
     arm = new Arm();
-    test = new TestChecklist(this, driveTrain, arm);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -297,13 +294,13 @@ public class RobotContainer {
   public void simulationPeriodic() {}
 
   public void testInit() {
-    this.test.initialize();
+    
   }
   public void testPeriodic() {
-    this.test.execute();
+    
   }
   public void testExit() {
-    this.test.exit();
+    
   }
 
 }

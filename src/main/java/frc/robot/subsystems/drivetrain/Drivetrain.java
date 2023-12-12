@@ -36,7 +36,6 @@ import frc.lib.swerve.SwerveModule;
 import frc.lib.util.RobotOdometry;
 import frc.robot.AutoConstants;
 import frc.robot.Constants;
-import frc.robot.test.TestChecklist;
 
 public class Drivetrain extends SubsystemBase {
   private final GyroIO gyro;
