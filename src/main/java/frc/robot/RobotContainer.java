@@ -46,10 +46,10 @@ public class RobotContainer {
   public OperatorInterface oi = new OperatorInterface() {};
 
   /* Subsystems */
-  private final PowerDistribution power = new PowerDistribution();
-  private final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
-  private final Drivetrain driveTrain;
-  private final Arm arm;
+  public final PowerDistribution power = new PowerDistribution();
+  public final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+  public final Drivetrain driveTrain;
+  public final Arm arm;
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -62,8 +62,15 @@ public class RobotContainer {
       new HashMap<String, List<PathPlannerTrajectory>>();
   public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
 
+  private static RobotContainer instance;
+  public static RobotContainer GetInstance(){ return instance; }
+  
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    instance = this;
+
     SwerveModuleIO flModule;
     SwerveModuleIO frModule;
     SwerveModuleIO blModule;
@@ -113,8 +120,9 @@ public class RobotContainer {
     tab.add(autoChooser).withSize(2, 1);
     tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
+  
   }
-
+  
   /**
    * This method scans for any changes to the connected joystick. If anything changed, it creates
    * new OI objects and binds all of the buttons to commands.
