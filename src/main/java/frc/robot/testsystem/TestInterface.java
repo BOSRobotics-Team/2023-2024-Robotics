@@ -2,17 +2,21 @@ package frc.robot.testsystem;
 
 public abstract interface TestInterface {
     
-    public static enum TestStates {
-
+    /** A bunch of returnable Test-End-States. */
+    public static enum TestEndStates {
         PASSED, FAILED,
-
-        // - Errors go here -
         NOT_IMPLEMENTED
-
     };
 
-    public default TestStates Test(String test){
-        return TestStates.NOT_IMPLEMENTED;
+    /**
+     * Runs every 10ms when this test is run in
+     * test mode.
+     * 
+     * @param test
+     * @return
+     */
+    public default TestEndStates Test(String test){
+        return TestEndStates.NOT_IMPLEMENTED;
     }
 
 }

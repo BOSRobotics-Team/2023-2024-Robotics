@@ -423,10 +423,10 @@ public class Arm extends TestableSubsytem {
   
   /* Tests for Arm Subsystem */
   @Override
-  public TestStates Test(String test) {
+  public TestEndStates Test(String test) {
 
     switch (test) { }
-    return TestStates.FAILED;
+    return TestEndStates.NOT_IMPLEMENTED;
 
   }
 
