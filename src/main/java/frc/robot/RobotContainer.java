@@ -28,6 +28,7 @@ import frc.robot.commands.*;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.drivetrain.*;
+import frc.robot.testsystem.TestChecklist;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,9 @@ public class RobotContainer {
   public final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
   public final Drivetrain driveTrain;
   public final Arm arm;
+
+  /* Test System */
+  private final TestChecklist test;
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -120,7 +124,9 @@ public class RobotContainer {
     tab.add(autoChooser).withSize(2, 1);
     tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
-  
+    
+    test = new TestChecklist(driveTrain, arm);
+
   }
   
   /**
@@ -301,14 +307,8 @@ public class RobotContainer {
   public void simulationInit() {}
   public void simulationPeriodic() {}
 
-  public void testInit() {
-    
-  }
-  public void testPeriodic() {
-    
-  }
-  public void testExit() {
-    
-  }
+  public void testInit() { test.initialize(); }
+  public void testPeriodic() { test.periodic(); }
+  public void testExit() { test.exit(); }
 
 }

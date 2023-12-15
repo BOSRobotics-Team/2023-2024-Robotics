@@ -741,15 +741,12 @@ public class Drivetrain extends TestableSubsytem {
     CHARACTERIZATION
   }
 
-  // This implements Tests for the Drive Train. 
-
+  /* Tests for Drive Train Subsystem */
   @Override
-  public Integer Test(String test) {
+  public TestStates Test(String test) {
 
-    switch (test) {
-      
-    }
-    return 1;
+    switch (test) { }
+    return TestStates.FAILED; // Failed
 
   }
 

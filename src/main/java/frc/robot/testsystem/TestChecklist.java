@@ -5,30 +5,26 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 
-
-
 public class TestChecklist {
     
     private RobotContainer m_robot = RobotContainer.GetInstance();
-    public TestableSubsytem[] m_subsytems;
-    private Boolean m_enableTestChecklist = false;
+    private Boolean m_enableTestChecklist = false; // Decides whether tests can be Run
 
-    public TestChecklist(TestableSubsytem... subsytems) {
-        m_subsytems = subsytems;
-    }
+    public TestableSubsytem[] m_subsytems; // List of available Subsystems
+    public TestChecklist(TestableSubsytem... subsytems) { m_subsytems = subsytems; }
 
+    /* Test Runner Implementation */
     public void initialize() {
         m_enableTestChecklist = true;
     }
     public void periodic() {
-        if (m_enableTestChecklist) {
-            
-        }
+        if (m_enableTestChecklist) { }
     }
     public void exit() {
         m_enableTestChecklist = false;
     }
 
+    /* Custom Teleop Mode Implementation */ 
     public void doTeleop() {
 
         double liftVal = MathUtil.applyDeadband(m_robot.oi.getArmLift(), Constants.STICK_DEADBAND);
@@ -48,5 +44,5 @@ public class TestChecklist {
         );
 
     }
-
+    
 }

@@ -1,10 +1,18 @@
 package frc.robot.testsystem;
 
 public abstract interface TestInterface {
+    
+    public static enum TestStates {
 
-    public default Integer Test(String test){
-        System.out.println("Not Implemented");
-        return 1;
+        PASSED, FAILED,
+
+        // - Errors go here -
+        NOT_IMPLEMENTED
+
+    };
+
+    public default TestStates Test(String test){
+        return TestStates.NOT_IMPLEMENTED;
     }
 
 }
