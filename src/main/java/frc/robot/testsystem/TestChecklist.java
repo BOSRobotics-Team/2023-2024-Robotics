@@ -1,5 +1,7 @@
 package frc.robot.testsystem;
 
+import java.util.List;
+
 import edu.wpi.first.math.MathUtil;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -19,6 +21,28 @@ public class TestChecklist {
 
     /** List of subsystems that allow test interfacing. */
     public TestableSubsytem[] subsytems; 
+
+    private List<String> testQueue;
+    /** Gets a list of Test identifiers as Strings. */
+    public List<String> GetTestQueue() { return testQueue; }
+    /**
+     * Adds Test / Tests to the Test Queue
+     * 
+     * @param kTests A list of Test identifiers to add to the queue
+     */
+    public void AddTestsToQueue(String... kTests) {
+        for (String kTest : kTests)
+            testQueue.add(kTest);
+    }
+    /**
+     * Removes Test / Tests to the Test Queue
+     * 
+     * @param kTests A list of Test identifiers to remove to the queue
+     */
+    public void RemoveTestsFromQueue(String... kTests) {
+        for (String kTest : kTests)
+            testQueue.remove(kTest);
+    }
 
     /**
      * Sets up a list of subsystems that allow test
