@@ -65,7 +65,7 @@ public class TestChecklist {
     public void periodic() {
         if (m_enableTestChecklist) { 
             if (GetTeleopEnabled())
-                doTeleop();
+                RunTeleop();
         }
     }
     public void exit() {
@@ -77,7 +77,7 @@ public class TestChecklist {
     private void InitializeShuffleBoard(){
         // Do Shuffle board stuff here
     }
-    public void doTeleop() {
+    public void RunTeleop() {
 
         double liftVal = MathUtil.applyDeadband(m_robot.oi.getArmLift(), Constants.STICK_DEADBAND);
         double extendVal = MathUtil.applyDeadband(m_robot.oi.getArmExtend(), Constants.STICK_DEADBAND);
