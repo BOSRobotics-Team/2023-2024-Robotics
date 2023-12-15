@@ -13,7 +13,7 @@ public class TestChecklist {
 
     private Boolean m_teleopEnabled = false;
     /** Sets whether Teleop Mode is enabled or disabled. */
-    public void SetTeleopEnabled(Boolean value) { m_teleopEnabled = value; }
+    public void SetTeleopEnabled(Boolean kValue) { m_teleopEnabled = kValue; }
     /** Gets whether Teleop Mode is enabled or disabled. */
     public Boolean GetTeleopEnabled() { return m_teleopEnabled; }
 
@@ -33,21 +33,21 @@ public class TestChecklist {
     }
 
     /* Test Runner Implementation */
-    private TestableSubsytem FindTestSubsytem(String test) {
-        for (TestableSubsytem subsystem : subsytems) 
-            if (subsystem.GetTests().contains(test))
-                return subsystem;
+    private TestableSubsytem FindTestSubsytem(String kTest) {
+        for (TestableSubsytem kSubsystem : subsytems) 
+            if (kSubsystem.GetTests().contains(kTest))
+                return kSubsystem;
         return null;
     }
-    private TestEndStates RunTest(String test) { 
-        return FindTestSubsytem(test)
-            .Test(test); 
+    private TestEndStates RunTest(String kTest) { 
+        return FindTestSubsytem(kTest)
+            .Test(kTest); 
     }
-    private void RunTestQueue(String... tests) {
-        for (String test : tests) {
-            TestEndStates state = RunTest(test);
+    private void RunTestQueue(String... kTests) {
+        for (String kTest : kTests) {
+            TestEndStates state = RunTest(kTest);
             if (state != TestEndStates.PASSED && state != TestEndStates.FAILED) {
-                System.out.println("Error in Test : " + test + " | " + state.toString());
+                System.out.println("Error in Test : " + kTest + " | " + state.toString());
                 // Do stuff here | Returned an Error
             } else if (state == TestEndStates.PASSED) {
                 // Do stuff here | Passed

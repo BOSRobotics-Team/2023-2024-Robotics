@@ -15,7 +15,7 @@ public abstract interface TestInterface {
      * @param test
      * @return
      */
-    public default TestEndStates Test(String test){
+    public default TestEndStates Test(String kTest){
         return TestEndStates.NOT_IMPLEMENTED;
     }
 

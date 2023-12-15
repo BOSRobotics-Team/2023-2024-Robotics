@@ -19,7 +19,7 @@ public abstract class TestableSubsytem extends SubsystemBase implements TestInte
      * @param name Test identifier
      * @return
      */
-    public void CreateTest(String name) { tests.add(name); }
+    public void CreateTest(String kName) { tests.add(kName); }
 
     /** Returns a list of tests as Strings. */
     public List<String> GetTests() { return tests; }
