@@ -3,8 +3,8 @@ package frc.robot.testsystem;
 public abstract interface TestInterface {
     
     /** A bunch of returnable Test-End-States. */
-    public static enum TestEndStates {
-        PASSED, FAILED,
+    public static enum TestStates {
+        PASSED, FAILED, RUNNING,
         NOT_IMPLEMENTED
     };
 
@@ -15,8 +15,8 @@ public abstract interface TestInterface {
      * @param test
      * @return
      */
-    public default TestEndStates Test(String kTest){
-        return TestEndStates.NOT_IMPLEMENTED;
+    public default TestStates Test(String kTest){
+        return TestStates.NOT_IMPLEMENTED;
     }
 
 }

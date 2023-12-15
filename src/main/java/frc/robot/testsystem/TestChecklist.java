@@ -6,7 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
-import frc.robot.testsystem.TestInterface.TestEndStates;
+import frc.robot.testsystem.TestInterface.TestStates;
 
 public class TestChecklist {
     
@@ -63,17 +63,17 @@ public class TestChecklist {
                 return kSubsystem;
         return null;
     }
-    private TestEndStates RunTest(String kTest) { 
+    private TestStates RunTest(String kTest) { 
         return FindTestSubsytem(kTest)
             .Test(kTest); 
     }
     private void RunTestQueue(String... kTests) {
         for (String kTest : kTests) {
-            TestEndStates state = RunTest(kTest);
-            if (state != TestEndStates.PASSED && state != TestEndStates.FAILED) {
+            TestStates state = RunTest(kTest);
+            if (state != TestStates.PASSED && state != TestStates.FAILED) {
                 System.out.println("Error in Test : " + kTest + " | " + state.toString());
                 // Do stuff here | Returned an Error
-            } else if (state == TestEndStates.PASSED) {
+            } else if (state == TestStates.PASSED) {
                 // Do stuff here | Passed
             } else {
                 // Do Stuff here | Failed

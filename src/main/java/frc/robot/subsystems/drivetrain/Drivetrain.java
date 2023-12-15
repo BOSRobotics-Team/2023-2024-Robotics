@@ -743,10 +743,10 @@ public class Drivetrain extends TestableSubsytem {
 
   /* Tests for Drive Train Subsystem */
   @Override
-  public TestEndStates Test(String test) {
+  public TestStates Test(String test) {
     
     switch (test) { }
-    return TestEndStates.NOT_IMPLEMENTED;
+    return TestStates.NOT_IMPLEMENTED;
 
   }
 
