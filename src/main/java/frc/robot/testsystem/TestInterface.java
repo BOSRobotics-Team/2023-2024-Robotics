@@ -13,7 +13,7 @@ public abstract interface TestInterface {
      * test mode.
      * 
      * @param test
-     * @return
+     * @return The Current State of the Test
      */
     public default TestStates Test(String kTest){
         return TestStates.NOT_IMPLEMENTED;

@@ -49,7 +49,6 @@ public class TestChecklist {
      * interfacing and the Test Shuffleboard tab.
      *
      * @param subsystems List of Testable Subsystems
-     * @return
     */
     public TestChecklist(TestableSubsytem... kSubsytems) { 
         subsytems = kSubsytems; 
@@ -78,7 +77,9 @@ public class TestChecklist {
         m_robot.arm.m_pH.disableCompressor();
     }
     public void periodic() {
-        if (m_enableTestChecklist) { 
+        if (m_enableTestChecklist) {
+            if (GetTestQueue().size() > 0)
+                RunTestQueue();
             if (GetTeleopEnabled())
                 RunTeleop();
         }
