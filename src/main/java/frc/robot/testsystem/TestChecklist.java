@@ -67,19 +67,17 @@ public class TestChecklist {
         return FindTestSubsytem(kTest)
             .Test(kTest); 
     }
-    private void RunTestQueue(String... kTests) {
-        for (String kTest : kTests) {
-            TestStates state = RunTest(kTest);
-            if (state != TestStates.PASSED && state != TestStates.FAILED) {
-                System.out.println("Error in Test : " + kTest + " | " + state.toString());
-                // Do stuff here | Returned an Error
-            } else if (state == TestStates.PASSED) {
-                // Do stuff here | Passed
-            } else {
-                // Do Stuff here | Failed
-            }
-            
-        }
+
+    /**
+     * This runs every 10ms and runs the test that is at the
+     * top of the queue.
+     * 
+     * You can find the identifier of the current test being run by 
+     * using "GetTestQueue().get(0);".
+     */
+    public void RunTestQueue() {
+        if (RunTest(testQueue.get(0)) != TestStates.RUNNING)
+            RemoveTestsFromQueue(testQueue.get(0));
     }
 
     public void initialize() {
