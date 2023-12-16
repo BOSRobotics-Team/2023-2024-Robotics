@@ -68,14 +68,7 @@ public class TestChecklist {
             .Test(kTest); 
     }
 
-    /**
-     * This runs every 10ms and runs the test that is at the
-     * top of the queue.
-     * 
-     * You can find the identifier of the current test being run by 
-     * using "GetTestQueue().get(0);".
-     */
-    public void RunTestQueue() {
+    private void RunTestQueue() {
         if (RunTest(testQueue.get(0)) != TestStates.RUNNING)
             RemoveTestsFromQueue(testQueue.get(0));
     }
