@@ -20,7 +20,7 @@ public abstract class TestableSubsytem extends SubsystemBase implements TestInte
      */
     public void CreateTest(String kName) { tests.add(kName); }
 
-    /** Returns a list of tests as Strings. */
+    /** @return A list of tests as Strings. */
     public List<String> GetTests() { return tests; }
 
 }
