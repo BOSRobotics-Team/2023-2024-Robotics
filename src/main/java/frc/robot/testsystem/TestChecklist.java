@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
@@ -20,7 +19,6 @@ public class TestChecklist {
     private Map<String, SimpleWidget> m_tests;
     
     private final Integer MAX_COLUMNS = 10;
-    private Integer m_currentColumn = 0;
 
     private RobotContainer m_robot = RobotContainer.GetInstance();
     private Boolean m_enableTestChecklist = false;
