@@ -1,8 +1,14 @@
 package frc.robot.testsystem;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
@@ -10,6 +16,12 @@ import frc.robot.testsystem.TestInterface.TestStates;
 
 public class TestChecklist {
     
+    private ShuffleboardTab m_tab = Shuffleboard.getTab("Checklist");
+    private Map<String, SimpleWidget> m_tests;
+    
+    private final Integer MAX_COLUMNS = 10;
+    private Integer m_currentColumn = 0;
+
     private RobotContainer m_robot = RobotContainer.GetInstance();
     private Boolean m_enableTestChecklist = false;
 
@@ -48,7 +60,7 @@ public class TestChecklist {
      * Sets up a list of subsystems that allow test
      * interfacing and the Test Shuffleboard tab.
      *
-     * @param subsystems List of Testable Subsystems
+     * @param subsystems List of Testable Subsystems 
     */
     public TestChecklist(TestableSubsytem... kSubsytems) { 
         subsytems = kSubsytems; 
@@ -63,13 +75,17 @@ public class TestChecklist {
         return null;
     }
     private TestStates RunTest(String kTest) { 
+        m_tests.get(kTest).withProperties(Map.of("Color when false", "red"));
         return FindTestSubsytem(kTest)
             .Test(kTest); 
     }
 
     private void RunTestQueue() {
-        if (RunTest(testQueue.get(0)) != TestStates.RUNNING)
+        TestStates kState = RunTest(testQueue.get(0));
+        if (kState != TestStates.RUNNING) {
+            SetShuffleTestCardValue(testQueue.get(0), kState);
             RemoveTestsFromQueue(testQueue.get(0));
+        }
     }
 
     public void initialize() {
@@ -91,8 +107,53 @@ public class TestChecklist {
 
     /* Custom Teleop Mode Implementation */ 
     private void InitializeShuffleBoard(){
-        // Do Shuffle board stuff here
+        for (TestableSubsytem kTestableSubsytem : subsytems)
+            for (String kTest : kTestableSubsytem.GetTests())
+                CreateShuffleTestCard(kTest, TestStates.NOT_IMPLEMENTED);
     }
+    private Boolean HasShuffleTestCard(String kTest) {
+        return m_tests.containsKey(kTest);
+    }
+    private void CreateShuffleTestCard(String kTest, TestStates kState) {
+
+        Integer kColumn = m_tests.size() != 0 ? (m_tests.size() % MAX_COLUMNS) + 1 : 0;
+        Integer kRow = m_tests.size() != 0 ? ((m_tests.size() - (m_tests.size() % MAX_COLUMNS)) / MAX_COLUMNS) : 0;
+
+        SimpleWidget kNewWidget = m_tab.add(kTest, false)
+            .withWidget(BuiltInWidgets.kBooleanBox)
+            .withProperties(Map.of("Color when false", "grey"))
+            .withPosition(kColumn, kRow)
+            .withSize(2, 1);
+
+        m_tests.put(kTest, kNewWidget);
+
+    }
+    private void SetShuffleTestCardValue(String kKey, TestStates kState) {
+
+        if (!HasShuffleTestCard(kKey)) {
+            CreateShuffleTestCard(kKey, kState);
+            return;
+        }
+        
+        Boolean kValue = false;
+        switch (kState) {
+            case FAILED:
+                kValue = false;
+                break;
+            case PASSED:
+                kValue = true;
+                break;
+            case NOT_IMPLEMENTED:
+                kValue = false;
+                break;
+        }       
+        
+        m_tests.get(kValue)
+            .getEntry()
+            .setBoolean(kValue);
+        
+    }
+
     public void RunTeleop() {
 
         double liftVal = MathUtil.applyDeadband(m_robot.oi.getArmLift(), Constants.STICK_DEADBAND);
