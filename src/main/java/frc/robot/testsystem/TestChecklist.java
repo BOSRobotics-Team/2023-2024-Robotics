@@ -8,17 +8,16 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 import frc.robot.testsystem.TestInterface.TestStates;
 
 public class TestChecklist {
-    
+
     private ShuffleboardTab m_tab = Shuffleboard.getTab("Checklist");
     private Map<String, SimpleWidget> m_tests;
-    
-    private final Integer MAX_COLUMNS = 10;
 
     private RobotContainer m_robot = RobotContainer.GetInstance();
     private Boolean m_enableTestChecklist = false;
@@ -77,7 +76,6 @@ public class TestChecklist {
         return FindTestSubsytem(kTest)
             .Test(kTest); 
     }
-
     private void RunTestQueue() {
         TestStates kState = RunTest(testQueue.get(0));
         if (kState != TestStates.RUNNING) {
@@ -114,8 +112,10 @@ public class TestChecklist {
     }
     private void CreateShuffleTestCard(String kTest, TestStates kState) {
 
-        Integer kColumn = m_tests.size() != 0 ? (m_tests.size() % MAX_COLUMNS) + 1 : 0;
-        Integer kRow = m_tests.size() != 0 ? ((m_tests.size() - (m_tests.size() % MAX_COLUMNS)) / MAX_COLUMNS) : 0;
+        Integer kColumn = m_tests.size() != 0 ? 
+            (m_tests.size() % Constants.MAX_TEST_COLUMNS) * 2 : 0;
+        Integer kRow = m_tests.size() != 0 ?
+            ((m_tests.size() - (m_tests.size() % Constants.MAX_TEST_COLUMNS)) / Constants.MAX_TEST_COLUMNS) : 0;
 
         SimpleWidget kNewWidget = m_tab.add(kTest, false)
             .withWidget(BuiltInWidgets.kBooleanBox)
