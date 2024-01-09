@@ -3,11 +3,11 @@ package frc.robot.subsystems.arm;
 import static frc.robot.Constants.*;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SimableCANSparkMax;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkLimitSwitch;
+import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -42,17 +42,17 @@ public class Arm extends TestableSubsytem {
       new SimableCANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
   // public final CANSparkMax m_armLiftMotor =
   //     new CANSparkMax(ARM_LIFT_MOTOR_ID, MotorType.kBrushless);
-  public final SparkMaxPIDController m_armLiftController;
+  public final SparkPIDController m_armLiftController;
   public final RelativeEncoder m_armLiftEncoder;
-  public final SparkMaxLimitSwitch m_armLiftLimit;
+  public final SparkLimitSwitch m_armLiftLimit;
 
   public final SimableCANSparkMax m_armExtendMotor =
       new SimableCANSparkMax(ARM_EXTEND_MOTOR_ID, MotorType.kBrushless);
   // public final CANSparkMax m_armExtendMotor =
   //     new CANSparkMax(ARM_EXTEND_MOTOR_ID, MotorType.kBrushless);
-  public final SparkMaxPIDController m_armExtendController;
+  public final SparkPIDController m_armExtendController;
   public final RelativeEncoder m_armExtendEncoder;
-  public final SparkMaxLimitSwitch m_armExtendLimit;
+  public final SparkLimitSwitch m_armExtendLimit;
 
   private ISimWrapper mLiftSim;
   private ISimWrapper mExtendSim;
@@ -68,7 +68,7 @@ public class Arm extends TestableSubsytem {
     // initialze PID controller and encoder objects
     m_armLiftController = m_armLiftMotor.getPIDController();
     m_armLiftEncoder = m_armLiftMotor.getEncoder();
-    m_armLiftLimit = m_armLiftMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    m_armLiftLimit = m_armLiftMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
     // set PID coefficients
     m_armLiftController.setP(ArmConstants.armLiftKP);
@@ -88,7 +88,7 @@ public class Arm extends TestableSubsytem {
     m_armExtendController = m_armExtendMotor.getPIDController();
     m_armExtendEncoder = m_armExtendMotor.getEncoder();
     m_armExtendLimit =
-        m_armExtendMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+        m_armExtendMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
     // set PID coefficients
     m_armExtendController.setP(ArmConstants.armExtendKP);

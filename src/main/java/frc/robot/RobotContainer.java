@@ -310,5 +310,4 @@ public class RobotContainer {
   public void testInit() { test.initialize(); }
   public void testPeriodic() { test.periodic(); }
   public void testExit() { test.exit(); }
-
 }
