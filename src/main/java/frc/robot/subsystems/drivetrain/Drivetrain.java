@@ -142,6 +142,7 @@ public class Drivetrain extends TestableSubsytem {
             DRIVE_BASE_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
             new ReplanningConfig() // Default path replanning config. See the API for the options here
         ),
+        () -> {return false;},
         this // Reference to this subsystem to set requirements
     );
 
