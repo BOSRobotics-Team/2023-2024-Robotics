@@ -2,7 +2,9 @@ package frc.lib.swerve;
 
 /** Swerve module hardware abstraction interface. */
 public interface SwerveModuleIO {
+  
   public static class SwerveModuleID {
+
     public int moduleNumber; // the module number (0-3); primarily used for logging
     public String canBusID; // name of the CAN bus
     public int driveMotorID; // the CAN ID of the drive motor
@@ -24,6 +26,7 @@ public interface SwerveModuleIO {
       this.canCoderID = canCoderID;
       this.angleOffsetDeg = angleOffsetDeg;
     }
+    
   }
 
   public static class SwerveModuleIOInputs {
