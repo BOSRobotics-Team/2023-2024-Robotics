@@ -12,7 +12,7 @@ public abstract interface TestInterface {
      * Runs every 10ms when this test is run in
      * test mode.
      * 
-     * @param test
+     * @param test The Test you want to run
      * @return The Current State of the Test
      */
     public default TestStates Test(String kTest){

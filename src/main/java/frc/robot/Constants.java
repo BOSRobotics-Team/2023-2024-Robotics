@@ -51,6 +51,6 @@ public final class Constants {
   public static final int BACK_RIGHT_MODULE_ANGLE_ENCODER_ID = 16;
   public static final double BACK_RIGHT_MODULE_ANGLE_OFFSET = 42.539;
 
-  
+  public static final int MAX_TEST_COLUMNS = 10;
 
 }
