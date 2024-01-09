@@ -28,16 +28,18 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.lib.gyro.GyroIO;
 import frc.lib.gyro.GyroIO.GyroIOInputs;
 import frc.lib.limelightvision.LimelightHelpers;
 import frc.lib.swerve.SwerveModule;
 import frc.lib.util.RobotOdometry;
+
 import frc.robot.AutoConstants;
 import frc.robot.Constants;
+import frc.robot.testsystem.TestableSubsytem;
 
-public class Drivetrain extends SubsystemBase {
+public class Drivetrain extends TestableSubsytem {
   private final GyroIO gyro;
   private final GyroIOInputs gyroInputs = new GyroIOInputs();
 
@@ -144,6 +146,7 @@ public class Drivetrain extends SubsystemBase {
     );
 
     initLogging();
+
   }
 
   /**
@@ -738,9 +741,13 @@ public class Drivetrain extends SubsystemBase {
     CHARACTERIZATION
   }
 
-  // -- Tests -------------------
-  public void TestDriveTrain() {
-    System.out.println("OMG!!!!!!!!!!!!!!!!!!");
+  /* Tests for Drive Train Subsystem */
+  @Override
+  public TestStates Test(String test) {
+    
+    switch (test) { }
+    return TestStates.NOT_IMPLEMENTED;
+
   }
 
 }

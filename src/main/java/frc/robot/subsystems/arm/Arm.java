@@ -22,7 +22,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.testsystem.TestableSubsytem;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
@@ -32,7 +33,7 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 import org.snobotv2.sim_wrappers.SingleJointedArmSimWrapper;
 
 /** */
-public class Arm extends SubsystemBase {
+public class Arm extends TestableSubsytem {
   public final PneumaticHub m_pH = new PneumaticHub(PNEUMATICSHUB_ID);
   public final DoubleSolenoid m_gripper =
       m_pH.makeDoubleSolenoid(SOLENOID_FWD_CHANNEL, SOLENOID_REV_CHANNEL);
@@ -419,4 +420,14 @@ public class Arm extends SubsystemBase {
       extLay.addBoolean("Reverse LimitSwitch", this::isArmExtendMinLimitSwitch).withPosition(0, 3);
     }
   }
+  
+  /* Tests for Arm Subsystem */
+  @Override
+  public TestStates Test(String test) {
+
+    switch (test) { }
+    return TestStates.NOT_IMPLEMENTED;
+
+  }
+
 }

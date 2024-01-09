@@ -28,7 +28,7 @@ import frc.robot.commands.*;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.drivetrain.*;
-//import frc.robot.test.TestChecklist;
+import frc.robot.testsystem.TestChecklist;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,11 +47,13 @@ public class RobotContainer {
   public OperatorInterface oi = new OperatorInterface() {};
 
   /* Subsystems */
-  private final PowerDistribution power = new PowerDistribution();
-  private final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
-  private final Drivetrain driveTrain;
-  private final Arm arm;
-//  private final TestChecklist test;
+  public final PowerDistribution power = new PowerDistribution();
+  public final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+  public final Drivetrain driveTrain;
+  public final Arm arm;
+
+  /* Test System */
+  private final TestChecklist test;
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -64,8 +66,15 @@ public class RobotContainer {
       new HashMap<String, List<PathPlannerTrajectory>>();
   public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
 
+  private static RobotContainer instance;
+  public static RobotContainer GetInstance(){ return instance; }
+  
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    instance = this;
+
     SwerveModuleIO flModule;
     SwerveModuleIO frModule;
     SwerveModuleIO blModule;
@@ -95,7 +104,6 @@ public class RobotContainer {
             new SwerveModule(blModule),
             new SwerveModule(brModule));
     arm = new Arm();
-    //test = new TestChecklist(this, driveTrain, arm);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -116,8 +124,11 @@ public class RobotContainer {
     tab.add(autoChooser).withSize(2, 1);
     tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
-  }
+    
+    test = new TestChecklist(driveTrain, arm);
 
+  }
+  
   /**
    * This method scans for any changes to the connected joystick. If anything changed, it creates
    * new OI objects and binds all of the buttons to commands.
@@ -296,14 +307,7 @@ public class RobotContainer {
   public void simulationInit() {}
   public void simulationPeriodic() {}
 
-  public void testInit() {
-//    this.test.initialize();
-  }
-  public void testPeriodic() {
-  //  this.test.execute();
-  }
-  public void testExit() {
-    //this.test.exit();
-  }
-
+  public void testInit() { test.initialize(); }
+  public void testPeriodic() { test.periodic(); }
+  public void testExit() { test.exit(); }
 }
