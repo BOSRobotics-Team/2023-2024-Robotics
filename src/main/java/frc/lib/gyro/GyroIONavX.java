@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.robot.Robot;
 
 public class GyroIONavX implements GyroIO {
   private AHRS gyro = null;
@@ -20,10 +21,12 @@ public class GyroIONavX implements GyroIO {
   public void updateInputs(GyroIOInputs inputs) {
     inputs.connected = this.isConnected();
     inputs.positionDeg = 360.0 - gyro.getYaw(); // degrees
-    inputs.velocityDegPerSec = -gyro.getRate(); // degrees per second
     inputs.yawDeg = gyro.getYaw(); // degrees
+    inputs.yawDegPerSec = -gyro.getRate(); // degrees per second
     inputs.pitchDeg = gyro.getPitch(); // degrees
+    inputs.pitchDegPerSec = gyro.getVelocityY(); // degrees per second
     inputs.rollDeg = gyro.getRoll(); // degrees
+    inputs.rollDegPerSec = gyro.getVelocityX(); // degrees per second
   }
 
   @Override
@@ -31,11 +34,18 @@ public class GyroIONavX implements GyroIO {
     return gyro.isConnected();
   }
 
-  /** Zero the robot's heading. */
   @Override
-  public void reset() {
-    gyro.reset();
+  public void setYaw(double yaw) {
+    gyro.setAngleAdjustment(360.0 - gyro.getYaw() + yaw);
   }
+
+  @Override
+  public void addYaw(double yaw) {
+    if (Robot.isSimulation()) {
+    gyro.setAngleAdjustment(360.0 - yaw);
+    }
+  }
+
 
   public void initLogging() {
     if (DEBUGGING) {

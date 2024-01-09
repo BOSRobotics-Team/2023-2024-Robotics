@@ -29,10 +29,12 @@ public class GyroIOPigeon2 implements GyroIO {
 
     inputs.connected = this.isConnected();
     inputs.positionDeg = yprdeg[0];
-    inputs.velocityDegPerSec = xyzDps[2]; // degrees per second
     inputs.yawDeg = yprdeg[0]; // degrees
+    inputs.yawDegPerSec = xyzDps[2]; // degrees per second
     inputs.pitchDeg = yprdeg[1]; // degrees
+    inputs.pitchDegPerSec = xyzDps[1]; // degrees per second
     inputs.rollDeg = yprdeg[2]; // degrees
+    inputs.rollDegPerSec = xyzDps[0]; // degrees per second
   }
 
   @Override
@@ -43,10 +45,16 @@ public class GyroIOPigeon2 implements GyroIO {
     return false;
   }
 
-  /** Zero the robot's heading. */
   @Override
-  public void reset() {
-    gyro.reset();
+  public void setYaw(double yaw) {
+    gyro.setYaw(yaw);
+  }
+
+  @Override
+  public void addYaw(double yaw) {
+    if (Robot.isSimulation()) {
+      gyro.addYaw(yaw);
+    }
   }
 
   public void initLogging() {

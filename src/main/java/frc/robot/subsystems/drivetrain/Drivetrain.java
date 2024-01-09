@@ -142,12 +142,26 @@ public class Drivetrain extends TestableSubsytem {
             DRIVE_BASE_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
             new ReplanningConfig() // Default path replanning config. See the API for the options here
         ),
+        this::shouldFlipPath,
         this // Reference to this subsystem to set requirements
     );
 
     initLogging();
 
   }
+
+  // Boolean supplier that controls when the path will be mirrored for the red alliance
+  // This will flip the path being followed to the red side of the field.
+  // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+  public boolean shouldFlipPath() {
+
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+              return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+  }
+
 
   /**
    * Zeroes the gyroscope. This sets the current rotation of the robot to zero degrees. This method
@@ -693,7 +707,7 @@ public class Drivetrain extends TestableSubsytem {
   }
 
   public void zeroGyro() {
-    gyro.reset();
+    gyro.setYaw(0.0);
   }
 
   public double getRotationDegrees() {
