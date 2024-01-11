@@ -53,7 +53,7 @@ public class RobotContainer {
   public final Arm arm;
 
   /* Test System */
-  private final TestChecklist test;
+  private final TestChecklist m_test;
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -125,7 +125,7 @@ public class RobotContainer {
     tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
     
-    test = new TestChecklist(driveTrain, arm);
+    m_test = new TestChecklist(driveTrain, arm);
 
   }
   
@@ -307,7 +307,7 @@ public class RobotContainer {
   public void simulationInit() {}
   public void simulationPeriodic() {}
 
-  public void testInit() { test.initialize(); }
-  public void testPeriodic() { test.periodic(); }
-  public void testExit() { test.exit(); }
+  public void testInit() { m_test.initialize(); }
+  public void testPeriodic() { m_test.periodic(); }
+  public void testExit() { m_test.exit(); }
 }

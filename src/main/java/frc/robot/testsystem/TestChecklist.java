@@ -18,6 +18,7 @@ public class TestChecklist {
 
     private ShuffleboardTab m_tab = Shuffleboard.getTab("Checklist");
     private Map<String, SimpleWidget> m_tests;
+    private Map<String, Boolean> m_testStates;
 
     private RobotContainer m_robot = RobotContainer.GetInstance();
     private Boolean m_enableTestChecklist = false;
@@ -90,10 +91,14 @@ public class TestChecklist {
     }
     public void periodic() {
         if (m_enableTestChecklist) {
+
+            CheckTestButtons();
+
             if (GetTestQueue().size() > 0)
                 RunTestQueue();
             if (GetTeleopEnabled())
                 RunTeleop();
+
         }
     }
     public void exit() {
@@ -104,26 +109,29 @@ public class TestChecklist {
     /* Custom Teleop Mode Implementation */ 
     private void InitializeShuffleBoard(){
         for (TestableSubsytem _testableSubsytem : subsytems)
-            for (String _test : _testableSubsytem.GetTests())
+            for (String _test : _testableSubsytem.GetTests()) 
                 CreateShuffleTestCard(_test, TestStates.NOT_IMPLEMENTED);
+
+        
     }
     private Boolean HasShuffleTestCard(String _test) {
         return m_tests.containsKey(_test);
     }
     private void CreateShuffleTestCard(String _test, TestStates _state) {
 
-        Integer kColumn = m_tests.size() != 0 ? 
+        Integer _column = m_tests.size() != 0 ? 
             (m_tests.size() % Constants.MAX_TEST_COLUMNS) * 2 : 0;
-        Integer kRow = m_tests.size() != 0 ?
+        Integer _row = m_tests.size() != 0 ?
             ((m_tests.size() - (m_tests.size() % Constants.MAX_TEST_COLUMNS)) / Constants.MAX_TEST_COLUMNS) : 0;
 
-        SimpleWidget kNewWidget = m_tab.add(_test, false)
-            .withWidget(BuiltInWidgets.kBooleanBox)
+        SimpleWidget _newWidget = m_tab.add(_test, false)
+            .withWidget(BuiltInWidgets.kToggleButton)
             .withProperties(Map.of("Color when false", "grey"))
-            .withPosition(kColumn, kRow)
+            .withPosition(_column, _row)
             .withSize(2, 1);
 
-        m_tests.put(_test, kNewWidget);
+        m_testStates.put(_test, false);
+        m_tests.put(_test, _newWidget);
 
     }
     private void SetShuffleTestCardValue(String _key, TestStates _state) {
@@ -150,6 +158,19 @@ public class TestChecklist {
             .getEntry()
             .setBoolean(_value);
         
+    }
+    private void OnTestCardValueChanged(String _test) {
+        AddTestsToQueue(_test);
+    }
+    private void CheckTestButtons() {
+        
+        for (String _test : m_tests.keySet()) {
+            if(m_tests.get(_test).getEntry().getBoolean(false) != m_testStates.get(_test)) {
+                m_testStates.put(_test, m_tests.get(_test).getEntry().getBoolean(false));
+                OnTestCardValueChanged(_test);
+            }
+        }
+
     }
 
     public void RunTeleop() {
