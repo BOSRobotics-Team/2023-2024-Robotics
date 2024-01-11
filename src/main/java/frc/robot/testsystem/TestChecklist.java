@@ -24,7 +24,7 @@ public class TestChecklist {
 
     private Boolean m_teleopEnabled = false;
     /** Sets whether Teleop Mode is enabled or disabled. */
-    public void SetTeleopEnabled(Boolean kValue) { m_teleopEnabled = kValue; }
+    public void SetTeleopEnabled(Boolean _value) { m_teleopEnabled = _value; }
     /** Gets whether Teleop Mode is enabled or disabled. */
     public Boolean GetTeleopEnabled() { return m_teleopEnabled; }
 
@@ -37,49 +37,49 @@ public class TestChecklist {
     /**
      * Adds Test / Tests to the Test Queue
      * 
-     * @param kTests A list of Test identifiers to add to the queue
+     * @param Tests A list of Test identifiers to add to the queue
      */
-    public void AddTestsToQueue(String... kTests) {
-        for (String kTest : kTests)
-            testQueue.add(kTest);
+    public void AddTestsToQueue(String... _tests) {
+        for (String _test : _tests)
+            testQueue.add(_test);
     }
     /**
      * Removes Test / Tests to the Test Queue
      * 
-     * @param kTests A list of Test identifiers to remove to the queue
+     * @param Tests A list of Test identifiers to remove to the queue
      */
-    public void RemoveTestsFromQueue(String... kTests) {
-        for (String kTest : kTests)
-            testQueue.remove(kTest);
+    public void RemoveTestsFromQueue(String... _tests) {
+        for (String _test : _tests)
+            testQueue.remove(_test);
     }
 
     /**
      * Sets up a list of subsystems that allow test
      * interfacing and the Test Shuffleboard tab.
      *
-     * @param subsystems List of Testable Subsystems 
+     * @param Subsystems List of Testable Subsystems 
     */
-    public TestChecklist(TestableSubsytem... kSubsytems) { 
-        subsytems = kSubsytems; 
+    public TestChecklist(TestableSubsytem... _subsytems) { 
+        subsytems = _subsytems; 
         InitializeShuffleBoard();
     }
 
     /* Test Runner Implementation */
-    private TestableSubsytem FindTestSubsytem(String kTest) {
-        for (TestableSubsytem kSubsystem : subsytems) 
-            if (kSubsystem.GetTests().contains(kTest))
-                return kSubsystem;
+    private TestableSubsytem FindTestSubsytem(String _test) {
+        for (TestableSubsytem _subsystem : subsytems) 
+            if (_subsystem.GetTests().contains(_test))
+                return _subsystem;
         return null;
     }
-    private TestStates RunTest(String kTest) { 
-        m_tests.get(kTest).withProperties(Map.of("Color when false", "red"));
-        return FindTestSubsytem(kTest)
-            .Test(kTest); 
+    private TestStates RunTest(String _test) { 
+        m_tests.get(_test).withProperties(Map.of("Color when false", "red"));
+        return FindTestSubsytem(_test)
+            .Test(_test); 
     }
     private void RunTestQueue() {
-        TestStates kState = RunTest(testQueue.get(0));
-        if (kState != TestStates.RUNNING) {
-            SetShuffleTestCardValue(testQueue.get(0), kState);
+        TestStates _state = RunTest(testQueue.get(0));
+        if (_state != TestStates.RUNNING) {
+            SetShuffleTestCardValue(testQueue.get(0), _state);
             RemoveTestsFromQueue(testQueue.get(0));
         }
     }
@@ -103,52 +103,52 @@ public class TestChecklist {
 
     /* Custom Teleop Mode Implementation */ 
     private void InitializeShuffleBoard(){
-        for (TestableSubsytem kTestableSubsytem : subsytems)
-            for (String kTest : kTestableSubsytem.GetTests())
-                CreateShuffleTestCard(kTest, TestStates.NOT_IMPLEMENTED);
+        for (TestableSubsytem _testableSubsytem : subsytems)
+            for (String _test : _testableSubsytem.GetTests())
+                CreateShuffleTestCard(_test, TestStates.NOT_IMPLEMENTED);
     }
-    private Boolean HasShuffleTestCard(String kTest) {
-        return m_tests.containsKey(kTest);
+    private Boolean HasShuffleTestCard(String _test) {
+        return m_tests.containsKey(_test);
     }
-    private void CreateShuffleTestCard(String kTest, TestStates kState) {
+    private void CreateShuffleTestCard(String _test, TestStates _state) {
 
         Integer kColumn = m_tests.size() != 0 ? 
             (m_tests.size() % Constants.MAX_TEST_COLUMNS) * 2 : 0;
         Integer kRow = m_tests.size() != 0 ?
             ((m_tests.size() - (m_tests.size() % Constants.MAX_TEST_COLUMNS)) / Constants.MAX_TEST_COLUMNS) : 0;
 
-        SimpleWidget kNewWidget = m_tab.add(kTest, false)
+        SimpleWidget kNewWidget = m_tab.add(_test, false)
             .withWidget(BuiltInWidgets.kBooleanBox)
             .withProperties(Map.of("Color when false", "grey"))
             .withPosition(kColumn, kRow)
             .withSize(2, 1);
 
-        m_tests.put(kTest, kNewWidget);
+        m_tests.put(_test, kNewWidget);
 
     }
-    private void SetShuffleTestCardValue(String kKey, TestStates kState) {
+    private void SetShuffleTestCardValue(String _key, TestStates _state) {
 
-        if (!HasShuffleTestCard(kKey)) {
-            CreateShuffleTestCard(kKey, kState);
+        if (!HasShuffleTestCard(_key)) {
+            CreateShuffleTestCard(_key, _state);
             return;
         }
         
-        Boolean kValue = false;
-        switch (kState) {
+        Boolean _value = false;
+        switch (_state) {
             case FAILED:
-                kValue = false;
+                _value = false;
                 break;
             case PASSED:
-                kValue = true;
+                _value = true;
                 break;
             case NOT_IMPLEMENTED:
-                kValue = false;
+                _value = false;
                 break;
         }       
         
-        m_tests.get(kValue)
+        m_tests.get(_value)
             .getEntry()
-            .setBoolean(kValue);
+            .setBoolean(_value);
         
     }
 

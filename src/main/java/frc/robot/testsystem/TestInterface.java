@@ -15,7 +15,7 @@ public abstract interface TestInterface {
      * @param test The Test you want to run
      * @return The Current State of the Test
      */
-    public default TestStates Test(String kTest){
+    public default TestStates Test(String _test){
         return TestStates.NOT_IMPLEMENTED;
     }
 
