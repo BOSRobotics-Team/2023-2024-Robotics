@@ -1,5 +1,6 @@
 package frc.robot.testsystem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -7,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public abstract class TestableSubsytem extends SubsystemBase implements TestInterface {
     
     /** List of tests this subsystem is capable of running. */
-    private List<String> tests; 
+    private List<String> tests = new ArrayList<String>();
 
     /**
      * Creates a Test object that corresponds with a case inside
@@ -18,7 +19,12 @@ public abstract class TestableSubsytem extends SubsystemBase implements TestInte
      * 
      * @param name Test identifier
      */
-    public void CreateTest(String _name) { tests.add(_name); }
+    public void CreateTest(String _name) {
+        try {tests.add(_name);}
+        catch(NullPointerException e) {
+            System.out.println("| Tests was not initialized >> " + e.getMessage());
+        } 
+    }
 
     /** @return A list of tests as Strings. */
     public List<String> GetTests() { return tests; }

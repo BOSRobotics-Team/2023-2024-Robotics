@@ -1,5 +1,6 @@
 package frc.robot.testsystem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import frc.robot.testsystem.TestInterface.TestStates;
 
 public class TestChecklist {
 
-    private ShuffleboardTab m_tab = Shuffleboard.getTab("Checklist");
+    private ShuffleboardTab m_tab;
     private Map<String, SimpleWidget> m_tests;
     private Map<String, Boolean> m_testStates;
 
@@ -32,7 +33,7 @@ public class TestChecklist {
     /** List of subsystems that allow test interfacing. */
     public TestableSubsytem[] subsytems; 
 
-    private List<String> testQueue;
+    private List<String> testQueue = new ArrayList<String>();
     /** Gets a list of Test identifiers as Strings. */
     public List<String> GetTestQueue() { return testQueue; }
     /**
@@ -62,7 +63,6 @@ public class TestChecklist {
     */
     public TestChecklist(TestableSubsytem... _subsytems) { 
         subsytems = _subsytems; 
-        InitializeShuffleBoard();
     }
 
     /* Test Runner Implementation */
@@ -86,6 +86,7 @@ public class TestChecklist {
     }
 
     public void initialize() {
+        InitializeShuffleBoard();
         m_enableTestChecklist = true;
         m_robot.arm.m_pH.disableCompressor();
     }
@@ -108,10 +109,12 @@ public class TestChecklist {
 
     /* Custom Teleop Mode Implementation */ 
     private void InitializeShuffleBoard(){
+
+        m_tab = Shuffleboard.getTab("Checklist");
+
         for (TestableSubsytem _testableSubsytem : subsytems)
             for (String _test : _testableSubsytem.GetTests()) 
                 CreateShuffleTestCard(_test, TestStates.NOT_IMPLEMENTED);
-
         
     }
     private Boolean HasShuffleTestCard(String _test) {
