@@ -125,6 +125,8 @@ public class Drivetrain extends TestableSubsytem {
 
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
 
+    CreateTest("TestTestCheckList");
+
     // getModulePositions();
     // this.swerveOdometry =
     //     new SwerveDriveOdometry(swerveKinematics, getRotation(), swerveModulePositions);
@@ -759,7 +761,11 @@ public class Drivetrain extends TestableSubsytem {
   @Override
   public TestStates Test(String _test) {
     
-    switch (_test) { }
+    switch (_test) {
+      case "TestTestCheckList":
+        System.out.println(_test);
+        return TestStates.PASSED;
+    }
     return TestStates.NOT_IMPLEMENTED;
 
   }
