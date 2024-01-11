@@ -1,8 +1,7 @@
-package frc.lib.team3061.vision;
+package frc.lib.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose3d;
-import org.littletonrobotics.junction.AutoLog;
 
 /**
  * The hardware abstraction interface for a PhotonVision-based co-processor that provides
@@ -13,7 +12,6 @@ import org.littletonrobotics.junction.AutoLog;
  * Currently, the abstraction is used to simulate vision.
  */
 public interface VisionIO {
-  @AutoLog
   public static class VisionIOInputs {
     Pose3d estimatedRobotPose = new Pose3d();
     double estimatedRobotPoseTimestamp = 0.0;

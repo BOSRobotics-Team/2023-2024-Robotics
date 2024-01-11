@@ -1,4 +1,4 @@
-package frc.lib.team3061.vision;
+package frc.lib.vision;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;

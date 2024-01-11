@@ -30,19 +30,14 @@ public interface SwerveModuleIO {
   }
 
   public static class SwerveModuleIOInputs {
-    double drivePositionDeg = 0.0;
     double driveDistanceMeters = 0.0;
     double driveVelocityMetersPerSec = 0.0;
     double driveAppliedPercentage = 0.0;
-    double[] driveCurrentAmps = new double[] {};
-    double[] driveTempCelsius = new double[] {};
 
     double angleAbsolutePositionDeg = 0.0;
     double anglePositionDeg = 0.0;
     double angleVelocityRevPerMin = 0.0;
     double angleAppliedPercentage = 0.0;
-    double[] angleCurrentAmps = new double[] {};
-    double[] angleTempCelsius = new double[] {};
   }
   /** return the module number */
   public default int getModuleNumber() {
@@ -75,7 +70,7 @@ public interface SwerveModuleIO {
     return false;
   }
 
-  public default boolean isAngleEncoderConnected() {
+  public default boolean isAbsoluteEncoderConnected() {
     return false;
   }
 }

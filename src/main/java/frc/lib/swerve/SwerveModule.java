@@ -236,7 +236,7 @@ public class SwerveModule {
   }
 
   /** Return if the CANCoder is connected. */
-  public boolean isAngleEncoderConnected() {
-    return io.isAngleEncoderConnected();
+  public boolean isAbsoluteEncoderConnected() {
+    return io.isAbsoluteEncoderConnected();
   }
 }

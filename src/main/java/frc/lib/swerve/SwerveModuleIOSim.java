@@ -89,10 +89,6 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
       turnAbsolutePositionRad -= 2.0 * Math.PI;
     }
 
-    inputs.drivePositionDeg =
-        inputs.drivePositionDeg
-            + (driveSim.getAngularVelocityRadPerSec() * LOOP_PERIOD_SECS * (180.0 / Math.PI));
-
     inputs.driveDistanceMeters =
         inputs.driveDistanceMeters
             + (driveSim.getAngularVelocityRadPerSec()
@@ -104,8 +100,6 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
             * (DriveTrainConstants.wheelCircumference / (2.0 * Math.PI));
 
     inputs.driveAppliedPercentage = driveAppliedVolts / 12.0;
-    inputs.driveCurrentAmps = new double[] {Math.abs(driveSim.getCurrentDrawAmps())};
-    inputs.driveTempCelsius = new double[] {};
 
     inputs.angleAbsolutePositionDeg = turnAbsolutePositionRad * (180.0 / Math.PI);
     inputs.anglePositionDeg = turnRelativePositionRad * (180.0 / Math.PI);
@@ -113,8 +107,6 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
         turnSim.getAngularVelocityRadPerSec() * (60.0 / (2.0 * Math.PI));
 
     inputs.angleAppliedPercentage = turnAppliedVolts / 12.0;
-    inputs.angleCurrentAmps = new double[] {Math.abs(turnSim.getCurrentDrawAmps())};
-    inputs.angleTempCelsius = new double[] {};
 
     /*  // update the tunable PID constants
     if (driveKp.hasChanged() || driveKi.hasChanged() || driveKd.hasChanged()) {
@@ -174,7 +166,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   }
 
   @Override
-  public boolean isAngleEncoderConnected() {
+  public boolean isAbsoluteEncoderConnected() {
     return true;
   }
 }

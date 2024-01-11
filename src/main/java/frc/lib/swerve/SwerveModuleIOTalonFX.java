@@ -33,7 +33,7 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
   private int moduleNumber;
   private WPI_TalonFX mAngleMotor;
   private WPI_TalonFX mDriveMotor;
-  private WPI_CANCoder angleEncoder;
+  private WPI_CANCoder absoluteEncoder;
   private SimpleMotorFeedforward feedForward;
   private double angleOffsetDeg;
 
@@ -61,13 +61,13 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
         new SimpleMotorFeedforward(
             DriveTrainConstants.driveKS, DriveTrainConstants.driveKV, DriveTrainConstants.driveKA);
 
-    configAngleEncoder(canCoderID, canBusID);
+    configAbsoluteEncoder(canCoderID, canBusID);
     configAngleMotor(angleMotorID, canBusID);
     configDriveMotor(driveMotorID, canBusID);
 
     SendableRegistry.setName(mDriveMotor, "SwerveModule " + moduleNumber, "Drive Motor");
     SendableRegistry.setName(mAngleMotor, "SwerveModule " + moduleNumber, "Angle Motor");
-    SendableRegistry.setName(angleEncoder, "SwerveModule " + moduleNumber, "Angle Encoder");
+    SendableRegistry.setName(absoluteEncoder, "SwerveModule " + moduleNumber, "Angle Encoder");
   }
 
   public SwerveModuleIOTalonFX(SwerveModuleID modID) {
@@ -80,17 +80,17 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
         modID.angleOffsetDeg);
   }
 
-  private void configAngleEncoder(int canCoderID, String canBusID) {
-    angleEncoder = new WPI_CANCoder(canCoderID, canBusID);
+  private void configAbsoluteEncoder(int canCoderID, String canBusID) {
+    absoluteEncoder = new WPI_CANCoder(canCoderID, canBusID);
 
-    angleEncoder.configFactoryDefault();
+    absoluteEncoder.configFactoryDefault();
 
     CANCoderConfiguration config = new CANCoderConfiguration();
     config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
     config.sensorDirection = DriveTrainConstants.canCoderInvert;
     config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
     config.sensorTimeBase = SensorTimeBase.PerSecond;
-    angleEncoder.configAllSettings(config);
+    absoluteEncoder.configAllSettings(config);
   }
 
   private void configAngleMotor(int angleMotorID, String canBusID) {
@@ -131,7 +131,7 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
 
     double absolutePosition =
         Conversions.degreesToFalcon(
-            getCanCoder().getDegrees() - angleOffsetDeg, DriveTrainConstants.angleGearRatio);
+            getAbsoluteAngle().getDegrees() - angleOffsetDeg, DriveTrainConstants.angleGearRatio);
     mAngleMotor.setSelectedSensorPosition(absolutePosition);
     mAngleMotor.configVoltageCompSaturation(12); // default 12v voltage compensation for motors
     mAngleMotor.enableVoltageCompensation(true);
@@ -180,8 +180,8 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
     mDriveMotor.setSelectedSensorPosition(0);
   }
 
-  private Rotation2d getCanCoder() {
-    return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition());
+  private Rotation2d getAbsoluteAngle() {
+    return Rotation2d.fromDegrees(absoluteEncoder.getAbsolutePosition());
   }
 
   private double calculateFeedforward(double velocity) {
@@ -201,9 +201,6 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
   /** Updates the set of loggable inputs. */
   @Override
   public void updateInputs(SwerveModuleIOInputs inputs) {
-    inputs.drivePositionDeg =
-        Conversions.falconToDegrees(
-            mDriveMotor.getSelectedSensorPosition(), DriveTrainConstants.driveGearRatio);
     inputs.driveDistanceMeters =
         Conversions.falconToMeters(
             mDriveMotor.getSelectedSensorPosition(),
@@ -215,10 +212,8 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
             DriveTrainConstants.wheelCircumference,
             DriveTrainConstants.driveGearRatio);
     inputs.driveAppliedPercentage = mDriveMotor.getMotorOutputPercent();
-    inputs.driveCurrentAmps = new double[] {mDriveMotor.getStatorCurrent()};
-    inputs.driveTempCelsius = new double[] {mDriveMotor.getTemperature()};
 
-    inputs.angleAbsolutePositionDeg = angleEncoder.getAbsolutePosition();
+    inputs.angleAbsolutePositionDeg = absoluteEncoder.getAbsolutePosition();
     inputs.anglePositionDeg =
         Conversions.falconToDegrees(
             mAngleMotor.getSelectedSensorPosition(), DriveTrainConstants.angleGearRatio);
@@ -226,8 +221,6 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
         Conversions.falconToRPM(
             mAngleMotor.getSelectedSensorVelocity(), DriveTrainConstants.angleGearRatio);
     inputs.angleAppliedPercentage = mAngleMotor.getMotorOutputPercent();
-    inputs.angleCurrentAmps = new double[] {mAngleMotor.getStatorCurrent()};
-    inputs.angleTempCelsius = new double[] {mAngleMotor.getTemperature()};
 
     /*  // update tunables
     if (driveKp.hasChanged()
@@ -296,7 +289,7 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
   }
 
   @Override
-  public boolean isAngleEncoderConnected() {
-    return (angleEncoder.getLastError() == ErrorCode.OK);
+  public boolean isAbsoluteEncoderConnected() {
+    return (absoluteEncoder.getLastError() == ErrorCode.OK);
   }
 }
