@@ -308,7 +308,7 @@ public class Drivetrain extends TestableSubsytem {
   }
 
   private boolean hasLimelight() {
-    return LimelightHelpers.getFiducialID(Constants.LIMELIGHTNAME) != -1;
+    return false; //LimelightHelpers.getFiducialID(Constants.LIMELIGHTNAME) != -1;
   }
 
   public void resetPoseRotationToGyro() {
