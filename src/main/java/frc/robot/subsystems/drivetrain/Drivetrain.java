@@ -306,7 +306,7 @@ public class Drivetrain extends TestableSubsytem {
   }
 
   private boolean hasLimelight() {
-    return LimelightHelpers.getFiducialID(Constants.LIMELIGHTNAME) != -1;
+    return false; //LimelightHelpers.getFiducialID(Constants.LIMELIGHTNAME) != -1;
   }
 
   public void resetPoseRotationToGyro() {
@@ -449,13 +449,13 @@ public class Drivetrain extends TestableSubsytem {
         Timer.getFPGATimestamp(), this.getRotation(), swerveModulePositions);
 
     if (this.hasLimelight()) {
-      Pose2d limelightPose2d = LimelightHelpers.getBotPose2d(Constants.LIMELIGHTNAME);
-      double tl = LimelightHelpers.getLatency_Pipeline(Constants.LIMELIGHTNAME);
+    Pose2d limelightPose2d = LimelightHelpers.getBotPose2d(Constants.LIMELIGHTNAME);
+    double tl = LimelightHelpers.getLatency_Pipeline(Constants.LIMELIGHTNAME);
 
-      poseEstimator.addVisionMeasurement(limelightPose2d, Timer.getFPGATimestamp() - tl / 1000);
-      SmartDashboard.putBoolean("HasLimelight", true);
+    poseEstimator.addVisionMeasurement(limelightPose2d, Timer.getFPGATimestamp() - tl / 1000);
+    SmartDashboard.putBoolean("HasLimelight", true);
     } else {
-      SmartDashboard.putBoolean("HasLimelight", false);
+    SmartDashboard.putBoolean("HasLimelight", false);
     }
 
     // update the brake mode based on the robot's velocity and state (enabled/disabled)

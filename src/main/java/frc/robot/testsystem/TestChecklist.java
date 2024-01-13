@@ -62,7 +62,7 @@ public class TestChecklist {
     */
     public TestChecklist(TestableSubsytem... _subsytems) { 
         subsytems = _subsytems; 
-        InitializeShuffleBoard();
+        // InitializeShuffleBoard();
     }
 
     /* Test Runner Implementation */

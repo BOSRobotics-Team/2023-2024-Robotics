@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -37,7 +38,7 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
 
   private final DutyCycleOut driveDutyCycle = new DutyCycleOut(0);
   private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
-  private final PositionVoltage anglePosition = new PositionVoltage(0);
+  private final PositionDutyCycle anglePosition = new PositionDutyCycle(0);
 
   /**
    * Make a new SwerveModuleIOTalonFX object.
@@ -105,18 +106,20 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
 
     /* Current Limiting */
     config.CurrentLimits.SupplyCurrentLimitEnable = DriveTrainConstants.angleEnableCurrentLimit;
-    config.CurrentLimits.SupplyCurrentLimit = DriveTrainConstants.anglePeakCurrentLimit;
-    config.CurrentLimits.SupplyCurrentThreshold = DriveTrainConstants.angleContinuousCurrentLimit;
+    config.CurrentLimits.SupplyCurrentLimit = DriveTrainConstants.angleContinuousCurrentLimit;
+    config.CurrentLimits.SupplyCurrentThreshold = DriveTrainConstants.anglePeakCurrentLimit;
     config.CurrentLimits.SupplyTimeThreshold = DriveTrainConstants.anglePeakCurrentDuration;
 
     /* PID Config */
     config.Slot0.kP = DriveTrainConstants.angleKP;
     config.Slot0.kI = DriveTrainConstants.angleKI;
-    config.Slot0.kD = DriveTrainConstants.angleKD;        
+    config.Slot0.kD = DriveTrainConstants.angleKD;
+    config.Slot0.kV = DriveTrainConstants.angleKF;        
 
     mAngleMotor.getConfigurator().apply(config, TIMEOUT_MS);
     double absolutePosition = getAbsoluteAngle().getRotations() - angleOffset.getRotations();
-    mAngleMotor.setPosition(absolutePosition);
+    mAngleMotor.getConfigurator().setPosition(absolutePosition);
+
   }
 
   private void configDriveMotor(int driveMotorID, String canBusID) {
@@ -132,14 +135,15 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
 
     /* Current Limiting */
     config.CurrentLimits.SupplyCurrentLimitEnable = DriveTrainConstants.driveEnableCurrentLimit;
-    config.CurrentLimits.SupplyCurrentLimit = DriveTrainConstants.drivePeakCurrentLimit;
-    config.CurrentLimits.SupplyCurrentThreshold = DriveTrainConstants.driveContinuousCurrentLimit;
+    config.CurrentLimits.SupplyCurrentLimit = DriveTrainConstants.driveContinuousCurrentLimit;
+    config.CurrentLimits.SupplyCurrentThreshold = DriveTrainConstants.drivePeakCurrentLimit;
     config.CurrentLimits.SupplyTimeThreshold = DriveTrainConstants.drivePeakCurrentDuration;
 
     /* PID Config */
     config.Slot0.kP = DriveTrainConstants.driveKP;
     config.Slot0.kI = DriveTrainConstants.driveKI;
-    config.Slot0.kD = DriveTrainConstants.driveKD;        
+    config.Slot0.kD = DriveTrainConstants.driveKD;
+    config.Slot0.kV = DriveTrainConstants.driveKF;
 
     /* Open and Closed Loop Ramping */
     config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = DriveTrainConstants.openLoopRamp;
@@ -180,12 +184,12 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
         Conversions.RPSToMPS(
             mDriveMotor.getVelocity().getValue(),
             DriveTrainConstants.wheelCircumference);
-    inputs.driveAppliedPercentage = mDriveMotor.getMotorVoltage().getValue();
+    inputs.driveAppliedPercentage = mDriveMotor.getDutyCycle().getValue();
 
     inputs.angleAbsolutePositionDeg = getAbsoluteAngle().getDegrees();
-    inputs.anglePositionDeg = Rotation2d.fromRotations(mAngleMotor.getPosition().getValue()).getDegrees();
+    inputs.anglePositionDeg = mAngleMotor.getPosition().getValue() * 360.0;
     inputs.angleVelocityRevPerMin = mAngleMotor.getVelocity().getValue();
-    inputs.angleAppliedPercentage = mAngleMotor.getMotorVoltage().getValue();
+    inputs.angleAppliedPercentage = mAngleMotor.getDutyCycle().getValue();
 
     /*  // update tunables
     if (driveKp.hasChanged()
@@ -213,6 +217,7 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
   /** Run the drive motor at the specified velocity. */
   @Override
   public void setDriveVelocity(double velocity) {
+    driveVelocity.Slot = 0;
     driveVelocity.Velocity = Conversions.MPSToRPS(velocity, DriveTrainConstants.wheelCircumference);
     driveVelocity.FeedForward = calculateFeedforward(velocity);
     mDriveMotor.setControl(driveVelocity);
@@ -221,7 +226,12 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
   /** Run the turn motor to the specified angle. */
   @Override
   public void setAnglePosition(double degrees) {
-    mAngleMotor.setControl(anglePosition.withPosition(Rotation2d.fromDegrees(degrees).getRotations()));
+    anglePosition.Slot = 0;
+    anglePosition.Position = Rotation2d.fromDegrees(degrees).getRotations();
+
+    mAngleMotor.setControl(anglePosition);
+
+    // mAngleMotor.setControl(anglePosition.withPosition(Rotation2d.fromDegrees(degrees).getRotations()));
   }
 
   /** Enable or disable brake mode on the drive motor. */

@@ -48,7 +48,7 @@ public class RobotContainer {
 
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
-  public final GyroIO gyro = new GyroIOPigeon2(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+  public final GyroIO gyro = new GyroIOPigeon2Phoenix6(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
   public final Drivetrain driveTrain;
   public final Arm arm;
 
@@ -86,10 +86,10 @@ public class RobotContainer {
         PortForwarder.add(port, Constants.LIMELIGHTURL, port);
       }
 
-      flModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod0);
-      frModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod1);
-      blModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod2);
-      brModule = new SwerveModuleIOTalonFX(DriveTrainConstants.mod3);
+      flModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod0);
+      frModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod1);
+      blModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod2);
+      brModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod3);
     } else {
       flModule = new SwerveModuleIOSim(DriveTrainConstants.mod0.moduleNumber);
       frModule = new SwerveModuleIOSim(DriveTrainConstants.mod1.moduleNumber);
@@ -307,7 +307,7 @@ public class RobotContainer {
   public void simulationInit() {}
   public void simulationPeriodic() {}
 
-  public void testInit() { m_test.initialize(); }
-  public void testPeriodic() { m_test.periodic(); }
-  public void testExit() { m_test.exit(); }
+public void testInit() { /*m_test.initialize(); */}
+public void testPeriodic() { /*m_test.periodic();*/ }
+public void testExit() { /*m_test.exit();*/ }
 }
