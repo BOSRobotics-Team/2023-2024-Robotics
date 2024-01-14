@@ -1,18 +1,15 @@
 package frc.lib.gyro;
 
-import frc.robot.Robot;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.sim.Pigeon2SimState;
-
 import edu.wpi.first.wpilibj.RobotController;
+import frc.robot.Robot;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GyroIOPigeon2Phoenix6 implements GyroIO {
   private final Pigeon2 gyro;
@@ -64,9 +61,9 @@ public class GyroIOPigeon2Phoenix6 implements GyroIO {
         this.rollStatusSignal,
         this.angularVelocityXStatusSignal,
         this.angularVelocityYStatusSignal);
-    
+
     inputs.connected = (this.yawStatusSignal.getStatus() == StatusCode.OK);
-    inputs.positionDeg = gyro.getAngle();//  inputs.yawDeg;
+    inputs.positionDeg = gyro.getAngle(); //  inputs.yawDeg;
     inputs.yawDeg =
         BaseStatusSignal.getLatencyCompensatedValue(
             this.yawStatusSignal, this.angularVelocityZStatusSignal);

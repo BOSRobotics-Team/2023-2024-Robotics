@@ -47,15 +47,18 @@ public class SwerveModule {
 
   // /**
   //  * Minimize the change in heading the desired swerve module state would require by potentially
-  //  * reversing the direction the wheel spins. Customized from WPILib's version to include placing in
+  //  * reversing the direction the wheel spins. Customized from WPILib's version to include placing
+  // in
   //  * appropriate scope for CTRE onboard control.
   //  *
   //  * @param desiredState The desired state.
   //  * @param currentAngle The current module angle.
   //  */
-  // public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
+  // public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d
+  // currentAngle) {
   //   double targetAngle =
-  //       placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
+  //       placeInAppropriate0To360Scope(currentAngle.getDegrees(),
+  // desiredState.angle.getDegrees());
   //   double targetSpeed = desiredState.speedMetersPerSecond;
   //   double delta = targetAngle - currentAngle.getDegrees();
 
@@ -107,14 +110,16 @@ public class SwerveModule {
    * @param forceAngle if true, the module will be forced to rotate to the specified angle; if
    *     false, the module will not rotate if the velocity is less than 1% of the max velocity.
    */
-  public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean forceAngle) {
+  public void setDesiredState(
+      SwerveModuleState desiredState, boolean isOpenLoop, boolean forceAngle) {
 
     // this optimization is specific to CTRE hardware; perhaps this responsibility should be demoted
     // to the hardware-specific classes.
     // desiredState = CTREModuleState.optimize(desiredState, getState().angle);
 
     double currentAngleDegrees = getState().angle.getDegrees();
-    double targetAngle = placeInAppropriate0To360Scope(currentAngleDegrees, desiredState.angle.getDegrees());
+    double targetAngle =
+        placeInAppropriate0To360Scope(currentAngleDegrees, desiredState.angle.getDegrees());
     double targetSpeed = desiredState.speedMetersPerSecond;
 
     double delta = targetAngle - currentAngleDegrees;

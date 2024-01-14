@@ -7,7 +7,6 @@ import com.pathplanner.lib.path.PathPlannerTrajectory.State;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,13 +27,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-
 import frc.lib.gyro.GyroIO;
 import frc.lib.gyro.GyroIO.GyroIOInputs;
 import frc.lib.limelightvision.LimelightHelpers;
 import frc.lib.swerve.SwerveModule;
 import frc.lib.util.RobotOdometry;
-
 import frc.robot.AutoConstants;
 import frc.robot.Constants;
 import frc.robot.testsystem.TestableSubsytem;
@@ -59,7 +56,7 @@ public class Drivetrain extends TestableSubsytem {
    * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
   //  private final double trackwidthMeters = DriveTrainConstants.getTrackwidth;
   //  private final double wheelbaseMeters = DriveTrainConstants.getWheelbase;
-   public final SwerveDriveKinematics kinematics = DriveTrainConstants.swerveKinematics;
+  public final SwerveDriveKinematics kinematics = DriveTrainConstants.swerveKinematics;
 
   private final SwerveModule[] swerveModules = new SwerveModule[4]; // FL, FR, BL, BR
 
@@ -103,7 +100,7 @@ public class Drivetrain extends TestableSubsytem {
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
 
-  public Drivetrain (
+  public Drivetrain(
       GyroIO gyro, SwerveModule mod0, SwerveModule mod1, SwerveModule mod2, SwerveModule mod3) {
     this.gyro = gyro;
     this.swerveModules[0] = mod0;
@@ -131,25 +128,35 @@ public class Drivetrain extends TestableSubsytem {
     // this.swerveOdometry =
     //     new SwerveDriveOdometry(swerveKinematics, getRotation(), swerveModulePositions);
 
-// Configure the AutoBuilder last
+    // Configure the AutoBuilder last
     AutoBuilder.configureHolonomic(
         this::getPose, // Robot pose supplier
-        this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::resetPose, // Method to reset odometry (will be called if your auto has a starting
+        // pose)
         this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this::driveChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-            new PIDConstants(AutoConstants.kPXController, AutoConstants.kIXController, AutoConstants.kDXController), // Translation PID constants
-            new PIDConstants(AutoConstants.kPYController, AutoConstants.kIYController, AutoConstants.kDYController), // Rotation PID constants
-            AutoConstants.kMaxSpeedMetersPerSecond, //4.5, // Max module speed, in m/s
-            DRIVE_BASE_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
-            new ReplanningConfig() // Default path replanning config. See the API for the options here
-        ),
+        this::driveChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
+        // ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
+            // your Constants class
+            new PIDConstants(
+                AutoConstants.kPXController,
+                AutoConstants.kIXController,
+                AutoConstants.kDXController), // Translation PID constants
+            new PIDConstants(
+                AutoConstants.kPYController,
+                AutoConstants.kIYController,
+                AutoConstants.kDYController), // Rotation PID constants
+            AutoConstants.kMaxSpeedMetersPerSecond, // 4.5, // Max module speed, in m/s
+            DRIVE_BASE_RADIUS, // Drive base radius in meters. Distance from robot center to
+            // furthest module.
+            new ReplanningConfig() // Default path replanning config. See the API for the options
+            // here
+            ),
         this::shouldFlipPath,
         this // Reference to this subsystem to set requirements
-    );
+        );
 
     initLogging();
-
   }
 
   // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -157,13 +164,12 @@ public class Drivetrain extends TestableSubsytem {
   // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
   public boolean shouldFlipPath() {
 
-          var alliance = DriverStation.getAlliance();
-          if (alliance.isPresent()) {
-              return alliance.get() == DriverStation.Alliance.Red;
-          }
-          return false;
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      return alliance.get() == DriverStation.Alliance.Red;
+    }
+    return false;
   }
-
 
   /**
    * Zeroes the gyroscope. This sets the current rotation of the robot to zero degrees. This method
@@ -198,7 +204,6 @@ public class Drivetrain extends TestableSubsytem {
   }
 
   /**
-   * 
    * @return The tilt of the robot
    */
   public Rotation2d getTilt() {
@@ -276,8 +281,7 @@ public class Drivetrain extends TestableSubsytem {
 
     getModulePositions();
 
-    estimatedPoseWithoutGyro =
-        new Pose2d(state.positionMeters, state.targetHolonomicRotation);
+    estimatedPoseWithoutGyro = new Pose2d(state.positionMeters, state.targetHolonomicRotation);
     poseEstimator.resetPosition(
         this.getRotation(),
         swerveModulePositions,
@@ -289,8 +293,7 @@ public class Drivetrain extends TestableSubsytem {
 
     getModulePositions();
 
-    estimatedPoseWithoutGyro =
-        new Pose2d(state.getX(), state.getY(), state.getRotation());
+    estimatedPoseWithoutGyro = new Pose2d(state.getX(), state.getY(), state.getRotation());
     poseEstimator.resetPosition(
         this.getRotation(),
         swerveModulePositions,
@@ -308,7 +311,7 @@ public class Drivetrain extends TestableSubsytem {
   }
 
   private boolean hasLimelight() {
-    return false; //LimelightHelpers.getFiducialID(Constants.LIMELIGHTNAME) != -1;
+    return false; // LimelightHelpers.getFiducialID(Constants.LIMELIGHTNAME) != -1;
   }
 
   public void resetPoseRotationToGyro() {
@@ -352,8 +355,8 @@ public class Drivetrain extends TestableSubsytem {
         SwerveModuleState[] swerveModuleStates =
             kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
         SwerveDriveKinematics.desaturateWheelSpeeds(
-              swerveModuleStates, DriveTrainConstants.maxSpeed);// getRobotMaxVelocity());
-  
+            swerveModuleStates, DriveTrainConstants.maxSpeed); // getRobotMaxVelocity());
+
         this.setSwerveModuleStates(swerveModuleStates, true, false);
         break;
 
@@ -375,17 +378,17 @@ public class Drivetrain extends TestableSubsytem {
     switch (driveMode) {
       case NORMAL:
         SwerveModuleState[] swerveModuleStates =
-          kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
+            kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
         SwerveDriveKinematics.desaturateWheelSpeeds(
-          swerveModuleStates, DriveTrainConstants.maxSpeed);
+            swerveModuleStates, DriveTrainConstants.maxSpeed);
 
         for (SwerveModule swerveModule : swerveModules) {
           swerveModule.setDesiredState(
-            swerveModuleStates[swerveModule.getModuleNumber()], true, false);
+              swerveModuleStates[swerveModule.getModuleNumber()], true, false);
         }
         break;
       case CHARACTERIZATION:
-    // In characterization mode, drive at the specified voltage (and turn to zero degrees)
+        // In characterization mode, drive at the specified voltage (and turn to zero degrees)
         for (SwerveModule swerveModule : swerveModules) {
           swerveModule.setVoltageForCharacterization(characterizationVoltage);
         }
@@ -451,13 +454,13 @@ public class Drivetrain extends TestableSubsytem {
         Timer.getFPGATimestamp(), this.getRotation(), swerveModulePositions);
 
     if (this.hasLimelight()) {
-    Pose2d limelightPose2d = LimelightHelpers.getBotPose2d(Constants.LIMELIGHTNAME);
-    double tl = LimelightHelpers.getLatency_Pipeline(Constants.LIMELIGHTNAME);
+      Pose2d limelightPose2d = LimelightHelpers.getBotPose2d(Constants.LIMELIGHTNAME);
+      double tl = LimelightHelpers.getLatency_Pipeline(Constants.LIMELIGHTNAME);
 
-    poseEstimator.addVisionMeasurement(limelightPose2d, Timer.getFPGATimestamp() - tl / 1000);
-    SmartDashboard.putBoolean("HasLimelight", true);
+      poseEstimator.addVisionMeasurement(limelightPose2d, Timer.getFPGATimestamp() - tl / 1000);
+      SmartDashboard.putBoolean("HasLimelight", true);
     } else {
-    SmartDashboard.putBoolean("HasLimelight", false);
+      SmartDashboard.putBoolean("HasLimelight", false);
     }
 
     // update the brake mode based on the robot's velocity and state (enabled/disabled)
@@ -760,14 +763,12 @@ public class Drivetrain extends TestableSubsytem {
   /* Tests for Drive Train Subsystem */
   @Override
   public TestStates Test(String _test) {
-    
+
     switch (_test) {
       case "TestTestCheckList":
         System.out.println(_test);
         return TestStates.PASSED;
     }
     return TestStates.NOT_IMPLEMENTED;
-
   }
-
 }

@@ -71,6 +71,7 @@ public class LimeLight {
       return true;
     }
   }
+
   /**
    * tx Horizontal Offset From Crosshair To Target (-27 degrees to 27 degrees)
    *
@@ -80,6 +81,7 @@ public class LimeLight {
     NetworkTableEntry tx = m_table.getEntry("tx");
     return tx.getDouble(0.0);
   }
+
   /**
    * ty Vertical Offset From Crosshair To Target (-20.5 degrees to 20.5 degrees)
    *
@@ -89,6 +91,7 @@ public class LimeLight {
     NetworkTableEntry ty = m_table.getEntry("ty");
     return ty.getDouble(0.0);
   }
+
   /**
    * ta Target Area (0% of image to 100% of image)
    *
@@ -98,6 +101,7 @@ public class LimeLight {
     NetworkTableEntry ta = m_table.getEntry("ta");
     return ta.getDouble(0.0);
   }
+
   /**
    * ts Skew or rotation (-90 degrees to 0 degrees)
    *
@@ -107,6 +111,7 @@ public class LimeLight {
     NetworkTableEntry ts = m_table.getEntry("ts");
     return ts.getDouble(0.0);
   }
+
   /**
    * tl The pipeline’s latency contribution (ms) Add at least 11ms for image capture latency.
    *
@@ -120,6 +125,7 @@ public class LimeLight {
   private void resetPipelineLatency() {
     m_table.getEntry("tl").setValue(0.0);
   }
+
   // Setters
 
   /**

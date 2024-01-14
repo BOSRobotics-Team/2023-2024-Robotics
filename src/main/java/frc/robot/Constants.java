@@ -23,7 +23,8 @@ public final class Constants {
 
   public static final double TRACKWIDTH = Units.inchesToMeters(17.5);
   public static final double WHEELBASE = Units.inchesToMeters(25.5);
-  public static final double DRIVE_BASE_RADIUS = 0.4; // Drive base radius in meters. Distance from robot center to furthest module.
+  public static final double DRIVE_BASE_RADIUS =
+      0.4; // Drive base radius in meters. Distance from robot center to furthest module.
 
   public static final String SWERVE_CAN_BUS = "Swerve";
 
@@ -52,5 +53,4 @@ public final class Constants {
   public static final double BACK_RIGHT_MODULE_ANGLE_OFFSET = 42.539;
 
   public static final int MAX_TEST_COLUMNS = 10;
-
 }

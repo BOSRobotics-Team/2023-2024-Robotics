@@ -29,7 +29,6 @@ import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.drivetrain.*;
 import frc.robot.testsystem.TestChecklist;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +66,10 @@ public class RobotContainer {
   public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
 
   private static RobotContainer instance;
-  public static RobotContainer GetInstance(){ return instance; }
-  
+
+  public static RobotContainer GetInstance() {
+    return instance;
+  }
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -124,11 +125,10 @@ public class RobotContainer {
     tab.add(autoChooser).withSize(2, 1);
     tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
-    
-    m_test = new TestChecklist(driveTrain, arm);
 
+    m_test = new TestChecklist(driveTrain, arm);
   }
-  
+
   /**
    * This method scans for any changes to the connected joystick. If anything changed, it creates
    * new OI objects and binds all of the buttons to commands.
@@ -212,20 +212,25 @@ public class RobotContainer {
     SmartDashboard.putData("Auto chooser", autoChooser);
     // SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
   }
+
   private void configureAutoPaths() {
     for (int pos = 1; pos <= 3; ++pos) {
-      NamedCommands.registerCommand("CubePosition" + pos, Commands.sequence(
+      NamedCommands.registerCommand(
+          "CubePosition" + pos,
+          Commands.sequence(
               Commands.runOnce(() -> arm.targetCones(false), arm), new PositionArm(arm, pos)));
     }
     for (int pos = 1; pos <= 3; ++pos) {
-      NamedCommands.registerCommand("ConePosition" + pos, Commands.sequence(
+      NamedCommands.registerCommand(
+          "ConePosition" + pos,
+          Commands.sequence(
               Commands.runOnce(() -> arm.targetCones(true), arm), new PositionArm(arm, pos)));
     }
     NamedCommands.registerCommand("DropPiece", new Grip(arm, true));
     NamedCommands.registerCommand("GrabPiece", new Grip(arm, false));
     NamedCommands.registerCommand("ZeroArm", new PositionArm(arm, 0));
 
-/*    try {
+    /*    try {
       DirectoryStream<Path> stream =
           Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("pathplanner"));
       for (Path file : stream) {
@@ -246,7 +251,7 @@ public class RobotContainer {
     for (Map.Entry<String, List<PathPlannerTrajectory>> entry : pptrajectoryList.entrySet()) {
       chooser.addOption(entry.getKey(), autoBuilder.fullAuto(entry.getValue()));
     } */
-    
+
     // for (Map.Entry<String, PathPlannerTrajectory> entry : pptrajectoryList.entrySet()) {
     //   Command autoPathBlue =
     //       new FollowPathWithEvents(
@@ -262,7 +267,7 @@ public class RobotContainer {
     //   chooser.addOption(entry.getKey(), Commands.either(autoPathBlue, autoPathRed, () ->
     // DriverStation.getAlliance() == Alliance.Blue));
     // }
-    //chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
+    // chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
 
     /*    try {
       DirectoryStream<Path> stream =
@@ -305,9 +310,18 @@ public class RobotContainer {
   }
 
   public void simulationInit() {}
+
   public void simulationPeriodic() {}
 
-public void testInit() { /*m_test.initialize(); */}
-public void testPeriodic() { /*m_test.periodic();*/ }
-public void testExit() { /*m_test.exit();*/ }
+  public void testInit() {
+    /*m_test.initialize(); */
+  }
+
+  public void testPeriodic() {
+    /*m_test.periodic();*/
+  }
+
+  public void testExit() {
+    /*m_test.exit();*/
+  }
 }

@@ -21,9 +21,12 @@
 // import java.util.Optional;
 
 // /**
-//  * The Vision subsystem is responsible for updating the robot's estimated pose based on a collection
-//  * of cameras capturing AprilTags. The Vision subsystem is comprised of multiple VisionIO objects,
-//  * each of which is responsible for producing a single PhotonPipelineResult. There is a one-to-one
+//  * The Vision subsystem is responsible for updating the robot's estimated pose based on a
+// collection
+//  * of cameras capturing AprilTags. The Vision subsystem is comprised of multiple VisionIO
+// objects,
+//  * each of which is responsible for producing a single PhotonPipelineResult. There is a
+// one-to-one
 //  * relationship between each VisionIO object and each co-processor (e.g., Raspberry Pi) running
 //  * PhotonVision.
 //  */
@@ -35,7 +38,8 @@
 //   private AprilTagFieldLayout layout;
 //   // private Alert noAprilTagLayoutAlert =
 //   //     new Alert(
-//   //         "No AprilTag layout file found. Update APRILTAG_FIELD_LAYOUT_PATH in VisionConstants.java",
+//   //         "No AprilTag layout file found. Update APRILTAG_FIELD_LAYOUT_PATH in
+// VisionConstants.java",
 //   //         AlertType.WARNING);
 
 //   private boolean isEnabled = true;
@@ -68,7 +72,8 @@
 //     // retrieve a reference to the pose estimator singleton
 //     this.odometry = RobotOdometry.getInstance();
 
-//     // add an indicator to the main Shuffleboard tab to indicate whether vision is updating in order
+//     // add an indicator to the main Shuffleboard tab to indicate whether vision is updating in
+// order
 //     // to alert the drive team if it is not.
 //     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
 //     tabMain
@@ -91,9 +96,12 @@
 //   }
 
 //   /**
-//    * This method should be invoked once the alliance color is known. Refer to the RobotContainer's
-//    * checkAllianceColor method for best practices on when to check the alliance's color. It updates
-//    * the AprilTag field layout, logs the new location of the tags, and updates all of the VisionIO
+//    * This method should be invoked once the alliance color is known. Refer to the
+// RobotContainer's
+//    * checkAllianceColor method for best practices on when to check the alliance's color. It
+// updates
+//    * the AprilTag field layout, logs the new location of the tags, and updates all of the
+// VisionIO
 //    * objects with the new alliance color.
 //    *
 //    * @param newAlliance the new alliance color
@@ -120,7 +128,8 @@
 //   }
 
 //   /**
-//    * This method is invoked each iteration of the scheduler. It updates the inputs for each of the
+//    * This method is invoked each iteration of the scheduler. It updates the inputs for each of
+// the
 //    * VisionIO objects and, for each, updates the pose estimator based on the most recent detected
 //    * AprilTags.
 //    */
@@ -181,7 +190,8 @@
 //   }
 
 //   /**
-//    * Returns the estimated robot pose based on the most recent vision data. This method is used to
+//    * Returns the estimated robot pose based on the most recent vision data. This method is used
+// to
 //    * reset the robot's odometry based solely on the vision data.
 //    *
 //    * @return the estimated robot pose based on the most recent vision data
@@ -208,11 +218,14 @@
 //   }
 
 //   /**
-//    * Returns true if the robot's pose based on vision data is within the specified threshold of the
-//    * robot's pose based on the pose estimator. This method can be used to trigger a transition from
+//    * Returns true if the robot's pose based on vision data is within the specified threshold of
+// the
+//    * robot's pose based on the pose estimator. This method can be used to trigger a transition
+// from
 //    * driver control to automated control once confident that the estimated pose is accurate.
 //    *
-//    * @return true if the robot's pose based on vision data is within the specified threshold of the
+//    * @return true if the robot's pose based on vision data is within the specified threshold of
+// the
 //    *     robot's pose based on the pose estimator
 //    */
 //   public boolean posesHaveConverged() {
@@ -229,7 +242,8 @@
 //   }
 
 //   /**
-//    * The standard deviations of the estimated pose from {@link #getEstimatedGlobalPose()}, for use
+//    * The standard deviations of the estimated pose from {@link #getEstimatedGlobalPose()}, for
+// use
 //    * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}.
 //    * This should only be used when there are targets visible.
 //    *

@@ -10,8 +10,7 @@ import frc.lib.swerve.SwerveModuleIO.SwerveModuleID;
 
 public final class DriveTrainConstants {
 
-  public static final COTSFalconSwerveConstants moduleType =
-      COTSFalconSwerveConstants.SDSMK4_L2();
+  public static final COTSFalconSwerveConstants moduleType = COTSFalconSwerveConstants.SDSMK4_L2();
 
   public static final SwerveModuleID mod0 =
       new SwerveModuleID(
@@ -108,6 +107,7 @@ public final class DriveTrainConstants {
   /* Swerve Profiling Values */
   /** Meters per Second */
   public static final double maxSpeed = 4.5; // TODO: This must be tuned to specific robot
+
   /** Radians per Second */
   public static final double maxAngularVelocity = 5.0; // TODO: This must be tuned to specific robot
 

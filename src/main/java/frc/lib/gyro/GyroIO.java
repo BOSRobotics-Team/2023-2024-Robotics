@@ -1,9 +1,8 @@
 package frc.lib.gyro;
 
+import com.ctre.phoenix6.StatusSignal;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.ctre.phoenix6.StatusSignal;
 
 /**
  * Gyro hardware abstraction interface

@@ -42,10 +42,9 @@ public class GyroIONavX implements GyroIO {
   @Override
   public void addYaw(double yaw) {
     if (Robot.isSimulation()) {
-    gyro.setAngleAdjustment(360.0 - yaw);
+      gyro.setAngleAdjustment(360.0 - yaw);
     }
   }
-
 
   public void initLogging() {
     if (DEBUGGING) {

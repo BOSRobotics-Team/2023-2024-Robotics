@@ -2,8 +2,8 @@ package frc.robot.subsystems.arm;
 
 import static frc.robot.Constants.*;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SimableCANSparkMax;
 import com.revrobotics.SparkLimitSwitch;
@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.testsystem.TestableSubsytem;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
@@ -87,8 +86,7 @@ public class Arm extends TestableSubsytem {
     // initialze PID controller and encoder objects
     m_armExtendController = m_armExtendMotor.getPIDController();
     m_armExtendEncoder = m_armExtendMotor.getEncoder();
-    m_armExtendLimit =
-        m_armExtendMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+    m_armExtendLimit = m_armExtendMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
     // set PID coefficients
     m_armExtendController.setP(ArmConstants.armExtendKP);
@@ -113,7 +111,7 @@ public class Arm extends TestableSubsytem {
                   Units.inchesToMeters(30.0),
                   0.0,
                   60.0,
-                  true, 
+                  true,
                   0.0),
               new RevMotorControllerSimWrapper(m_armLiftMotor),
               RevEncoderSimWrapper.create(m_armLiftMotor));
@@ -420,14 +418,13 @@ public class Arm extends TestableSubsytem {
       extLay.addBoolean("Reverse LimitSwitch", this::isArmExtendMinLimitSwitch).withPosition(0, 3);
     }
   }
-  
+
   /* Tests for Arm Subsystem */
   @Override
   public TestStates Test(String _test) {
 
-    switch (_test) { }
+    switch (_test) {
+    }
     return TestStates.NOT_IMPLEMENTED;
-
   }
-
 }

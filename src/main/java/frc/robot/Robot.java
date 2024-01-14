@@ -28,11 +28,13 @@ public class Robot extends TimedRobot {
    * real.
    */
   public static final Path RESOURCES_PATH_REAL = Filesystem.getDeployDirectory().toPath();
+
   /**
    * The relative filepath to the resources folder containing the config files when the robot is
    * simulated.
    */
   public static final Path RESOURCES_PATH_SIMULATED = new File("./src/main/deploy/").toPath();
+
   /** The filepath to the resources folder containing the config files. */
   public static final Path RESOURCES_PATH =
       RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;

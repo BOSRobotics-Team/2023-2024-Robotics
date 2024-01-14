@@ -59,7 +59,8 @@
 //         this.turnSparkMaxControllerPID = turnMotor.getPIDController();
 
 //         this.driveRelativeEncoder = driveMotor.getEncoder();
-//         this.turnAbsoluteEncoder = new SimSparkMaxAbsoluteEncoder(turnMotor, SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+//         this.turnAbsoluteEncoder = new SimSparkMaxAbsoluteEncoder(turnMotor,
+// SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
 //         final DCMotor driveDCMotor = DCMotor.getNEO(1);
 //         this.driveSim = new RevSparkMAXSim(
@@ -86,16 +87,19 @@
 
 //         this.deltaTime = new DeltaTime();
 
-//         this.turnSparkMaxRoborioPID = new PIDController(turnMotorGains.kP, turnMotorGains.kI, turnMotorGains.kD);
+//         this.turnSparkMaxRoborioPID = new PIDController(turnMotorGains.kP, turnMotorGains.kI,
+// turnMotorGains.kD);
 //         this.turnSparkMaxRoborioPID.enableContinuousInput(-1, 1);
 
-//         this.turnMotorFeedforward = new SimpleMotorFeedforward(turnMotorGains.kS, turnMotorGains.kV);
+//         this.turnMotorFeedforward = new SimpleMotorFeedforward(turnMotorGains.kS,
+// turnMotorGains.kV);
 //     }
 
 //     @Override
 //     @SuppressWarnings("DuplicatedCode")
 //     public void config() {
-//         // TODO: does any of this configuration work correctly? we need to change a lot of this, probably
+//         // TODO: does any of this configuration work correctly? we need to change a lot of this,
+// probably
 //         // Drive SparkMAX & Motor
 //         driveMotor.restoreFactoryDefaults();
 
@@ -158,7 +162,8 @@
 //     public void updateInputs(final SwerveModuleIO.SwerveModuleIOInputs inputs) {
 //         inputs.drivePositionRots = getDrivePosition();
 //         inputs.driveVelocityRotsPerSec = getDriveVelocity();
-//         // TODO: getOutputCurrent doesn't even work in sim... figure out a way to calculate a semi-correct current
+//         // TODO: getOutputCurrent doesn't even work in sim... figure out a way to calculate a
+// semi-correct current
 //         //  for NEOs in sim
 //         inputs.driveTorqueCurrentAmps = driveMotor.getOutputCurrent();
 //         inputs.driveStatorCurrentAmps = 0;
@@ -166,7 +171,8 @@
 
 //         inputs.turnAbsolutePositionRots = getRawAngle();
 //         inputs.turnVelocityRotsPerSec = turnAbsoluteEncoder.getVelocity();
-//         // TODO: getOutputCurrent doesn't even work in sim... figure out a way to calculate a semi-correct current
+//         // TODO: getOutputCurrent doesn't even work in sim... figure out a way to calculate a
+// semi-correct current
 //         //  for NEOs in sim
 //         inputs.turnTorqueCurrentAmps = turnMotor.getOutputCurrent();
 //         inputs.turnStatorCurrentAmps = 0;
@@ -194,12 +200,14 @@
 //      * @return the rotor velocity, in rots/sec (rps)
 //      */
 //     public double getDriveVelocity() {
-//         return RevUtils.rotationsPerMinuteToRotationsPerSecond(driveRelativeEncoder.getVelocity())
+//         return
+// RevUtils.rotationsPerMinuteToRotationsPerSecond(driveRelativeEncoder.getVelocity())
 //                 / Constants.Modules.DRIVER_GEAR_RATIO;
 //     }
 
 //     @Override
-//     public void setInputs(final double desiredDriverVelocity, final double desiredTurnerRotations) {
+//     public void setInputs(final double desiredDriverVelocity, final double
+// desiredTurnerRotations) {
 //         driveSparkMaxPID.setReference(
 //                 RevUtils.rotationsPerSecondToRotationsPerMinute(desiredDriverVelocity)
 //                         * Constants.Modules.DRIVER_GEAR_RATIO,
@@ -213,13 +221,15 @@
 //                     CANSparkMax.ControlType.kVoltage
 //             );
 //         } else {
-//             turnSparkMaxControllerPID.setReference(desiredTurnerRotations, CANSparkMax.ControlType.kPosition);
+//             turnSparkMaxControllerPID.setReference(desiredTurnerRotations,
+// CANSparkMax.ControlType.kPosition);
 //         }
 //     }
 
 //     @Override
 //     public void setNeutralMode(final NeutralModeValue neutralMode) {
-//         // TODO: maybe we should use our own NeutralMode enum that can be converted between ctre and rev?
+//         // TODO: maybe we should use our own NeutralMode enum that can be converted between ctre
+// and rev?
 //         driveMotor.setIdleMode(RevUtils.neutralModeToIdleMode(neutralMode));
 //     }
 // }

@@ -12,7 +12,8 @@
 //  * PhotonVision-based implementation of the VisionIO interface.
 //  *
 //  * <p>Adapted from
-//  * https://github.com/PhotonVision/photonvision/blob/master/photonlib-java-examples/swervedriveposeestsim/src/main/java/frc/robot/Vision.java
+//  *
+// https://github.com/PhotonVision/photonvision/blob/master/photonlib-java-examples/swervedriveposeestsim/src/main/java/frc/robot/Vision.java
 //  */
 // public class VisionIOPhotonVision implements VisionIO {
 //   // private Alert noCameraConnectedAlert =

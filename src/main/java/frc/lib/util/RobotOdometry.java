@@ -32,16 +32,16 @@ public class RobotOdometry {
 
   public Pose2d getEstimatedPosition() {
     // if (this.customOdometry == null) {
-      return this.estimator.getEstimatedPosition();
+    return this.estimator.getEstimatedPosition();
     // } else {
-      // return this.customOdometry.getEstimatedPosition();
+    // return this.customOdometry.getEstimatedPosition();
     // }
   }
 
   public void resetPosition(
       Rotation2d gyroAngle, SwerveModulePosition[] modulePositions, Pose2d poseMeters) {
     // if (this.customOdometry == null) {
-      this.estimator.resetPosition(gyroAngle, modulePositions, poseMeters);
+    this.estimator.resetPosition(gyroAngle, modulePositions, poseMeters);
     // } else {
     //   this.customOdometry.resetPosition(gyroAngle, modulePositions, poseMeters);
     // }
@@ -50,7 +50,7 @@ public class RobotOdometry {
   public Pose2d updateWithTime(
       double currentTimeSeconds, Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
     // if (this.customOdometry == null) {
-      return this.estimator.updateWithTime(currentTimeSeconds, gyroAngle, modulePositions);
+    return this.estimator.updateWithTime(currentTimeSeconds, gyroAngle, modulePositions);
     // } else {
     //   return this.customOdometry.updateWithTime(currentTimeSeconds, gyroAngle, modulePositions);
     // }
@@ -61,8 +61,8 @@ public class RobotOdometry {
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
     // if (this.customOdometry == null) {
-      this.estimator.addVisionMeasurement(
-          visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    this.estimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     // } else {
     //   this.customOdometry.addVisionMeasurement(
     //       visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
@@ -80,5 +80,4 @@ public class RobotOdometry {
   public SwerveDrivePoseEstimator getPoseEstimator() {
     return estimator;
   }
-
 }

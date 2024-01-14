@@ -2,7 +2,7 @@ package frc.lib.swerve;
 
 /** Swerve module hardware abstraction interface. */
 public interface SwerveModuleIO {
-  
+
   public static class SwerveModuleID {
 
     public int moduleNumber; // the module number (0-3); primarily used for logging
@@ -26,7 +26,6 @@ public interface SwerveModuleIO {
       this.canCoderID = canCoderID;
       this.angleOffsetDeg = angleOffsetDeg;
     }
-    
   }
 
   public static class SwerveModuleIOInputs {
@@ -39,6 +38,7 @@ public interface SwerveModuleIO {
     double angleVelocityRevPerMin = 0.0;
     double angleAppliedPercentage = 0.0;
   }
+
   /** return the module number */
   public default int getModuleNumber() {
     return 0;

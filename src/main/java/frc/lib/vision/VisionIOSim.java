@@ -17,7 +17,8 @@
 
 // /**
 //  * PhotonVision-compatible simulated implementation of the VisionIO interface. Only a single
-//  * VisionIOSim object may be instantiated. It uses the PhotonVision SimVisionSystem to simulates the
+//  * VisionIOSim object may be instantiated. It uses the PhotonVision SimVisionSystem to simulates
+// the
 //  * AprilTag targets that would be seen by a camera based on the robot's pose, which is determined
 //  * based on its odometry.
 //  */
@@ -98,7 +99,8 @@
 //   }
 
 //   /**
-//    * Sets the origin position of the AprilTag field layout and updates the simulated vision targets
+//    * Sets the origin position of the AprilTag field layout and updates the simulated vision
+// targets
 //    * based on the new origin.
 //    *
 //    * @param origin the origin position of the AprilTag field layout

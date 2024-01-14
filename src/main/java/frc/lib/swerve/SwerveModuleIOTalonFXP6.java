@@ -5,14 +5,12 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -87,7 +85,10 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
     absoluteEncoder = new CANcoder(canCoderID, canBusID);
 
     CANcoderConfiguration config = new CANcoderConfiguration();
-    config.MagnetSensor.SensorDirection = DriveTrainConstants.canCoderInvert ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
+    config.MagnetSensor.SensorDirection =
+        DriveTrainConstants.canCoderInvert
+            ? SensorDirectionValue.Clockwise_Positive
+            : SensorDirectionValue.CounterClockwise_Positive;
 
     absoluteEncoder.getConfigurator().apply(config);
   }
@@ -97,8 +98,14 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
 
     /* Swerve Angle Motor Configurations */
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.MotorOutput.Inverted = DriveTrainConstants.angleMotorInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-    config.MotorOutput.NeutralMode = DriveTrainConstants.angleNeutralMode == NeutralMode.Brake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    config.MotorOutput.Inverted =
+        DriveTrainConstants.angleMotorInvert
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.NeutralMode =
+        DriveTrainConstants.angleNeutralMode == NeutralMode.Brake
+            ? NeutralModeValue.Brake
+            : NeutralModeValue.Coast;
 
     /* Gear Ratio Config */
     config.Feedback.SensorToMechanismRatio = DriveTrainConstants.angleGearRatio;
@@ -114,12 +121,11 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
     config.Slot0.kP = DriveTrainConstants.angleKP;
     config.Slot0.kI = DriveTrainConstants.angleKI;
     config.Slot0.kD = DriveTrainConstants.angleKD;
-    config.Slot0.kV = DriveTrainConstants.angleKF;        
+    config.Slot0.kV = DriveTrainConstants.angleKF;
 
     mAngleMotor.getConfigurator().apply(config, TIMEOUT_MS);
     double absolutePosition = getAbsoluteAngle().getRotations() - angleOffset.getRotations();
     mAngleMotor.getConfigurator().setPosition(absolutePosition);
-
   }
 
   private void configDriveMotor(int driveMotorID, String canBusID) {
@@ -127,8 +133,14 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
 
     /* Swerve Drive Motor Configuration */
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.MotorOutput.Inverted = DriveTrainConstants.driveMotorInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-    config.MotorOutput.NeutralMode = DriveTrainConstants.driveNeutralMode == NeutralMode.Brake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    config.MotorOutput.Inverted =
+        DriveTrainConstants.driveMotorInvert
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.NeutralMode =
+        DriveTrainConstants.driveNeutralMode == NeutralMode.Brake
+            ? NeutralModeValue.Brake
+            : NeutralModeValue.Coast;
 
     /* Gear Ratio Config */
     config.Feedback.SensorToMechanismRatio = DriveTrainConstants.driveGearRatio;
@@ -150,7 +162,7 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
     config.OpenLoopRamps.VoltageOpenLoopRampPeriod = DriveTrainConstants.openLoopRamp;
 
     config.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = DriveTrainConstants.closedLoopRamp;
-    config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = DriveTrainConstants.closedLoopRamp;    
+    config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = DriveTrainConstants.closedLoopRamp;
     mDriveMotor.getConfigurator().apply(config, TIMEOUT_MS);
     mDriveMotor.getConfigurator().setPosition(0.0);
   }
@@ -178,12 +190,10 @@ public class SwerveModuleIOTalonFXP6 implements SwerveModuleIO {
   public void updateInputs(SwerveModuleIOInputs inputs) {
     inputs.driveDistanceMeters =
         Conversions.rotationsToMeters(
-            mDriveMotor.getPosition().getValue(),
-            DriveTrainConstants.wheelCircumference);
+            mDriveMotor.getPosition().getValue(), DriveTrainConstants.wheelCircumference);
     inputs.driveVelocityMetersPerSec =
         Conversions.RPSToMPS(
-            mDriveMotor.getVelocity().getValue(),
-            DriveTrainConstants.wheelCircumference);
+            mDriveMotor.getVelocity().getValue(), DriveTrainConstants.wheelCircumference);
     inputs.driveAppliedPercentage = mDriveMotor.getDutyCycle().getValue();
 
     inputs.angleAbsolutePositionDeg = getAbsoluteAngle().getDegrees();

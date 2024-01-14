@@ -107,7 +107,7 @@ public class Conversions {
    * @param circumference Wheel Circumference: (in Meters)
    * @return Wheel Velocity: (in Meters per Second)
    */
-  public static double RPSToMPS(double wheelRPS, double circumference){
+  public static double RPSToMPS(double wheelRPS, double circumference) {
     double wheelMPS = wheelRPS * circumference;
     return wheelMPS;
   }
@@ -117,9 +117,9 @@ public class Conversions {
    * @param circumference Wheel Circumference: (in Meters)
    * @return Wheel Velocity: (in Rotations per Second)
    */
-  public static double MPSToRPS(double wheelMPS, double circumference){
-      double wheelRPS = wheelMPS / circumference;
-      return wheelRPS;
+  public static double MPSToRPS(double wheelMPS, double circumference) {
+    double wheelRPS = wheelMPS / circumference;
+    return wheelRPS;
   }
 
   /**
@@ -127,9 +127,9 @@ public class Conversions {
    * @param circumference Wheel Circumference: (in Meters)
    * @return Wheel Distance: (in Meters)
    */
-  public static double rotationsToMeters(double wheelRotations, double circumference){
-      double wheelMeters = wheelRotations * circumference;
-      return wheelMeters;
+  public static double rotationsToMeters(double wheelRotations, double circumference) {
+    double wheelMeters = wheelRotations * circumference;
+    return wheelMeters;
   }
 
   /**
@@ -137,8 +137,8 @@ public class Conversions {
    * @param circumference Wheel Circumference: (in Meters)
    * @return Wheel Position: (in Rotations)
    */
-  public static double metersToRotations(double wheelMeters, double circumference){
-      double wheelRotations = wheelMeters / circumference;
-      return wheelRotations;
+  public static double metersToRotations(double wheelMeters, double circumference) {
+    double wheelRotations = wheelMeters / circumference;
+    return wheelRotations;
   }
 }
