@@ -1,6 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import swervelib.math.Matter;
 
 public final class Constants {
   public static final boolean DEBUGGING = false;
@@ -19,7 +21,12 @@ public final class Constants {
   public static final int ARM_LIFT_MOTOR_ID = 30;
   public static final int ARM_EXTEND_MOTOR_ID = 31;
 
-  public static final double STICK_DEADBAND = 0.1;
+  public static final double STICK_DEADBAND = 0.01;
+  public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+  public static final Matter CHASSIS =
+      new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
+  public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms sprk max velocity lag
+  public static final double TURN_CONSTANT = 0.75;
 
   public static final double TRACKWIDTH = Units.inchesToMeters(17.5);
   public static final double WHEELBASE = Units.inchesToMeters(25.5);

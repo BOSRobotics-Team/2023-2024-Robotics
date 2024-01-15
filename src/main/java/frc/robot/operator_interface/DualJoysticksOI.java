@@ -104,17 +104,17 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public double getTranslateX() {
-    return -translateJoystick.getY();
+    return MathUtil.applyDeadband(-translateJoystick.getY(), Constants.STICK_DEADBAND);
   }
 
   @Override
   public double getTranslateY() {
-    return -translateJoystick.getX();
+    return MathUtil.applyDeadband(-translateJoystick.getX(), Constants.STICK_DEADBAND);
   }
 
   @Override
   public double getRotate() {
-    return -rotateJoystick.getX();
+    return MathUtil.applyDeadband(-rotateJoystick.getX(), Constants.STICK_DEADBAND);
   }
 
   @Override

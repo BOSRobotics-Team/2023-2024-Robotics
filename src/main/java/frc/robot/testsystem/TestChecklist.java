@@ -198,9 +198,9 @@ public class TestChecklist {
     double strafeVal = MathUtil.applyDeadband(m_robot.oi.getTranslateY(), Constants.STICK_DEADBAND);
     double rotationVal = MathUtil.applyDeadband(m_robot.oi.getRotate(), Constants.STICK_DEADBAND);
 
-    m_robot.driveTrain.drive(
-        Math.copySign(translationVal * translationVal, translationVal) * maxSpeed,
-        Math.copySign(strafeVal * strafeVal, strafeVal) * maxSpeed,
-        Math.copySign(rotationVal * rotationVal, rotationVal) * maxRotate);
+    // m_robot.driveTrain.drive(
+    //     Math.copySign(translationVal * translationVal, translationVal) * maxSpeed,
+    //     Math.copySign(strafeVal * strafeVal, strafeVal) * maxSpeed,
+    //     Math.copySign(rotationVal * rotationVal, rotationVal) * maxRotate);
   }
 }

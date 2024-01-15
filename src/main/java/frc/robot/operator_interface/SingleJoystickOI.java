@@ -90,17 +90,17 @@ public class SingleJoystickOI implements OperatorInterface {
 
   @Override
   public double getTranslateX() {
-    return -joystick.getY();
+    return MathUtil.applyDeadband(-joystick.getY(), Constants.STICK_DEADBAND);
   }
 
   @Override
   public double getTranslateY() {
-    return -joystick.getX();
+    return MathUtil.applyDeadband(-joystick.getX(), Constants.STICK_DEADBAND);
   }
 
   @Override
   public double getRotate() {
-    return -joystick.getTwist();
+    return MathUtil.applyDeadband(-joystick.getTwist(), Constants.STICK_DEADBAND);
   }
 
   @Override

@@ -3,16 +3,13 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
-// import edu.wpi.first.cameraserver.CameraServer;
-// import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.trajectory.Trajectory;
-// import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
-// import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -23,15 +20,20 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.gyro.*;
 import frc.lib.limelightvision.LimelightHelpers;
-import frc.lib.swerve.*;
 import frc.robot.commands.*;
+import frc.robot.commands.swervedrive.drivebase.*;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
-import frc.robot.subsystems.drivetrain.*;
-import frc.robot.testsystem.TestChecklist;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+// import edu.wpi.first.cameraserver.CameraServer;
+// import edu.wpi.first.cscore.UsbCamera;
+// import edu.wpi.first.math.trajectory.TrajectoryUtil;
+// import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,12 +49,16 @@ public class RobotContainer {
 
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
+  // The robot's subsystems and commands are defined here...
+  public final SwerveSubsystem drivebase =
+      new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/falcon"));
+
   public final GyroIO gyro = new GyroIOPigeon2Phoenix6(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
-  public final Drivetrain driveTrain;
-  public final Arm arm;
+  // public final Drivetrain driveTrain;
+  public final Arm arm = new Arm();
 
   /* Test System */
-  private final TestChecklist m_test;
+  // private final TestChecklist m_test;
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -76,35 +82,34 @@ public class RobotContainer {
 
     instance = this;
 
-    SwerveModuleIO flModule;
-    SwerveModuleIO frModule;
-    SwerveModuleIO blModule;
-    SwerveModuleIO brModule;
+    // SwerveModuleIO flModule;
+    // SwerveModuleIO frModule;
+    // SwerveModuleIO blModule;
+    // SwerveModuleIO brModule;
 
     if (RobotBase.isReal()) {
       // Make sure you only configure port forwarding once in your robot code.
       for (int port = 5800; port <= 5805; port++) {
         PortForwarder.add(port, Constants.LIMELIGHTURL, port);
       }
-
-      flModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod0);
-      frModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod1);
-      blModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod2);
-      brModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod3);
-    } else {
-      flModule = new SwerveModuleIOSim(DriveTrainConstants.mod0.moduleNumber);
-      frModule = new SwerveModuleIOSim(DriveTrainConstants.mod1.moduleNumber);
-      blModule = new SwerveModuleIOSim(DriveTrainConstants.mod2.moduleNumber);
-      brModule = new SwerveModuleIOSim(DriveTrainConstants.mod3.moduleNumber);
     }
-    driveTrain =
-        new Drivetrain(
-            gyro,
-            new SwerveModule(flModule),
-            new SwerveModule(frModule),
-            new SwerveModule(blModule),
-            new SwerveModule(brModule));
-    arm = new Arm();
+    //   flModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod0);
+    //   frModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod1);
+    //   blModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod2);
+    //   brModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod3);
+    // } else {
+    //   flModule = new SwerveModuleIOSim(DriveTrainConstants.mod0.moduleNumber);
+    //   frModule = new SwerveModuleIOSim(DriveTrainConstants.mod1.moduleNumber);
+    //   blModule = new SwerveModuleIOSim(DriveTrainConstants.mod2.moduleNumber);
+    //   brModule = new SwerveModuleIOSim(DriveTrainConstants.mod3.moduleNumber);
+    // }
+    // driveTrain =
+    //     new Drivetrain(
+    //         gyro,
+    //         new SwerveModule(flModule),
+    //         new SwerveModule(frModule),
+    //         new SwerveModule(blModule),
+    //         new SwerveModule(brModule));
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -126,7 +131,7 @@ public class RobotContainer {
     tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
 
-    m_test = new TestChecklist(driveTrain, arm);
+    // m_test = new TestChecklist(driveTrain, arm);
   }
 
   /**
@@ -141,6 +146,47 @@ public class RobotContainer {
     CommandScheduler.getInstance().getActiveButtonLoop().clear();
     oi = OISelector.findOperatorInterface();
 
+    // AbsoluteDrive closedAbsoluteDrive =
+    //     new AbsoluteDrive(
+    //         drivebase,
+    //         oi::getTranslateX,
+    //         oi::getTranslateY,
+    //         oi::getRotate,
+    //         () -> -driverXbox.getRightY());
+
+    // AbsoluteFieldDrive closedFieldAbsoluteDrive =
+    //     new AbsoluteFieldDrive(
+    //         drivebase,
+    //         oi::getTranslateX,
+    //         oi::getTranslateY,
+    //         oi::getRotate);
+
+    // AbsoluteDriveAdv closedAbsoluteDriveAdv =
+    //     new AbsoluteDriveAdv(
+    //         drivebase,
+    //         oi::getTranslateX,
+    //         oi::getTranslateY,
+    //         oi::getRotate,
+    //         driverXbox::getYButtonPressed,
+    //         driverXbox::getAButtonPressed,
+    //         driverXbox::getXButtonPressed,
+    //         driverXbox::getBButtonPressed);
+
+    // TeleopDrive simClosedFieldRel =
+    //     new TeleopDrive(
+    //         drivebase,
+    //         oi::getTranslateX,
+    //         oi::getTranslateY,
+    //         oi::getRotate,
+    //         () -> true);
+    TeleopDrive closedFieldRel =
+        new TeleopDrive(drivebase, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> true);
+    TeleopDrive closedRobotRel =
+        new TeleopDrive(
+            drivebase, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> false);
+
+    drivebase.setDefaultCommand(closedFieldRel);
+
     /*
      * Set up the default command for the drivetrain. The joysticks' values map to percentage of the
      * maximum velocities. The velocities may be specified from either the robot's frame of
@@ -151,14 +197,14 @@ public class RobotContainer {
      * direction. This is why the left joystick's y axis specifies the velocity in the x direction
      * and the left joystick's x axis specifies the velocity in the y direction.
      */
-    driveTrain.setDefaultCommand(
-        new TeleopSwerve(
-            driveTrain,
-            oi::getTranslateX,
-            oi::getTranslateY,
-            oi::getRotate,
-            oi::getDriveScaling,
-            oi::getRotateScaling));
+    // driveTrain.setDefaultCommand(
+    //     new TeleopSwerve(
+    //         driveTrain,
+    //         oi::getTranslateX,
+    //         oi::getTranslateY,
+    //         oi::getRotate,
+    //         oi::getDriveScaling,
+    //         oi::getRotateScaling));
 
     arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
 
@@ -173,17 +219,22 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // reset gyro to 0 degrees
-    oi.getResetGyroButton().onTrue(Commands.runOnce(driveTrain::zeroGyro, driveTrain));
+    // oi.getResetGyroButton().onTrue(Commands.runOnce(driveTrain::zeroGyro, driveTrain));
+    oi.getResetGyroButton().onTrue(Commands.runOnce(drivebase::zeroGyro));
+
     // Robot relative navigation
-    oi.getRobotRelative().onTrue(Commands.runOnce(driveTrain::disableFieldRelative, driveTrain));
-    oi.getRobotRelative().onFalse(Commands.runOnce(driveTrain::enableFieldRelative, driveTrain));
+    // oi.getRobotRelative().onTrue(Commands.runOnce(driveTrain::disableFieldRelative, driveTrain));
+    // oi.getRobotRelative().onFalse(Commands.runOnce(driveTrain::enableFieldRelative, driveTrain));
+    oi.getRobotRelative().onTrue(Commands.runOnce(drivebase::disableFieldRelative));
+    oi.getRobotRelative().onFalse(Commands.runOnce(drivebase::enableFieldRelative));
 
     // x-stance
-    oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance, driveTrain));
-    oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance, driveTrain));
+    // oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance, driveTrain));
+    // oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance, driveTrain));
+    oi.getXStanceButton().onTrue(Commands.runOnce(drivebase::enableXstance));
+    oi.getXStanceButton().onFalse(Commands.runOnce(drivebase::disableXstance));
 
     oi.getGripToggle().onTrue(Commands.runOnce(arm::gripToggle, arm));
-
     oi.getArmCalibrate().onTrue(Commands.runOnce(arm::resetArm, arm));
     oi.getArmPosition0().onTrue(Commands.runOnce(() -> arm.setArmPosition(0), arm));
     oi.getArmPosition1().onTrue(Commands.runOnce(() -> arm.setArmPosition(1), arm));
