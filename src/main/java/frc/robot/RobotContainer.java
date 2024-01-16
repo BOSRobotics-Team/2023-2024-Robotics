@@ -114,7 +114,7 @@ public class RobotContainer {
     //         new SwerveModule(brModule));
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
-    LiveWindow.disableAllTelemetry();
+    // LiveWindow.disableAllTelemetry();
 
     configureAutoCommands();
     configureAutoPaths();
@@ -187,7 +187,7 @@ public class RobotContainer {
         new TeleopDrive(
             drivebase, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> false);
 
-    drivebase.setDefaultCommand(closedFieldRel);
+    drivebase.setDefaultCommand(closedRobotRel);
 
     /*
      * Set up the default command for the drivetrain. The joysticks' values map to percentage of the
