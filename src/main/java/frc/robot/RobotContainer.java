@@ -26,7 +26,6 @@ import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.testsystem.TestChecklist;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +54,8 @@ public class RobotContainer {
   public final SwerveSubsystem drivebase =
       new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/falcon"));
 
-  public final GyroIO gyro = new GyroIOPigeon2Phoenix6(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+  // public final GyroIO gyro = new GyroIOPigeon2Phoenix6(Constants.GYRO_ID,
+  // Constants.GYRO_CAN_BUS);
   // public final Drivetrain driveTrain;
   public final Arm arm = new Arm();
 
@@ -70,7 +70,7 @@ public class RobotContainer {
 
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
   public static Map<String, List<PathPlannerTrajectory>> pptrajectoryList =
-    new HashMap<String, List<PathPlannerTrajectory>>();
+      new HashMap<String, List<PathPlannerTrajectory>>();
   public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
 
   private static RobotContainer instance;
