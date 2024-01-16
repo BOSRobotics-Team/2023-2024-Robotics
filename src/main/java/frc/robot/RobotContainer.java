@@ -25,6 +25,8 @@ import frc.robot.commands.swervedrive.drivebase.*;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.testsystem.TestChecklist;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +60,7 @@ public class RobotContainer {
   public final Arm arm = new Arm();
 
   /* Test System */
-  // private final TestChecklist m_test;
+  private TestChecklist m_test;
 
   /* Cameras */
   // public UsbCamera cam0;
@@ -68,7 +70,7 @@ public class RobotContainer {
 
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
   public static Map<String, List<PathPlannerTrajectory>> pptrajectoryList =
-      new HashMap<String, List<PathPlannerTrajectory>>();
+    new HashMap<String, List<PathPlannerTrajectory>>();
   public static final HashMap<String, Command> AUTO_EVENT_MAP = new HashMap<>();
 
   private static RobotContainer instance;
@@ -365,14 +367,14 @@ public class RobotContainer {
   public void simulationPeriodic() {}
 
   public void testInit() {
-    /*m_test.initialize(); */
+    m_test.initialize();
   }
 
   public void testPeriodic() {
-    /*m_test.periodic();*/
+    m_test.periodic();
   }
 
   public void testExit() {
-    /*m_test.exit();*/
+    m_test.exit();
   }
 }
