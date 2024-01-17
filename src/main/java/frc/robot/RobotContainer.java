@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -18,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.gyro.*;
 import frc.lib.limelightvision.LimelightHelpers;
 import frc.robot.commands.*;
 import frc.robot.commands.swervedrive.drivebase.*;
@@ -181,8 +179,8 @@ public class RobotContainer {
     //         oi::getTranslateY,
     //         oi::getRotate,
     //         () -> true);
-    TeleopDrive closedFieldRel =
-        new TeleopDrive(drivebase, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> true);
+    // TeleopDrive closedFieldRel =
+    //     new TeleopDrive(drivebase, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> true);
     TeleopDrive closedRobotRel =
         new TeleopDrive(
             drivebase, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> false);

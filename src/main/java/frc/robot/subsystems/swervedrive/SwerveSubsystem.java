@@ -19,6 +19,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.AutoConstants;
+import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 import frc.robot.testsystem.TestableSubsytem;
 import java.io.File;
 import swervelib.SwerveController;
@@ -36,7 +38,7 @@ public class SwerveSubsystem extends TestableSubsytem {
   private final SwerveDrive swerveDrive;
 
   /** Maximum speed of the robot in meters per second, used to limit acceleration. */
-  public double maximumSpeed = Units.feetToMeters(14.5);
+  public double maximumSpeed = Units.feetToMeters(DriveTrainConstants.maxSpeed);
 
   private boolean isFieldRelative = true;
   private boolean isLockStance = false;
@@ -92,14 +94,17 @@ public class SwerveSubsystem extends TestableSubsytem {
         // ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
             // your Constants class
-            new PIDConstants(5.0, 0.0, 0.0),
+            new PIDConstants(
+                AutoConstants.kPXController,
+                AutoConstants.kIXController,
+                AutoConstants.kDXController),
             // Translation PID constants
             new PIDConstants(
-                swerveDrive.swerveController.config.headingPIDF.p,
-                swerveDrive.swerveController.config.headingPIDF.i,
-                swerveDrive.swerveController.config.headingPIDF.d),
+                AutoConstants.kPYController,
+                AutoConstants.kIYController,
+                AutoConstants.kDYController),
             // Rotation PID constants
-            4.5,
+            AutoConstants.kMaxSpeedMetersPerSecond,
             // Max module speed, in m/s
             swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
             // Drive base radius in meters. Distance from robot center to furthest module.
