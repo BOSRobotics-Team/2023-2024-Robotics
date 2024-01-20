@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -19,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.limelightvision.LimelightHelpers;
 import frc.robot.commands.*;
-import frc.robot.commands.swervedrive.drivebase.*;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -31,8 +31,6 @@ import java.util.Map;
 
 // import edu.wpi.first.cameraserver.CameraServer;
 // import edu.wpi.first.cscore.UsbCamera;
-// import edu.wpi.first.math.trajectory.TrajectoryUtil;
-// import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,12 +47,10 @@ public class RobotContainer {
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
   // The robot's subsystems and commands are defined here...
-  public final SwerveSubsystem drivebase =
+  public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/falcon"));
 
-  // public final GyroIO gyro = new GyroIOPigeon2Phoenix6(Constants.GYRO_ID,
-  // Constants.GYRO_CAN_BUS);
-  // public final Drivetrain driveTrain;
+  //  public final Drivetrain driveTrain = new Drivetrain();
   public final Arm arm = new Arm();
 
   /* Test System */
@@ -62,9 +58,6 @@ public class RobotContainer {
 
   /* Cameras */
   // public UsbCamera cam0;
-
-  /* Auto paths */
-  //  public SwerveAutoBuilder autoBuilder;
 
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
   public static Map<String, List<PathPlannerTrajectory>> pptrajectoryList =
@@ -82,37 +75,15 @@ public class RobotContainer {
 
     instance = this;
 
-    // SwerveModuleIO flModule;
-    // SwerveModuleIO frModule;
-    // SwerveModuleIO blModule;
-    // SwerveModuleIO brModule;
-
     if (RobotBase.isReal()) {
       // Make sure you only configure port forwarding once in your robot code.
       for (int port = 5800; port <= 5805; port++) {
         PortForwarder.add(port, Constants.LIMELIGHTURL, port);
       }
     }
-    //   flModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod0);
-    //   frModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod1);
-    //   blModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod2);
-    //   brModule = new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod3);
-    // } else {
-    //   flModule = new SwerveModuleIOSim(DriveTrainConstants.mod0.moduleNumber);
-    //   frModule = new SwerveModuleIOSim(DriveTrainConstants.mod1.moduleNumber);
-    //   blModule = new SwerveModuleIOSim(DriveTrainConstants.mod2.moduleNumber);
-    //   brModule = new SwerveModuleIOSim(DriveTrainConstants.mod3.moduleNumber);
-    // }
-    // driveTrain =
-    //     new Drivetrain(
-    //         gyro,
-    //         new SwerveModule(flModule),
-    //         new SwerveModule(frModule),
-    //         new SwerveModule(blModule),
-    //         new SwerveModule(brModule));
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
-    // LiveWindow.disableAllTelemetry();
+    LiveWindow.disableAllTelemetry();
 
     configureAutoCommands();
     configureAutoPaths();
@@ -148,7 +119,7 @@ public class RobotContainer {
 
     // AbsoluteDrive closedAbsoluteDrive =
     //     new AbsoluteDrive(
-    //         drivebase,
+    //         driveTrain,
     //         oi::getTranslateX,
     //         oi::getTranslateY,
     //         oi::getRotate,
@@ -156,14 +127,14 @@ public class RobotContainer {
 
     // AbsoluteFieldDrive closedFieldAbsoluteDrive =
     //     new AbsoluteFieldDrive(
-    //         drivebase,
+    //         driveTrain,
     //         oi::getTranslateX,
     //         oi::getTranslateY,
     //         oi::getRotate);
 
     // AbsoluteDriveAdv closedAbsoluteDriveAdv =
     //     new AbsoluteDriveAdv(
-    //         drivebase,
+    //         driveTrain,
     //         oi::getTranslateX,
     //         oi::getTranslateY,
     //         oi::getRotate,
@@ -174,31 +145,20 @@ public class RobotContainer {
 
     // TeleopDrive simClosedFieldRel =
     //     new TeleopDrive(
-    //         drivebase,
+    //         driveTrain,
     //         oi::getTranslateX,
     //         oi::getTranslateY,
     //         oi::getRotate,
     //         () -> true);
     // TeleopDrive closedFieldRel =
-    //     new TeleopDrive(drivebase,
+    //     new TeleopDrive(driveTrain,
     //         oi::getTranslateX,
     //         oi::getTranslateY,
     //         oi::getRotate,
     //         () -> true);
     // TeleopDrive closedRobotRel =
     //     new TeleopDrive(
-    //         drivebase, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> false);
-    TeleopSwerveNew newCmd =
-        new TeleopSwerveNew(
-            drivebase,
-            oi::getTranslateX,
-            oi::getTranslateY,
-            oi::getRotate,
-            oi::getDriveScaling,
-            oi::getRotateScaling);
-
-    drivebase.setDefaultCommand(newCmd);
-
+    //         driveTrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> false);
     /*
      * Set up the default command for the drivetrain. The joysticks' values map to percentage of the
      * maximum velocities. The velocities may be specified from either the robot's frame of
@@ -209,14 +169,16 @@ public class RobotContainer {
      * direction. This is why the left joystick's y axis specifies the velocity in the x direction
      * and the left joystick's x axis specifies the velocity in the y direction.
      */
-    // driveTrain.setDefaultCommand(
-    //     new TeleopSwerve(
-    //         driveTrain,
-    //         oi::getTranslateX,
-    //         oi::getTranslateY,
-    //         oi::getRotate,
-    //         oi::getDriveScaling,
-    //         oi::getRotateScaling));
+    TeleopSwerveNew teleopCmd =
+        new TeleopSwerveNew(
+            driveTrain,
+            oi::getTranslateX,
+            oi::getTranslateY,
+            oi::getRotate,
+            oi::getDriveScaling,
+            oi::getRotateScaling);
+
+    driveTrain.setDefaultCommand(teleopCmd);
 
     arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
 
@@ -231,20 +193,15 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // reset gyro to 0 degrees
-    // oi.getResetGyroButton().onTrue(Commands.runOnce(driveTrain::zeroGyro, driveTrain));
-    oi.getResetGyroButton().onTrue(Commands.runOnce(drivebase::zeroGyro));
+    oi.getResetGyroButton().onTrue(Commands.runOnce(driveTrain::zeroGyro));
 
     // Robot relative navigation
-    // oi.getRobotRelative().onTrue(Commands.runOnce(driveTrain::disableFieldRelative, driveTrain));
-    // oi.getRobotRelative().onFalse(Commands.runOnce(driveTrain::enableFieldRelative, driveTrain));
-    oi.getRobotRelative().onTrue(Commands.runOnce(drivebase::disableFieldRelative));
-    oi.getRobotRelative().onFalse(Commands.runOnce(drivebase::enableFieldRelative));
+    oi.getRobotRelative().onTrue(Commands.runOnce(driveTrain::disableFieldRelative));
+    oi.getRobotRelative().onFalse(Commands.runOnce(driveTrain::enableFieldRelative));
 
     // x-stance
-    // oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance, driveTrain));
-    // oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance, driveTrain));
-    oi.getXStanceButton().onTrue(Commands.runOnce(drivebase::enableXstance));
-    oi.getXStanceButton().onFalse(Commands.runOnce(drivebase::disableXstance));
+    oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance));
+    oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance));
 
     oi.getGripToggle().onTrue(Commands.runOnce(arm::gripToggle, arm));
     oi.getArmCalibrate().onTrue(Commands.runOnce(arm::resetArm, arm));
@@ -292,84 +249,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("DropPiece", new Grip(arm, true));
     NamedCommands.registerCommand("GrabPiece", new Grip(arm, false));
     NamedCommands.registerCommand("ZeroArm", new PositionArm(arm, 0));
-
-    /*    try {
-      DirectoryStream<Path> stream =
-          Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("pathplanner"));
-      for (Path file : stream) {
-        if (!Files.isDirectory(file)) {
-          String name = file.getFileName().toString().replaceFirst("[.][^.]+$", "");
-          pptrajectoryList.put(
-              name,
-              PathPlanner.loadPathGroup(
-                  name,
-                  AutoConstants.kMaxSpeedMetersPerSecond,
-                  AutoConstants.kMaxAccelerationMetersPerSecondSquared));
-        }
-      }
-    } catch (IOException ex) {
-      DriverStation.reportError("Unable to open pptrajectory: ", ex.getStackTrace());
-    }
-
-    for (Map.Entry<String, List<PathPlannerTrajectory>> entry : pptrajectoryList.entrySet()) {
-      chooser.addOption(entry.getKey(), autoBuilder.fullAuto(entry.getValue()));
-    } */
-
-    // for (Map.Entry<String, PathPlannerTrajectory> entry : pptrajectoryList.entrySet()) {
-    //   Command autoPathBlue =
-    //       new FollowPathWithEvents(
-    //           new FollowPath(entry.getValue(), driveTrain, true),
-    //           entry.getValue().getMarkers(),
-    //           AUTO_EVENT_MAP);
-    //   Command autoPathRed =
-    //     new FollowPathWithEvents(
-    //         new FollowPath(PathPlannerTrajectory.transformTrajectoryForAlliance(entry.getValue(),
-    // Alliance.Red), driveTrain, true),
-    //         entry.getValue().getMarkers(),
-    //         AUTO_EVENT_MAP);
-    //   chooser.addOption(entry.getKey(), Commands.either(autoPathBlue, autoPathRed, () ->
-    // DriverStation.getAlliance() == Alliance.Blue));
-    // }
-    // chooser.addOption("Autonomous Command", new exampleAuto(driveTrain));
-
-    /*    try {
-      DirectoryStream<Path> stream =
-          Files.newDirectoryStream(Robot.RESOURCES_PATH.resolve("paths"));
-      for (Path file : stream) {
-        if (!Files.isDirectory(file)) {
-          trajectoryList.put(
-              file.getFileName().toString().replaceFirst("[.][^.]+$", ""),
-              TrajectoryUtil.fromPathweaverJson(file));
-        }
-      }
-    } catch (IOException ex) {
-      DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());
-    }
-    for (Map.Entry<String, Trajectory> entry : trajectoryList.entrySet()) {
-      chooser.addOption(entry.getKey(), new driveToTrajectory(driveTrain, entry.getValue()));
-    }
-
-    // build auto path commands
-    List<PathPlannerTrajectory> auto1Paths =
-        PathPlanner.loadPathGroup(
-            "testPaths1",
-            AutoConstants.kMaxSpeedMetersPerSecond,
-            AutoConstants.kMaxAccelerationMetersPerSecondSquared);
-    Command autoTest =
-        Commands.sequence(
-            new FollowPathWithEvents(
-                new FollowPath(auto1Paths.get(0), driveTrain, true),
-                auto1Paths.get(0).getMarkers(),
-                AUTO_EVENT_MAP),
-            Commands.runOnce(driveTrain::enableXstance, driveTrain),
-            Commands.waitSeconds(5.0),
-            Commands.runOnce(driveTrain::disableXstance, driveTrain),
-            new FollowPathWithEvents(
-                new FollowPath(auto1Paths.get(1), driveTrain, false),
-                auto1Paths.get(1).getMarkers(),
-                AUTO_EVENT_MAP));
-    // demonstration of PathPlanner path group with event markers
-    chooser.addOption("Test Path", autoTest); */
   }
 
   public void simulationInit() {}

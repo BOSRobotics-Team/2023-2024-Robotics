@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -29,8 +30,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.gyro.GyroIO;
 import frc.lib.gyro.GyroIO.GyroIOInputs;
+import frc.lib.gyro.GyroIOPigeon2Phoenix6;
 import frc.lib.limelightvision.LimelightHelpers;
 import frc.lib.swerve.SwerveModule;
+import frc.lib.swerve.SwerveModuleIOSim;
+import frc.lib.swerve.SwerveModuleIOTalonFXP6;
 import frc.lib.util.RobotOdometry;
 import frc.robot.AutoConstants;
 import frc.robot.Constants;
@@ -100,13 +104,23 @@ public class Drivetrain extends TestableSubsytem {
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
 
-  public Drivetrain(
-      GyroIO gyro, SwerveModule mod0, SwerveModule mod1, SwerveModule mod2, SwerveModule mod3) {
-    this.gyro = gyro;
-    this.swerveModules[0] = mod0;
-    this.swerveModules[1] = mod1;
-    this.swerveModules[2] = mod2;
-    this.swerveModules[3] = mod3;
+  public Drivetrain() {
+    this.gyro = new GyroIOPigeon2Phoenix6(Constants.GYRO_ID, Constants.GYRO_CAN_BUS);
+    if (RobotBase.isReal()) {
+      this.swerveModules[0] =
+          new SwerveModule(new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod0));
+      this.swerveModules[1] =
+          new SwerveModule(new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod1));
+      this.swerveModules[2] =
+          new SwerveModule(new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod2));
+      this.swerveModules[3] =
+          new SwerveModule(new SwerveModuleIOTalonFXP6(DriveTrainConstants.mod3));
+    } else {
+      this.swerveModules[0] = new SwerveModule(new SwerveModuleIOSim(DriveTrainConstants.mod0));
+      this.swerveModules[1] = new SwerveModule(new SwerveModuleIOSim(DriveTrainConstants.mod1));
+      this.swerveModules[2] = new SwerveModule(new SwerveModuleIOSim(DriveTrainConstants.mod2));
+      this.swerveModules[3] = new SwerveModule(new SwerveModuleIOSim(DriveTrainConstants.mod3));
+    }
 
     this.autoThetaController.enableContinuousInput(-Math.PI, Math.PI);
 

@@ -63,8 +63,8 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   private PIDController turnController =
       new PIDController(SIM_ANGLE_KP, SIM_ANGLE_KI, SIM_ANGLE_KD);
 
-  public SwerveModuleIOSim(int moduleNumber) {
-    this.moduleNumber = moduleNumber;
+  public SwerveModuleIOSim(SwerveModuleID moduleNumber) {
+    this.moduleNumber = moduleNumber.moduleNumber;
   }
 
   @Override
