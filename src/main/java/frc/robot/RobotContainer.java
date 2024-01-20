@@ -185,11 +185,19 @@ public class RobotContainer {
     //         oi::getTranslateY,
     //         oi::getRotate,
     //         () -> true);
-    TeleopDrive closedRobotRel =
-        new TeleopDrive(
-            drivebase, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> false);
+    // TeleopDrive closedRobotRel =
+    //     new TeleopDrive(
+    //         drivebase, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> false);
+    TeleopSwerveNew newCmd =
+        new TeleopSwerveNew(
+            drivebase,
+            oi::getTranslateX,
+            oi::getTranslateY,
+            oi::getRotate,
+            oi::getDriveScaling,
+            oi::getRotateScaling);
 
-    drivebase.setDefaultCommand(closedRobotRel);
+    drivebase.setDefaultCommand(newCmd);
 
     /*
      * Set up the default command for the drivetrain. The joysticks' values map to percentage of the

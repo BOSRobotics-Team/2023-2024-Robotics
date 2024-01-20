@@ -109,17 +109,17 @@ public class SingleHandheldOI implements OperatorInterface {
 
   @Override
   public double getTranslateX() {
-    return MathUtil.applyDeadband(-controller.getLeftY(), Constants.STICK_DEADBAND);
+    return -controller.getLeftY();
   }
 
   @Override
   public double getTranslateY() {
-    return MathUtil.applyDeadband(-controller.getLeftX(), Constants.STICK_DEADBAND);
+    return -controller.getLeftX();
   }
 
   @Override
   public double getRotate() {
-    return MathUtil.applyDeadband(-controller.getRightX(), Constants.STICK_DEADBAND);
+    return -controller.getRightX();
   }
 
   @Override
