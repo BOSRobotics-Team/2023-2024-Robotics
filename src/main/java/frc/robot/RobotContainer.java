@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.limelightvision.LimelightHelpers;
 import frc.robot.commands.*;
+import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -143,22 +144,15 @@ public class RobotContainer {
     //         driverXbox::getXButtonPressed,
     //         driverXbox::getBButtonPressed);
 
-    // TeleopDrive simClosedFieldRel =
-    //     new TeleopDrive(
-    //         driveTrain,
-    //         oi::getTranslateX,
-    //         oi::getTranslateY,
-    //         oi::getRotate,
-    //         () -> true);
-    // TeleopDrive closedFieldRel =
-    //     new TeleopDrive(driveTrain,
-    //         oi::getTranslateX,
-    //         oi::getTranslateY,
-    //         oi::getRotate,
-    //         () -> true);
-    // TeleopDrive closedRobotRel =
-    //     new TeleopDrive(
-    //         driveTrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate, () -> false);
+    TeleopDrive teleopCmd =
+        new TeleopDrive(
+            driveTrain,
+            oi::getTranslateX,
+            oi::getTranslateY,
+            oi::getRotate,
+            oi::isRobotRelative,
+            oi::getDriveScaling,
+            oi::getRotateScaling);
     /*
      * Set up the default command for the drivetrain. The joysticks' values map to percentage of the
      * maximum velocities. The velocities may be specified from either the robot's frame of
@@ -169,17 +163,7 @@ public class RobotContainer {
      * direction. This is why the left joystick's y axis specifies the velocity in the x direction
      * and the left joystick's x axis specifies the velocity in the y direction.
      */
-    TeleopSwerveNew teleopCmd =
-        new TeleopSwerveNew(
-            driveTrain,
-            oi::getTranslateX,
-            oi::getTranslateY,
-            oi::getRotate,
-            oi::getDriveScaling,
-            oi::getRotateScaling);
-
     driveTrain.setDefaultCommand(teleopCmd);
-
     arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
 
     configureButtonBindings();
@@ -194,10 +178,6 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // reset gyro to 0 degrees
     oi.getResetGyroButton().onTrue(Commands.runOnce(driveTrain::zeroGyro));
-
-    // Robot relative navigation
-    oi.getRobotRelative().onTrue(Commands.runOnce(driveTrain::disableFieldRelative));
-    oi.getRobotRelative().onFalse(Commands.runOnce(driveTrain::enableFieldRelative));
 
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance));

@@ -100,12 +100,12 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
 
   @Override
   public double getArmLift() {
-    return -operator.getLeftY();
+    return -MathUtil.applyDeadband(operator.getLeftY(), Constants.STICK_DEADBAND);
   }
 
   @Override
   public double getArmExtend() {
-    return -operator.getRightY();
+    return -MathUtil.applyDeadband(operator.getRightY(), Constants.STICK_DEADBAND);
   }
 
   @Override

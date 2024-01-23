@@ -15,12 +15,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.AutoConstants;
-import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 import frc.robot.testsystem.TestableSubsytem;
 import java.io.File;
 import swervelib.SwerveController;
@@ -38,9 +36,8 @@ public class SwerveSubsystem extends TestableSubsytem {
   private final SwerveDrive swerveDrive;
 
   /** Maximum speed of the robot in meters per second, used to limit acceleration. */
-  public double maximumSpeed = Units.feetToMeters(DriveTrainConstants.maxSpeed);
+  public double maximumSpeed = SwerveDriveConstants.maxSpeed;
 
-  private boolean isFieldRelative = true;
   private boolean isLockStance = false;
 
   /**
@@ -50,17 +47,16 @@ public class SwerveSubsystem extends TestableSubsytem {
    */
   public SwerveSubsystem(File directory) {
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
-    //  In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
-    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(12.8, 1);
-    // Motor conversion factor is (PI * WHEEL DIAMETER IN METERS) / (GEAR RATIO * ENCODER
-    // RESOLUTION).
-    //  In this case the wheel diameter is 4 inches, which must be converted to meters to get
-    // meters/second.
-    //  The gear ratio is 6.75 motor revolutions per wheel rotation.
+    double angleConversionFactor =
+        SwerveMath.calculateDegreesPerSteeringRotation(SwerveDriveConstants.angleGearRatio);
+
+    // Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER RESOLUTION).
     //  The encoder resolution per motor revolution is 1 per motor revolution.
     double driveConversionFactor =
-        SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.75, 1);
+        SwerveMath.calculateMetersPerRotation(
+            SwerveDriveConstants.wheelDiameter, SwerveDriveConstants.driveGearRatio);
+
     System.out.println("\"conversionFactor\": {");
     System.out.println("\t\"angle\": " + angleConversionFactor + ",");
     System.out.println("\t\"drive\": " + driveConversionFactor);
@@ -187,15 +183,6 @@ public class SwerveSubsystem extends TestableSubsytem {
    */
   public void drive(ChassisSpeeds velocity) {
     swerveDrive.drive(velocity);
-  }
-
-  /**
-   * Drive according to the chassis robot oriented velocity.
-   *
-   * @param velocity Robot oriented {@link ChassisSpeeds}
-   */
-  public void drive(Translation2d translation, double rotation) {
-    this.drive(translation, rotation, isFieldRelative);
   }
 
   @Override
@@ -375,31 +362,6 @@ public class SwerveSubsystem extends TestableSubsytem {
       return alliance.get() == DriverStation.Alliance.Red;
     }
     return false;
-  }
-
-  /**
-   * Returns true if field relative mode is enabled
-   *
-   * @return true if field relative mode is enabled
-   */
-  public boolean getFieldRelative() {
-    return isFieldRelative;
-  }
-
-  /**
-   * Enables field-relative mode. When enabled, the joystick inputs specify the velocity of the
-   * robot in the frame of reference of the field.
-   */
-  public void enableFieldRelative() {
-    this.isFieldRelative = true;
-  }
-
-  /**
-   * Disables field-relative mode. When disabled, the joystick inputs specify the velocity of the
-   * robot in the frame of reference of the robot.
-   */
-  public void disableFieldRelative() {
-    this.isFieldRelative = false;
   }
 
   /**

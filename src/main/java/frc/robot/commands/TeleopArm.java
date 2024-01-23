@@ -1,8 +1,5 @@
 package frc.robot.commands;
 
-import static frc.robot.Constants.*;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.arm.Arm;
 import java.util.function.DoubleSupplier;
@@ -22,10 +19,9 @@ public class TeleopArm extends Command {
 
   @Override
   public void execute() {
-    /* Get Values, Deadband*/
-    double deadBand = STICK_DEADBAND;
-    double liftVal = MathUtil.applyDeadband(liftSup.getAsDouble(), deadBand);
-    double extendVal = MathUtil.applyDeadband(extendSup.getAsDouble(), deadBand);
+    /* Get Values */
+    double liftVal = liftSup.getAsDouble();
+    double extendVal = extendSup.getAsDouble();
 
     arm.teleop(liftVal, extendVal);
   }

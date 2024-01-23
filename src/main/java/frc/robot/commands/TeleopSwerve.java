@@ -1,8 +1,5 @@
 package frc.robot.commands;
 
-import static frc.robot.Constants.*;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -36,20 +33,18 @@ public class TeleopSwerve extends Command {
   @Override
   public void execute() {
     /* Get Values, Deadband*/
-    double deadBand = STICK_DEADBAND;
     double maxSpeed = DriveTrainConstants.maxSpeed * scaleFactorSup.getAsDouble();
     double maxRotate = DriveTrainConstants.maxAngularVelocity * rotateFactorSup.getAsDouble();
 
-    double translationVal = this.scaleController(translationSup.getAsDouble(), deadBand) * maxSpeed;
-    double strafeVal = this.scaleController(strafeSup.getAsDouble(), deadBand) * maxSpeed;
-    double rotationVal = this.scaleController(rotationSup.getAsDouble(), deadBand) * maxRotate;
+    double translationVal = this.scaleController(translationSup.getAsDouble()) * maxSpeed;
+    double strafeVal = this.scaleController(strafeSup.getAsDouble()) * maxSpeed;
+    double rotationVal = this.scaleController(rotationSup.getAsDouble()) * maxRotate;
 
     /* Drive */
     driveTrain.drive(translationVal, strafeVal, rotationVal);
   }
 
-  public double scaleController(double value, double deadBand) {
-    value = MathUtil.applyDeadband(value, deadBand);
+  public double scaleController(double value) {
     // Square the axis - more natural for drivers
     return Math.copySign(value * value, value);
   }

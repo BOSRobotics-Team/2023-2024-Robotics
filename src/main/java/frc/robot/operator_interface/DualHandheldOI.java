@@ -1,7 +1,9 @@
 package frc.robot.operator_interface;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 
 /** Class for controlling the robot with a dual Xbox controllers. */
 public class DualHandheldOI extends SingleHandheldOI {
@@ -29,12 +31,12 @@ public class DualHandheldOI extends SingleHandheldOI {
 
   @Override
   public double getArmLift() {
-    return -operator.getLeftY();
+    return -MathUtil.applyDeadband(operator.getLeftY(), Constants.STICK_DEADBAND);
   }
 
   @Override
   public double getArmExtend() {
-    return -operator.getRightY();
+    return -MathUtil.applyDeadband(operator.getRightY(), Constants.STICK_DEADBAND);
   }
 
   @Override

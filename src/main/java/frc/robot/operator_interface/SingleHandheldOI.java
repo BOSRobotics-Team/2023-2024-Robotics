@@ -109,17 +109,17 @@ public class SingleHandheldOI implements OperatorInterface {
 
   @Override
   public double getTranslateX() {
-    return -controller.getLeftY();
+    return -MathUtil.applyDeadband(controller.getLeftY(), Constants.STICK_DEADBAND);
   }
 
   @Override
   public double getTranslateY() {
-    return -controller.getLeftX();
+    return -MathUtil.applyDeadband(controller.getLeftX(), Constants.STICK_DEADBAND);
   }
 
   @Override
   public double getRotate() {
-    return -controller.getRightX();
+    return -MathUtil.applyDeadband(controller.getRightX(), Constants.STICK_DEADBAND);
   }
 
   @Override
@@ -158,6 +158,11 @@ public class SingleHandheldOI implements OperatorInterface {
       updateRotateScale = true;
     }
     return rotateScaleFactor;
+  }
+
+  @Override
+  public boolean isRobotRelative() {
+    return controller.getLeftBumper();
   }
 
   @Override

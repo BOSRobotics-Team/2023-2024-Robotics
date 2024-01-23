@@ -1,13 +1,12 @@
 package frc.robot.testsystem;
 
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.drivetrain.DriveTrainConstants;
 import frc.robot.testsystem.TestInterface.TestStates;
 import java.util.ArrayList;
 import java.util.List;
@@ -187,20 +186,19 @@ public class TestChecklist {
 
   public void RunTeleop() {
 
-    double liftVal = MathUtil.applyDeadband(m_robot.oi.getArmLift(), Constants.STICK_DEADBAND);
-    double extendVal = MathUtil.applyDeadband(m_robot.oi.getArmExtend(), Constants.STICK_DEADBAND);
+    double liftVal = m_robot.oi.getArmLift();
+    double extendVal = m_robot.oi.getArmExtend();
     m_robot.arm.teleop(liftVal, extendVal);
 
-    double maxSpeed = DriveTrainConstants.maxSpeed * m_robot.oi.getDriveScaling();
-    double maxRotate = DriveTrainConstants.maxAngularVelocity * m_robot.oi.getRotateScaling();
-    double translationVal =
-        MathUtil.applyDeadband(m_robot.oi.getTranslateY(), Constants.STICK_DEADBAND);
-    double strafeVal = MathUtil.applyDeadband(m_robot.oi.getTranslateY(), Constants.STICK_DEADBAND);
-    double rotationVal = MathUtil.applyDeadband(m_robot.oi.getRotate(), Constants.STICK_DEADBAND);
+    double maxSpeed = m_robot.driveTrain.maximumSpeed;
+    double maxRotate = m_robot.driveTrain.getSwerveController().config.maxAngularVelocity;
+    double xVelocity = Math.pow(m_robot.oi.getTranslateX(), 3) * m_robot.oi.getDriveScaling();
+    double yVelocity = Math.pow(m_robot.oi.getTranslateY(), 3) * m_robot.oi.getDriveScaling();
+    double angVelocity = Math.pow(m_robot.oi.getRotate(), 3) * m_robot.oi.getRotateScaling();
 
-    // m_robot.driveTrain.drive(
-    //     Math.copySign(translationVal * translationVal, translationVal) * maxSpeed,
-    //     Math.copySign(strafeVal * strafeVal, strafeVal) * maxSpeed,
-    //     Math.copySign(rotationVal * rotationVal, rotationVal) * maxRotate);
+    m_robot.driveTrain.drive(
+        new Translation2d(xVelocity * maxSpeed, yVelocity * maxSpeed),
+        angVelocity * maxRotate,
+        false);
   }
 }

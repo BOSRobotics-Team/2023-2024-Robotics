@@ -28,6 +28,10 @@ public interface OperatorInterface {
     return 1.0;
   }
 
+  public default boolean isRobotRelative() {
+    return false;
+  }
+
   public default Trigger getRobotRelative() {
     return new Trigger(() -> false);
   }
