@@ -1,6 +1,5 @@
 {
   "angleJoystickRadiusDeadband": 0.5,
-  "maxAngularVelocity": 5.0,
   "heading": {
     "p": 0.4,
     "i": 0,

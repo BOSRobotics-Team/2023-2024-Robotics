@@ -11,7 +11,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import swervelib.SwerveController;
 
 /** An example command that uses an example subsystem. */
 public class TeleopDrive extends Command {
@@ -23,7 +22,6 @@ public class TeleopDrive extends Command {
   private final BooleanSupplier driveMode;
   private final DoubleSupplier vScaling;
   private final DoubleSupplier rScaling;
-  private final SwerveController controller;
 
   /**
    * @param swerve The subsystem used by this command.
@@ -43,7 +41,6 @@ public class TeleopDrive extends Command {
     this.driveMode = driveMode;
     this.vScaling = velocityScaling;
     this.rScaling = rotateScaling;
-    this.controller = swerve.getSwerveController();
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(swerve);
@@ -68,9 +65,20 @@ public class TeleopDrive extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xVelocity = Math.pow(vX.getAsDouble(), 3) * vScaling.getAsDouble();
-    double yVelocity = Math.pow(vY.getAsDouble(), 3) * vScaling.getAsDouble();
-    double angVelocity = Math.pow(omega.getAsDouble(), 3) * rScaling.getAsDouble();
+    double xVel = vX.getAsDouble();
+    double yVel = vY.getAsDouble();
+    double rVel = omega.getAsDouble();
+    double vScale = vScaling.getAsDouble();
+    double rScale = rScaling.getAsDouble();
+    boolean dMode = driveMode.getAsBoolean();
+
+    double xVelocity = xVel * xVel * xVel * vScale * swerve.maximumSpeed;
+    double yVelocity = yVel * yVel * yVel * vScale * swerve.maximumSpeed;
+    double angVelocity = rVel * rVel * rVel * rScale * swerve.maxAngularVel;
+
+    // double xVelocity = Math.pow(vX.getAsDouble(), 3) * vScaling.getAsDouble();
+    // double yVelocity = Math.pow(vY.getAsDouble(), 3) * vScaling.getAsDouble();
+    // double angVelocity = Math.pow(omega.getAsDouble(), 3) * rScaling.getAsDouble();
 
     if (Constants.DEBUGGING) {
       SmartDashboard.putNumber("vX", xVelocity);
@@ -79,10 +87,7 @@ public class TeleopDrive extends Command {
     }
 
     // Drive using raw values.
-    swerve.drive(
-        new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed),
-        angVelocity * controller.config.maxAngularVelocity,
-        driveMode.getAsBoolean());
+    swerve.drive(new Translation2d(xVelocity, yVelocity), angVelocity, dMode);
   }
 
   // Called once the command ends or is interrupted.
