@@ -104,6 +104,7 @@ public class RobotContainer {
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
 
     // m_test = new TestChecklist(driveTrain, arm);
+    
   }
 
   /**
@@ -246,4 +247,5 @@ public class RobotContainer {
   public void testExit() {
     m_test.exit();
   }
+
 }
