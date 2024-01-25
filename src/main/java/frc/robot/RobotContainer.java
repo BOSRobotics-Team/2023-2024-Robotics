@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.net.PortForwarder;
@@ -18,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.limelightvision.LimelightHelpers;
 import frc.robot.commands.*;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.operator_interface.*;
@@ -29,7 +27,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.photonvision.PhotonCamera;
 
 // import edu.wpi.first.cameraserver.CameraServer;
 // import edu.wpi.first.cscore.UsbCamera;
@@ -50,16 +47,17 @@ public class RobotContainer {
   public final PowerDistribution power = new PowerDistribution();
   // The robot's subsystems and commands are defined here...
   public final SwerveSubsystem driveTrain =
-      new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/falcon"));
+      new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
+  // new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/falcon"));
 
   //  public final Drivetrain driveTrain = new Drivetrain();
-  public final Arm arm = new Arm();
+  // public final Arm arm = new Arm();
 
   /* Test System */
   private TestChecklist m_test;
 
   /* Cameras */
-  public PhotonCamera camera = new PhotonCamera("photonvision");
+  // public PhotonCamera camera = new PhotonCamera("photonvision");
   // public UsbCamera cam0;
 
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
@@ -94,9 +92,9 @@ public class RobotContainer {
     // cam0 = CameraServer.startAutomaticCapture(0);
     // cam0.setConnectVerbose(0);
 
-    LimelightHelpers.setLEDMode_ForceOff(Constants.LIMELIGHTNAME); // setLEDMode_PipelineControl
-    LimelightHelpers.setCameraMode_Driver(Constants.LIMELIGHTNAME); // setCameraMode_Processor
-    LimelightHelpers.setStreamMode_Standard(Constants.LIMELIGHTNAME);
+    // LimelightHelpers.setLEDMode_ForceOff(Constants.LIMELIGHTNAME); // setLEDMode_PipelineControl
+    // LimelightHelpers.setCameraMode_Driver(Constants.LIMELIGHTNAME); // setCameraMode_Processor
+    // LimelightHelpers.setStreamMode_Standard(Constants.LIMELIGHTNAME);
     // LimelightHelpers.setStreamMode_PiPMain("");
     // LimelightHelpers.setStreamMode_PiPSecondary("");
 
@@ -166,7 +164,7 @@ public class RobotContainer {
      * and the left joystick's x axis specifies the velocity in the y direction.
      */
     driveTrain.setDefaultCommand(teleopCmd);
-    arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
+    // arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
 
     configureButtonBindings();
   }
@@ -185,14 +183,14 @@ public class RobotContainer {
     oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance));
     oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance));
 
-    oi.getGripToggle().onTrue(Commands.runOnce(arm::gripToggle, arm));
-    oi.getArmCalibrate().onTrue(Commands.runOnce(arm::resetArm, arm));
-    oi.getArmPosition0().onTrue(Commands.runOnce(() -> arm.setArmPosition(0), arm));
-    oi.getArmPosition1().onTrue(Commands.runOnce(() -> arm.setArmPosition(1), arm));
-    oi.getArmPosition2().onTrue(Commands.runOnce(() -> arm.setArmPosition(2), arm));
-    oi.getArmPosition3().onTrue(Commands.runOnce(() -> arm.setArmPosition(3), arm));
-    oi.getArmTargetToggle()
-        .onTrue(Commands.runOnce(() -> arm.targetCones(!arm.isTargetCone()), arm));
+    // oi.getGripToggle().onTrue(Commands.runOnce(arm::gripToggle, arm));
+    // oi.getArmCalibrate().onTrue(Commands.runOnce(arm::resetArm, arm));
+    // oi.getArmPosition0().onTrue(Commands.runOnce(() -> arm.setArmPosition(0), arm));
+    // oi.getArmPosition1().onTrue(Commands.runOnce(() -> arm.setArmPosition(1), arm));
+    // oi.getArmPosition2().onTrue(Commands.runOnce(() -> arm.setArmPosition(2), arm));
+    // oi.getArmPosition3().onTrue(Commands.runOnce(() -> arm.setArmPosition(3), arm));
+    // oi.getArmTargetToggle()
+    //     .onTrue(Commands.runOnce(() -> arm.targetCones(!arm.isTargetCone()), arm));
   }
 
   /**
@@ -216,21 +214,21 @@ public class RobotContainer {
   }
 
   private void configureAutoPaths() {
-    for (int pos = 1; pos <= 3; ++pos) {
-      NamedCommands.registerCommand(
-          "CubePosition" + pos,
-          Commands.sequence(
-              Commands.runOnce(() -> arm.targetCones(false), arm), new PositionArm(arm, pos)));
-    }
-    for (int pos = 1; pos <= 3; ++pos) {
-      NamedCommands.registerCommand(
-          "ConePosition" + pos,
-          Commands.sequence(
-              Commands.runOnce(() -> arm.targetCones(true), arm), new PositionArm(arm, pos)));
-    }
-    NamedCommands.registerCommand("DropPiece", new Grip(arm, true));
-    NamedCommands.registerCommand("GrabPiece", new Grip(arm, false));
-    NamedCommands.registerCommand("ZeroArm", new PositionArm(arm, 0));
+    // for (int pos = 1; pos <= 3; ++pos) {
+    //   NamedCommands.registerCommand(
+    //       "CubePosition" + pos,
+    //       Commands.sequence(
+    //           Commands.runOnce(() -> arm.targetCones(false), arm), new PositionArm(arm, pos)));
+    // }
+    // for (int pos = 1; pos <= 3; ++pos) {
+    //   NamedCommands.registerCommand(
+    //       "ConePosition" + pos,
+    //       Commands.sequence(
+    //           Commands.runOnce(() -> arm.targetCones(true), arm), new PositionArm(arm, pos)));
+    // }
+    // NamedCommands.registerCommand("DropPiece", new Grip(arm, true));
+    // NamedCommands.registerCommand("GrabPiece", new Grip(arm, false));
+    // NamedCommands.registerCommand("ZeroArm", new PositionArm(arm, 0));
   }
 
   public void simulationInit() {}

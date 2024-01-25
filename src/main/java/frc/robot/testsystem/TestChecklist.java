@@ -94,7 +94,7 @@ public class TestChecklist {
   public void initialize() {
     InitializeShuffleBoard();
     m_enableTestChecklist = true;
-    m_robot.arm.m_pH.disableCompressor();
+    // m_robot.arm.m_pH.disableCompressor();
   }
 
   public void periodic() {
@@ -109,7 +109,7 @@ public class TestChecklist {
 
   public void exit() {
     m_enableTestChecklist = false;
-    m_robot.arm.m_pH.enableCompressorDigital();
+    // m_robot.arm.m_pH.enableCompressorDigital();
   }
 
   /* Custom Teleop Mode Implementation */
@@ -188,7 +188,7 @@ public class TestChecklist {
 
     double liftVal = m_robot.oi.getArmLift();
     double extendVal = m_robot.oi.getArmExtend();
-    m_robot.arm.teleop(liftVal, extendVal);
+    // m_robot.arm.teleop(liftVal, extendVal);
 
     double maxSpeed = m_robot.driveTrain.maximumSpeed;
     double maxRotate = m_robot.driveTrain.getSwerveController().config.maxAngularVelocity;
