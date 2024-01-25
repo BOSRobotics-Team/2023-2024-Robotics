@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.photonvision.PhotonCamera;
+
 // import edu.wpi.first.cameraserver.CameraServer;
 // import edu.wpi.first.cscore.UsbCamera;
 
@@ -58,6 +60,7 @@ public class RobotContainer {
   private TestChecklist m_test;
 
   /* Cameras */
+  public PhotonCamera camera = new PhotonCamera("photonvision");
   // public UsbCamera cam0;
 
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
