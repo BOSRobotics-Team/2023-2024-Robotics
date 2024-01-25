@@ -29,7 +29,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.photonvision.PhotonCamera;
 
 // import edu.wpi.first.cameraserver.CameraServer;
@@ -107,6 +106,7 @@ public class RobotContainer {
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
 
     // m_test = new TestChecklist(driveTrain, arm);
+    
   }
 
   /**
@@ -249,4 +249,5 @@ public class RobotContainer {
   public void testExit() {
     m_test.exit();
   }
+
 }
