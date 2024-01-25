@@ -10,6 +10,8 @@ public final class SwerveDriveConstants {
   /** Maximum Speed - Meters per Second */
   public static final double maxSpeed = 4.5; // TODO: This must be tuned to specific robot
 
+  public static final double maxAngularVelocity = 5.0;
+
   /* Module Gear Ratios SDS MK4 */
   public static final double driveGearRatio_MK4_L1 = 8.14;
 

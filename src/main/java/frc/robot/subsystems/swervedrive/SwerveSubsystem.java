@@ -38,6 +38,8 @@ public class SwerveSubsystem extends TestableSubsytem {
   /** Maximum speed of the robot in meters per second, used to limit acceleration. */
   public double maximumSpeed = SwerveDriveConstants.maxSpeed;
 
+  public double maxAngularVel = SwerveDriveConstants.maxAngularVelocity;
+
   private boolean isLockStance = false;
 
   /**
