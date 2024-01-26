@@ -123,6 +123,11 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
+  public double getRotateY() {
+    return -MathUtil.applyDeadband(controller.getRightY(), Constants.STICK_DEADBAND);
+  }
+
+  @Override
   public double getDriveScaling() {
     int povVal = controller.getPOV();
 

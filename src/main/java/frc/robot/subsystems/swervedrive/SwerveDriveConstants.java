@@ -31,6 +31,7 @@ public final class SwerveDriveConstants {
   public static final boolean driveMotorInvert_MK4 = false;
 
   public static final boolean angleMotorInvert_MK4 = false;
+
   /* Module Gear Ratios SDS MK4i */
   /** SDS MK4i - 8.14 : 1 */
   public static final double driveGearRatio_MK4i_L1 = 8.14;
@@ -49,6 +50,6 @@ public final class SwerveDriveConstants {
   public static final boolean angleMotorInvert_MK4i = true;
 
   /* Module Gear Ratios */
-  public static final double driveGearRatio = driveGearRatio_MK4i_L2;//driveGearRatio_MK4_L2;
-  public static final double angleGearRatio = angleGearRatio_MK4i;//angleGearRatio_MK4;
+  public static final double driveGearRatio = driveGearRatio_MK4i_L2; // driveGearRatio_MK4_L2;
+  public static final double angleGearRatio = angleGearRatio_MK4i; // angleGearRatio_MK4;
 }

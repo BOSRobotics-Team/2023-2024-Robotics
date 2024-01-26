@@ -118,6 +118,11 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
+  public double getRotateY() {
+    return -MathUtil.applyDeadband(rotateJoystick.getY(), Constants.STICK_DEADBAND);
+  }
+
+  @Override
   public double getDriveScaling() {
     if (translateJoystickButtons[1].getAsBoolean()) {
       return 0.25;

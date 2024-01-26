@@ -104,6 +104,11 @@ public class SingleJoystickOI implements OperatorInterface {
   }
 
   @Override
+  public double getRotateY() {
+    return -MathUtil.applyDeadband(joystick.getTwist(), Constants.STICK_DEADBAND);
+  }
+
+  @Override
   public double getDriveScaling() {
     int povVal = joystick.getHID().getPOV();
     if (updateDriveScale && povVal == -1) {

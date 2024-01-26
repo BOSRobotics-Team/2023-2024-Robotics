@@ -3,7 +3,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -17,12 +16,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.commands.*;
-import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.operator_interface.*;
-import frc.robot.subsystems.arm.*;
+// import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.testsystem.TestChecklist;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -45,19 +42,17 @@ public class RobotContainer {
 
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
-  // The robot's subsystems and commands are defined here...
+  public final VisionSubsystem vision = new VisionSubsystem();
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
-  // new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/falcon"));
 
   //  public final Drivetrain driveTrain = new Drivetrain();
   // public final Arm arm = new Arm();
 
   /* Test System */
-  private TestChecklist m_test;
+  //  private TestChecklist m_test;
 
   /* Cameras */
-  // public PhotonCamera camera = new PhotonCamera("photonvision");
   // public UsbCamera cam0;
 
   public static Map<String, Trajectory> trajectoryList = new HashMap<String, Trajectory>();
@@ -76,13 +71,6 @@ public class RobotContainer {
 
     instance = this;
 
-    if (RobotBase.isReal()) {
-      // Make sure you only configure port forwarding once in your robot code.
-      for (int port = 5800; port <= 5805; port++) {
-        PortForwarder.add(port, Constants.LIMELIGHTURL, port);
-      }
-    }
-
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 
@@ -92,19 +80,12 @@ public class RobotContainer {
     // cam0 = CameraServer.startAutomaticCapture(0);
     // cam0.setConnectVerbose(0);
 
-    // LimelightHelpers.setLEDMode_ForceOff(Constants.LIMELIGHTNAME); // setLEDMode_PipelineControl
-    // LimelightHelpers.setCameraMode_Driver(Constants.LIMELIGHTNAME); // setCameraMode_Processor
-    // LimelightHelpers.setStreamMode_Standard(Constants.LIMELIGHTNAME);
-    // LimelightHelpers.setStreamMode_PiPMain("");
-    // LimelightHelpers.setStreamMode_PiPSecondary("");
-
     ShuffleboardTab tab = Shuffleboard.getTab("MAIN");
     tab.add(autoChooser).withSize(2, 1);
     tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
     tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
 
     // m_test = new TestChecklist(driveTrain, arm);
-    
   }
 
   /**
@@ -119,24 +100,10 @@ public class RobotContainer {
     CommandScheduler.getInstance().getActiveButtonLoop().clear();
     oi = OISelector.findOperatorInterface();
 
-    // AbsoluteDrive closedAbsoluteDrive =
-    //     new AbsoluteDrive(
-    //         driveTrain,
-    //         oi::getTranslateX,
-    //         oi::getTranslateY,
-    //         oi::getRotate,
-    //         () -> -driverXbox.getRightY());
-
-    // AbsoluteFieldDrive closedFieldAbsoluteDrive =
-    //     new AbsoluteFieldDrive(
-    //         driveTrain,
-    //         oi::getTranslateX,
-    //         oi::getTranslateY,
-    //         oi::getRotate);
+    configureButtonBindings();
 
     // AbsoluteDriveAdv closedAbsoluteDriveAdv =
-    //     new AbsoluteDriveAdv(
-    //         driveTrain,
+    //    new AbsoluteDriveAdv(driveTrain,
     //         oi::getTranslateX,
     //         oi::getTranslateY,
     //         oi::getRotate,
@@ -145,29 +112,21 @@ public class RobotContainer {
     //         driverXbox::getXButtonPressed,
     //         driverXbox::getBButtonPressed);
 
-    TeleopDrive teleopCmd =
-        new TeleopDrive(
-            driveTrain,
-            oi::getTranslateX,
-            oi::getTranslateY,
-            oi::getRotate,
-            oi::isRobotRelative,
-            oi::getDriveScaling,
-            oi::getRotateScaling);
-    /*
-     * Set up the default command for the drivetrain. The joysticks' values map to percentage of the
-     * maximum velocities. The velocities may be specified from either the robot's frame of
-     * reference or the field's frame of reference. In the robot's frame of reference, the positive
-     * x direction is forward; the positive y direction, left; position rotation, CCW. In the field
-     * frame of reference, the origin of the field to the lower left corner (i.e., the corner of the
-     * field to the driver's right). Zero degrees is away from the driver and increases in the CCW
-     * direction. This is why the left joystick's y axis specifies the velocity in the x direction
-     * and the left joystick's x axis specifies the velocity in the y direction.
-     */
-    driveTrain.setDefaultCommand(teleopCmd);
-    // arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
+    Command driveFieldOrientedDirectAngle =
+        driveTrain.driveCommand(
+            oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::getRotateY);
 
-    configureButtonBindings();
+    Command drivedAnglularVelocity =
+        driveTrain.driveCommand(
+            oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::isRobotRelative);
+
+    Command driveFieldOrientedAngleVelSim =
+        driveTrain.simDriveCommand(oi::getTranslateX, oi::getTranslateY, oi::getRotate);
+
+    driveTrain.setDefaultCommand(
+        !RobotBase.isSimulation() ? drivedAnglularVelocity : driveFieldOrientedAngleVelSim);
+
+    // arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
   }
 
   /**
@@ -237,15 +196,14 @@ public class RobotContainer {
   public void simulationPeriodic() {}
 
   public void testInit() {
-    m_test.initialize();
+    // m_test.initialize();
   }
 
   public void testPeriodic() {
-    m_test.periodic();
+    // m_test.periodic();
   }
 
   public void testExit() {
-    m_test.exit();
+    // m_test.exit();
   }
-
 }

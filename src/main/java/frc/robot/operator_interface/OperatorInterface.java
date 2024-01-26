@@ -20,6 +20,10 @@ public interface OperatorInterface {
     return 0.0;
   }
 
+  public default double getRotateY() {
+    return 0.0;
+  }
+
   public default double getDriveScaling() {
     return 1.0;
   }
