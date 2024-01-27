@@ -135,7 +135,7 @@ public class SingleHandheldOI implements OperatorInterface {
   @Override
   public double getDriveScaling() {
     int povVal = controller.getPOV();
-    
+
     if (updateDriveScale && povVal == -1) {
       updateDriveScale = false;
     } else if (!updateDriveScale && povVal == 0) {

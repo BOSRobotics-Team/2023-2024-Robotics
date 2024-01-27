@@ -41,7 +41,7 @@ public class RobotContainer {
 
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
-  public final VisionSubsystem vision = new VisionSubsystem();
+  // public final VisionSubsystem vision = new VisionSubsystem();
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
 
@@ -136,7 +136,8 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance));
     oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance));
-    oi.isDriveScaling().onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.getDriveScaling())));
+    oi.isDriveScaling()
+        .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.getDriveScaling())));
   }
 
   /**
