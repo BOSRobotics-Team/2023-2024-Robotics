@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.operator_interface.*;
-// import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
@@ -45,9 +44,6 @@ public class RobotContainer {
   public final VisionSubsystem vision = new VisionSubsystem();
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
-
-  //  public final Drivetrain driveTrain = new Drivetrain();
-  // public final Arm arm = new Arm();
 
   /* Test System */
   //  private TestChecklist m_test;
@@ -112,9 +108,9 @@ public class RobotContainer {
     //         driverXbox::getXButtonPressed,
     //         driverXbox::getBButtonPressed);
 
-    Command driveFieldOrientedDirectAngle =
-        driveTrain.driveCommand(
-            oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::getRotateY);
+    // Command driveFieldOrientedDirectAngle =
+    //     driveTrain.driveCommand(
+    //         oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::getRotateY);
 
     Command drivedAnglularVelocity =
         driveTrain.driveCommand(
@@ -125,8 +121,6 @@ public class RobotContainer {
 
     driveTrain.setDefaultCommand(
         !RobotBase.isSimulation() ? drivedAnglularVelocity : driveFieldOrientedAngleVelSim);
-
-    // arm.setDefaultCommand(new TeleopArm(arm, oi::getArmLift, oi::getArmExtend));
   }
 
   /**
@@ -142,15 +136,6 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance));
     oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance));
-
-    // oi.getGripToggle().onTrue(Commands.runOnce(arm::gripToggle, arm));
-    // oi.getArmCalibrate().onTrue(Commands.runOnce(arm::resetArm, arm));
-    // oi.getArmPosition0().onTrue(Commands.runOnce(() -> arm.setArmPosition(0), arm));
-    // oi.getArmPosition1().onTrue(Commands.runOnce(() -> arm.setArmPosition(1), arm));
-    // oi.getArmPosition2().onTrue(Commands.runOnce(() -> arm.setArmPosition(2), arm));
-    // oi.getArmPosition3().onTrue(Commands.runOnce(() -> arm.setArmPosition(3), arm));
-    // oi.getArmTargetToggle()
-    //     .onTrue(Commands.runOnce(() -> arm.targetCones(!arm.isTargetCone()), arm));
   }
 
   /**

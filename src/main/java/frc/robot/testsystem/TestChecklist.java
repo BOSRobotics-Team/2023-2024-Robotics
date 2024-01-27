@@ -165,9 +165,10 @@ public class TestChecklist {
       case NOT_IMPLEMENTED:
         _value = false;
         break;
+      case RUNNING:
+        break;
     }
-
-    m_tests.get(_value).getEntry().setBoolean(_value);
+    m_tests.get(_key).getEntry().setBoolean(_value);
   }
 
   private void OnTestCardValueChanged(String _test) {
@@ -185,10 +186,6 @@ public class TestChecklist {
   }
 
   public void RunTeleop() {
-
-    double liftVal = m_robot.oi.getArmLift();
-    double extendVal = m_robot.oi.getArmExtend();
-    // m_robot.arm.teleop(liftVal, extendVal);
 
     double maxSpeed = m_robot.driveTrain.maximumSpeed;
     double maxRotate = m_robot.driveTrain.getSwerveController().config.maxAngularVelocity;

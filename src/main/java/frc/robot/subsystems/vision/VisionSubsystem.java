@@ -23,7 +23,6 @@ public class VisionSubsystem extends SubsystemBase {
 
   // Create a vision photon camera
   PhotonCamera visionCamera = new PhotonCamera("photonvision");
-  ;
 
   // Camera result for vision camera
   private PhotonPipelineResult cameraResult;
@@ -70,31 +69,31 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   // Returns the single best target from the camera
-  private PhotonTrackedTarget getBestTarget() {
+  public PhotonTrackedTarget getBestTarget() {
     return (cameraResult.getBestTarget());
   }
 
   // Returns all targets from the camera in an array
-  private List<PhotonTrackedTarget> getTargetList() {
+  public List<PhotonTrackedTarget> getTargetList() {
     return (cameraResult.getTargets());
   }
 
   // Returns a picked target from the target list
-  private PhotonTrackedTarget getTargetFromList(int num) {
+  public PhotonTrackedTarget getTargetFromList(int num) {
     return (cameraResult.getTargets().get(num));
   }
 
   // Returns the size of the target list
-  private int getListSize() {
+  public int getListSize() {
     return (cameraResult.getTargets().size());
   }
 
   // Returns a percentage of how much area a target takes up, 0 - 100 percent
-  private double getTargetArea() {
+  public double getTargetArea() {
     return (getBestTarget().getArea());
   }
 
-  private double getTargetPitch() {
+  public double getTargetPitch() {
     return (getBestTarget().getPitch());
   }
 
@@ -103,7 +102,7 @@ public class VisionSubsystem extends SubsystemBase {
     return (getBestTarget().getFiducialId());
   }
 
-  private double getTargetDistance() {
+  public double getTargetDistance() {
     // Camera height M, Target height M, Camera pitch R, Target pitch R.
     return (PhotonUtils.calculateDistanceToTargetMeters(0.774, 0.361, 0.0174, getTargetPitch()));
   }
@@ -120,6 +119,7 @@ public class VisionSubsystem extends SubsystemBase {
   private void updateSmartDashboard() {
     // Put targets? value
     SmartDashboard.putBoolean("Targets?", hasTargets());
+
     // Check if targets are found before putting values to prevent null!
     if (hasTargets()) {
       SmartDashboard.putString("Target ID", getTargetID() + "");
