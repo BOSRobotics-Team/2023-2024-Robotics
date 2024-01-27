@@ -28,8 +28,16 @@ public interface OperatorInterface {
     return 1.0;
   }
 
+  public default Trigger isDriveScaling() {
+    return new Trigger(() -> false);
+  }
+
   public default double getRotateScaling() {
     return 1.0;
+  }
+
+  public default Trigger isRotateScaling() {
+    return new Trigger(() -> false);
   }
 
   public default boolean isRobotRelative() {

@@ -123,15 +123,17 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger isDriveScaling() {
+    return new Trigger(() -> updateDriveScale);
+  }
+
+  @Override
   public double getDriveScaling() {
-    if (translateJoystickButtons[1].getAsBoolean()) {
-      return 0.25;
-    }
     int povVal = translateJoystick.getHID().getPOV();
+    
     if (updateDriveScale && povVal == -1) {
       updateDriveScale = false;
-    }
-    if (!updateDriveScale && povVal == 0) {
+    } else if (!updateDriveScale && povVal == 0) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
@@ -140,20 +142,25 @@ public class DualJoysticksOI implements OperatorInterface {
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
     }
+    if (translateJoystickButtons[1].getAsBoolean()) {
+      updateDriveScale = true;
+      return 0.25;
+    }
     return driveScaleFactor;
   }
 
   @Override
+  public Trigger isRotateScaling() {
+    return new Trigger(() -> updateRotateScale);
+  }
+
+  @Override
   public double getRotateScaling() {
-    if (rotateJoystickButtons[1].getAsBoolean()) {
-      return 0.3;
-    }
     int povVal = rotateJoystick.getHID().getPOV();
 
     if (updateRotateScale && povVal == -1) {
       updateRotateScale = false;
-    }
-    if (!updateRotateScale && povVal == 0) {
+    } else if (!updateRotateScale && povVal == 0) {
       rotateScaleFactor = MathUtil.clamp(rotateScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
       updateRotateScale = true;
@@ -161,6 +168,10 @@ public class DualJoysticksOI implements OperatorInterface {
       rotateScaleFactor = MathUtil.clamp(rotateScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
       updateRotateScale = true;
+    }
+    if (rotateJoystickButtons[1].getAsBoolean()) {
+      updateRotateScale = true;
+      return 0.3;
     }
     return rotateScaleFactor;
   }

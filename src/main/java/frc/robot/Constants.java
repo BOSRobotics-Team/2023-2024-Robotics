@@ -1,6 +1,14 @@
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
 
@@ -8,18 +16,21 @@ public final class Constants {
   public static final boolean DEBUGGING = false;
   public static final boolean TESTING = false;
 
-  public static final String GYRO_CAN_BUS = "Swerve";
-  public static final int GYRO_ID = 20; // DriveGyro.DRIVEGYRO_NAVX;
-
   public static final String LIMELIGHTNAME = "limelight";
   public static final String LIMELIGHTURL = "limelight.local";
 
-  public static final int PNEUMATICSHUB_ID = 29;
-  public static final int SOLENOID_FWD_CHANNEL = 0;
-  public static final int SOLENOID_REV_CHANNEL = 1;
+  public static final String kCameraName = "photonvision";
+  // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+  public static final Transform3d kRobotToCam =
+          new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
 
-  public static final int ARM_LIFT_MOTOR_ID = 30;
-  public static final int ARM_EXTEND_MOTOR_ID = 31;
+  // The layout of the AprilTags on the field
+  public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+
+  // The standard deviations of our vision estimated poses, which affect correction rate
+  // (Fake values. Experiment and determine estimation noise on an actual robot.)
+  public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+  public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
   public static final double STICK_DEADBAND = 0.01;
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
@@ -27,37 +38,6 @@ public final class Constants {
       new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms sprk max velocity lag
   public static final double TURN_CONSTANT = 0.75;
-
-  public static final double TRACKWIDTH = Units.inchesToMeters(17.5);
-  public static final double WHEELBASE = Units.inchesToMeters(25.5);
-  public static final double DRIVE_BASE_RADIUS =
-      0.4; // Drive base radius in meters. Distance from robot center to furthest module.
-
-  public static final String SWERVE_CAN_BUS = "Swerve";
-
-  public static final int FRONT_LEFT_MODULE = 0;
-  public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR_ID = 3;
-  public static final int FRONT_LEFT_MODULE_ANGLE_MOTOR_ID = 2;
-  public static final int FRONT_LEFT_MODULE_ANGLE_ENCODER_ID = 12;
-  public static final double FRONT_LEFT_MODULE_ANGLE_OFFSET = 57.920;
-
-  public static final int FRONT_RIGHT_MODULE = 1;
-  public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID = 1;
-  public static final int FRONT_RIGHT_MODULE_ANGLE_MOTOR_ID = 0;
-  public static final int FRONT_RIGHT_MODULE_ANGLE_ENCODER_ID = 10;
-  public static final double FRONT_RIGHT_MODULE_ANGLE_OFFSET = 344.180;
-
-  public static final int BACK_LEFT_MODULE = 2;
-  public static final int BACK_LEFT_MODULE_DRIVE_MOTOR_ID = 5;
-  public static final int BACK_LEFT_MODULE_ANGLE_MOTOR_ID = 4;
-  public static final int BACK_LEFT_MODULE_ANGLE_ENCODER_ID = 14;
-  public static final double BACK_LEFT_MODULE_ANGLE_OFFSET = 350.332;
-
-  public static final int BACK_RIGHT_MODULE = 3;
-  public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR_ID = 7;
-  public static final int BACK_RIGHT_MODULE_ANGLE_MOTOR_ID = 6;
-  public static final int BACK_RIGHT_MODULE_ANGLE_ENCODER_ID = 16;
-  public static final double BACK_RIGHT_MODULE_ANGLE_OFFSET = 42.539;
 
   public static final int MAX_TEST_COLUMNS = 10;
 }

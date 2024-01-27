@@ -136,6 +136,7 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance));
     oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance));
+    oi.isDriveScaling().onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.getDriveScaling())));
   }
 
   /**

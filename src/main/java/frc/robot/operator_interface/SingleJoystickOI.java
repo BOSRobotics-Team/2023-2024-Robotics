@@ -109,12 +109,17 @@ public class SingleJoystickOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger isDriveScaling() {
+    return new Trigger(() -> updateDriveScale);
+  }
+
+  @Override
   public double getDriveScaling() {
     int povVal = joystick.getHID().getPOV();
+
     if (updateDriveScale && povVal == -1) {
       updateDriveScale = false;
-    }
-    if (!updateDriveScale && povVal == 0) {
+    } else if (!updateDriveScale && povVal == 0) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
@@ -129,10 +134,10 @@ public class SingleJoystickOI implements OperatorInterface {
   @Override
   public double getRotateScaling() {
     int povVal = joystick.getHID().getPOV();
+
     if (updateRotateScale && povVal == -1) {
       updateRotateScale = false;
-    }
-    if (!updateRotateScale && povVal == 90) {
+    } else if (!updateRotateScale && povVal == 90) {
       rotateScaleFactor = MathUtil.clamp(rotateScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
       updateRotateScale = true;

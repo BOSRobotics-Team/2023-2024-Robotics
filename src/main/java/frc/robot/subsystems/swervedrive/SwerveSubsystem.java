@@ -10,6 +10,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -503,5 +505,13 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public boolean isXstance() {
     return this.isLockStance;
+  }
+
+  public void scaleMaximumSpeed(double scale) {
+    swerveDrive.setMaximumSpeed(maximumSpeed * MathUtil.clamp(scale, 0.1, 1.0));
+  }
+
+  public void resetMaximumSpeed() {
+    swerveDrive.setMaximumSpeed(maximumSpeed);
   }
 }
