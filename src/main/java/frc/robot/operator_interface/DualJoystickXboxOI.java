@@ -2,7 +2,6 @@ package frc.robot.operator_interface;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 /** Class for controlling the robot with two Xbox controllers. */
@@ -96,50 +95,5 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
       }
     }
     return result;
-  }
-
-  @Override
-  public double getArmLift() {
-    return -MathUtil.applyDeadband(operator.getLeftY(), Constants.STICK_DEADBAND);
-  }
-
-  @Override
-  public double getArmExtend() {
-    return -MathUtil.applyDeadband(operator.getRightY(), Constants.STICK_DEADBAND);
-  }
-
-  @Override
-  public Trigger getGripToggle() {
-    return new Trigger(operator::getLeftBumper);
-  }
-
-  @Override
-  public Trigger getArmCalibrate() {
-    return new Trigger(operator::getStartButton);
-  }
-
-  @Override
-  public Trigger getArmPosition0() {
-    return new Trigger(operator::getAButton);
-  }
-
-  @Override
-  public Trigger getArmPosition1() {
-    return new Trigger(operator::getXButton);
-  }
-
-  @Override
-  public Trigger getArmPosition2() {
-    return new Trigger(operator::getYButton);
-  }
-
-  @Override
-  public Trigger getArmPosition3() {
-    return new Trigger(operator::getBButton);
-  }
-
-  @Override
-  public Trigger getArmTargetToggle() {
-    return new Trigger(operator::getRightBumper);
   }
 }

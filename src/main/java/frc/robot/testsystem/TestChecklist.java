@@ -189,9 +189,9 @@ public class TestChecklist {
 
     double maxSpeed = m_robot.driveTrain.maximumSpeed;
     double maxRotate = m_robot.driveTrain.getSwerveController().config.maxAngularVelocity;
-    double xVelocity = Math.pow(m_robot.oi.getTranslateX(), 3) * m_robot.oi.getDriveScaling();
-    double yVelocity = Math.pow(m_robot.oi.getTranslateY(), 3) * m_robot.oi.getDriveScaling();
-    double angVelocity = Math.pow(m_robot.oi.getRotate(), 3) * m_robot.oi.getRotateScaling();
+    double xVelocity = Math.pow(m_robot.oi.getTranslateX(), 3) * m_robot.oi.driveScalingValue();
+    double yVelocity = Math.pow(m_robot.oi.getTranslateY(), 3) * m_robot.oi.driveScalingValue();
+    double angVelocity = Math.pow(m_robot.oi.getRotate(), 3) * m_robot.oi.driveScalingValue();
 
     m_robot.driveTrain.drive(
         new Translation2d(xVelocity * maxSpeed, yVelocity * maxSpeed),

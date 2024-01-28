@@ -1,10 +1,6 @@
 package frc.robot.subsystems.vision;
 
-import static frc.robot.Constants.kCameraName;
-import static frc.robot.Constants.kMultiTagStdDevs;
-import static frc.robot.Constants.kRobotToCam;
-import static frc.robot.Constants.kSingleTagStdDevs;
-import static frc.robot.Constants.kTagLayout;
+import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -36,7 +32,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class VisionSubsystem extends SubsystemBase {
 
   // Create a vision photon camera
-  private final PhotonCamera camera = new PhotonCamera(kCameraName);
+  private final PhotonCamera camera = new PhotonCamera(kCameraName1);
   private final PhotonPoseEstimator photonEstimator;
   private double lastEstTimestamp = 0;
 
@@ -52,7 +48,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     this.photonEstimator =
         new PhotonPoseEstimator(
-            kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, kRobotToCam);
+            kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, kRobotToCam1);
     this.photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     // ----- Simulation
@@ -72,14 +68,14 @@ public class VisionSubsystem extends SubsystemBase {
       // targets.
       this.cameraSim = new PhotonCameraSim(camera, cameraProp);
       // Add the simulated camera to view the targets on this simulated field.
-      this.visionSim.addCamera(cameraSim, kRobotToCam);
+      this.visionSim.addCamera(cameraSim, kRobotToCam1);
 
       this.cameraSim.enableDrawWireframe(true);
     } else {
       // Port forward photon vision so we can access it with an ethernet cable
       // Make sure you only configure port forwarding once in your robot code.
       for (int port = 5800; port <= 5805; port++) {
-        PortForwarder.add(port, "photonvision.local", port);
+        PortForwarder.add(port, PHOTONVISIONURL, port);
       }
     }
 

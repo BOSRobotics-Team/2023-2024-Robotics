@@ -10,8 +10,6 @@ public class SingleHandheldOI implements OperatorInterface {
   private final XboxController controller;
   private double driveScaleFactor = 0.5;
   private boolean updateDriveScale = false;
-  private double rotateScaleFactor = 1.0;
-  private boolean updateRotateScale = false;
   protected boolean tests[][] = new boolean[2][20];
 
   public SingleHandheldOI(int port) {
@@ -128,49 +126,31 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger isDriveScaling() {
-    return new Trigger(() -> updateDriveScale);
-  }
-
-  @Override
-  public double getDriveScaling() {
+  public boolean isDriveScaling() {
     int povVal = controller.getPOV();
 
-    if (updateDriveScale && povVal == -1) {
-      updateDriveScale = false;
-    } else if (!updateDriveScale && povVal == 0) {
+    if (updateDriveScale) {
+      updateDriveScale = (povVal != -1);
+    } else if (povVal == 0) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
-    } else if (!updateDriveScale && povVal == 180) {
+    } else if (povVal == 180) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
     }
+    return updateDriveScale;
+  }
+
+  @Override
+  public Trigger getDriveScaling() {
+    return new Trigger(() -> isDriveScaling());
+  }
+
+  @Override
+  public double driveScalingValue() {
     return driveScaleFactor;
-  }
-
-  @Override
-  public Trigger isRotateScaling() {
-    return new Trigger(() -> updateRotateScale);
-  }
-
-  @Override
-  public double getRotateScaling() {
-    int povVal = controller.getPOV();
-
-    if (updateRotateScale && povVal == -1) {
-      updateRotateScale = false;
-    } else if (!updateRotateScale && povVal == 90) {
-      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor + 0.05, 0.1, 1.0);
-      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
-      updateRotateScale = true;
-    } else if (!updateRotateScale && povVal == 270) {
-      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor - 0.05, 0.1, 1.0);
-      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
-      updateRotateScale = true;
-    }
-    return rotateScaleFactor;
   }
 
   @Override
@@ -191,35 +171,5 @@ public class SingleHandheldOI implements OperatorInterface {
   @Override
   public Trigger getXStanceButton() {
     return new Trigger(controller::getRightBumper);
-  }
-
-  @Override
-  public Trigger getGripToggle() {
-    return new Trigger(() -> controller.getLeftTriggerAxis() != 0.0);
-  }
-
-  @Override
-  public Trigger getArmPosition0() {
-    return new Trigger(controller::getAButton);
-  }
-
-  @Override
-  public Trigger getArmPosition1() {
-    return new Trigger(controller::getXButton);
-  }
-
-  @Override
-  public Trigger getArmPosition2() {
-    return new Trigger(controller::getYButton);
-  }
-
-  @Override
-  public Trigger getArmPosition3() {
-    return new Trigger(controller::getBButton);
-  }
-
-  @Override
-  public Trigger getArmTargetToggle() {
-    return new Trigger(controller::getLeftStickButton);
   }
 }

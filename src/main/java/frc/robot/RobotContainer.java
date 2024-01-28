@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.operator_interface.*;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.vision.VisionSubsystem;
+// import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +43,11 @@ public class RobotContainer {
   public final PowerDistribution power = new PowerDistribution();
   // public final VisionSubsystem vision = new VisionSubsystem();
   public final SwerveSubsystem driveTrain =
-      new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
+      new SwerveSubsystem(
+          new File(Filesystem.getDeployDirectory(), Constants.swerveConfigurationName),
+          Constants.driveGearRatio,
+          Constants.angleGearRatio,
+          Constants.wheelDiameter);
 
   /* Test System */
   //  private TestChecklist m_test;
@@ -78,8 +82,8 @@ public class RobotContainer {
 
     ShuffleboardTab tab = Shuffleboard.getTab("MAIN");
     tab.add(autoChooser).withSize(2, 1);
-    tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
-    tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
+    // tab.addNumber("DriveTrain/Drive Scaling", () -> oi.getDriveScaling());
+    // tab.addNumber("DriveTrain/Rotate Scaling", () -> oi.getRotateScaling());
 
     // m_test = new TestChecklist(driveTrain, arm);
   }
@@ -134,10 +138,14 @@ public class RobotContainer {
     oi.getResetGyroButton().onTrue(Commands.runOnce(driveTrain::zeroGyro));
 
     // x-stance
-    oi.getXStanceButton().onTrue(Commands.runOnce(driveTrain::enableXstance));
-    oi.getXStanceButton().onFalse(Commands.runOnce(driveTrain::disableXstance));
-    oi.isDriveScaling()
-        .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.getDriveScaling())));
+    oi.getXStanceButton()
+        .onTrue(Commands.runOnce(driveTrain::enableXstance))
+        .onFalse(Commands.runOnce(driveTrain::disableXstance));
+    oi.getDriveScaling()
+        .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
+    oi.getDriveSlowMode()
+        .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(0.25)))
+        .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
   }
 
   /**
@@ -157,7 +165,6 @@ public class RobotContainer {
 
     // SmartDashboard Buttons
     SmartDashboard.putData("Auto chooser", autoChooser);
-    // SmartDashboard.putData("Calibrate Arm", Commands.runOnce(arm::resetArm, arm));
   }
 
   private void configureAutoPaths() {

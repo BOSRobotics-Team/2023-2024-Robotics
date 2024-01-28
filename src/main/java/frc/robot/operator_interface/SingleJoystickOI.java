@@ -12,8 +12,6 @@ public class SingleJoystickOI implements OperatorInterface {
 
   private double driveScaleFactor = 0.5;
   private boolean updateDriveScale = false;
-  private double rotateScaleFactor = 1.0;
-  private boolean updateRotateScale = false;
   protected boolean tests[][] = new boolean[2][20];
 
   public SingleJoystickOI(int port) {
@@ -109,44 +107,31 @@ public class SingleJoystickOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger isDriveScaling() {
-    return new Trigger(() -> updateDriveScale);
-  }
-
-  @Override
-  public double getDriveScaling() {
+  public boolean isDriveScaling() {
     int povVal = joystick.getHID().getPOV();
 
-    if (updateDriveScale && povVal == -1) {
-      updateDriveScale = false;
-    } else if (!updateDriveScale && povVal == 0) {
+    if (updateDriveScale) {
+      updateDriveScale = (povVal != -1);
+    } else if (povVal == 0) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
-    } else if (!updateDriveScale && povVal == 180) {
+    } else if (povVal == 180) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
     }
-    return driveScaleFactor;
+    return updateDriveScale;
   }
 
   @Override
-  public double getRotateScaling() {
-    int povVal = joystick.getHID().getPOV();
+  public Trigger getDriveScaling() {
+    return new Trigger(() -> isDriveScaling());
+  }
 
-    if (updateRotateScale && povVal == -1) {
-      updateRotateScale = false;
-    } else if (!updateRotateScale && povVal == 90) {
-      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor + 0.05, 0.1, 1.0);
-      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
-      updateRotateScale = true;
-    } else if (!updateRotateScale && povVal == 270) {
-      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor - 0.05, 0.1, 1.0);
-      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
-      updateRotateScale = true;
-    }
-    return rotateScaleFactor;
+  @Override
+  public double driveScalingValue() {
+    return driveScaleFactor;
   }
 
   @Override

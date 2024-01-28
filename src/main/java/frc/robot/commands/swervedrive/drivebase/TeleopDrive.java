@@ -20,31 +20,6 @@ public class TeleopDrive extends Command {
   private final DoubleSupplier vY;
   private final DoubleSupplier omega;
   private final BooleanSupplier driveMode;
-  private final DoubleSupplier vScaling;
-  private final DoubleSupplier rScaling;
-
-  /**
-   * @param swerve The subsystem used by this command.
-   */
-  public TeleopDrive(
-      SwerveSubsystem swerve,
-      DoubleSupplier vX,
-      DoubleSupplier vY,
-      DoubleSupplier omega,
-      BooleanSupplier driveMode,
-      DoubleSupplier velocityScaling,
-      DoubleSupplier rotateScaling) {
-    this.swerve = swerve;
-    this.vX = vX;
-    this.vY = vY;
-    this.omega = omega;
-    this.driveMode = driveMode;
-    this.vScaling = velocityScaling;
-    this.rScaling = rotateScaling;
-
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(swerve);
-  }
 
   /**
    * @param swerve The subsystem used by this command.
@@ -55,7 +30,14 @@ public class TeleopDrive extends Command {
       DoubleSupplier vY,
       DoubleSupplier omega,
       BooleanSupplier driveMode) {
-    this(swerve, vX, vY, omega, driveMode, () -> 1.0, () -> 1.0);
+    this.swerve = swerve;
+    this.vX = vX;
+    this.vY = vY;
+    this.omega = omega;
+    this.driveMode = driveMode;
+
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(swerve);
   }
 
   // Called when the command is initially scheduled.
@@ -68,17 +50,14 @@ public class TeleopDrive extends Command {
     double xVel = vX.getAsDouble();
     double yVel = vY.getAsDouble();
     double rVel = omega.getAsDouble();
-    double vScale = vScaling.getAsDouble();
-    double rScale = rScaling.getAsDouble();
     boolean dMode = driveMode.getAsBoolean();
 
-    double xVelocity = xVel * xVel * xVel * vScale * swerve.maximumSpeed;
-    double yVelocity = yVel * yVel * yVel * vScale * swerve.maximumSpeed;
-    double angVelocity = rVel * rVel * rVel * rScale * swerve.maxAngularVel;
+    double maxVel = swerve.getMaximumVelocity();
+    double maxAngularVel = swerve.getMaximumAngularVelocity();
 
-    // double xVelocity = Math.pow(vX.getAsDouble(), 3) * vScaling.getAsDouble();
-    // double yVelocity = Math.pow(vY.getAsDouble(), 3) * vScaling.getAsDouble();
-    // double angVelocity = Math.pow(omega.getAsDouble(), 3) * rScaling.getAsDouble();
+    double xVelocity = xVel * xVel * xVel * maxVel;
+    double yVelocity = yVel * yVel * yVel * maxVel;
+    double angVelocity = rVel * rVel * rVel * maxAngularVel;
 
     if (Constants.DEBUGGING) {
       SmartDashboard.putNumber("vX", xVelocity);

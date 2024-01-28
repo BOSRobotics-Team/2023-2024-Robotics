@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.AutoConstants;
+import frc.robot.Constants;
 import java.io.File;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -41,9 +42,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
 
   /** Maximum speed of the robot in meters per second, used to limit acceleration. */
-  public double maximumSpeed = SwerveDriveConstants.maxSpeed;
-
-  public double maxAngularVel = SwerveDriveConstants.maxAngularVelocity;
+  public double maximumSpeed = Constants.maxSpeed;
 
   private boolean isLockStance = false;
 
@@ -52,17 +51,16 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param directory Directory of swerve drive config files.
    */
-  public SwerveSubsystem(File directory) {
-    // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
-    //  The encoder resolution per motor revolution is 1 per motor revolution.
-    double angleConversionFactor =
-        SwerveMath.calculateDegreesPerSteeringRotation(SwerveDriveConstants.angleGearRatio);
-
+  public SwerveSubsystem(
+      File directory, double driveGearRatio, double angleGearRatio, double wheelDiameter) {
     // Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER RESOLUTION).
     //  The encoder resolution per motor revolution is 1 per motor revolution.
     double driveConversionFactor =
-        SwerveMath.calculateMetersPerRotation(
-            SwerveDriveConstants.wheelDiameter, SwerveDriveConstants.driveGearRatio);
+        SwerveMath.calculateMetersPerRotation(wheelDiameter, driveGearRatio);
+
+    // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
+    //  The encoder resolution per motor revolution is 1 per motor revolution.
+    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(angleGearRatio);
 
     System.out.println("\"conversionFactor\": {");
     System.out.println("\t\"angle\": " + angleConversionFactor + ",");
@@ -73,15 +71,36 @@ public class SwerveSubsystem extends SubsystemBase {
     // created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
+      // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
       // Alternative method if you don't want to supply the conversion factor via JSON files.
-      // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed,
-      // angleConversionFactor, driveConversionFactor);
+      swerveDrive =
+          new SwerveParser(directory)
+              .createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    swerveDrive.setHeadingCorrection(
-        false); // Heading correction should only be used while controlling the robot via angle.
+    // Heading correction should only be used while controlling the robot via angle.
+    swerveDrive.setHeadingCorrection(false);
+
+    setupPathPlanner();
+  }
+
+  /**
+   * Initialize {@link SwerveDrive} with the directory provided.
+   *
+   * @param directory Directory of swerve drive config files.
+   */
+  public SwerveSubsystem(File directory) {
+    // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being
+    // created.
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    try {
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    // Heading correction should only be used while controlling the robot via angle.
+    swerveDrive.setHeadingCorrection(false);
 
     setupPathPlanner();
   }
@@ -95,6 +114,9 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveSubsystem(
       SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, maximumSpeed);
+    // Heading correction should only be used while controlling the robot via angle.
+    swerveDrive.setHeadingCorrection(false);
+    setupPathPlanner();
   }
 
   /** Setup AutoBuilder for PathPlanner. */
@@ -468,6 +490,14 @@ public class SwerveSubsystem extends SubsystemBase {
   public void addFakeVisionReading() {
     swerveDrive.addVisionMeasurement(
         new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
+  }
+
+  public double getMaximumVelocity() {
+    return swerveDrive.getMaximumVelocity();
+  }
+
+  public double getMaximumAngularVelocity() {
+    return swerveDrive.getMaximumAngularVelocity();
   }
 
   // Boolean supplier that controls when the path will be mirrored for the red alliance

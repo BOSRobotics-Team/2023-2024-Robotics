@@ -14,8 +14,6 @@ public class DualJoysticksOI implements OperatorInterface {
 
   private double driveScaleFactor = 0.8;
   private boolean updateDriveScale = false;
-  private double rotateScaleFactor = 0.8;
-  private boolean updateRotateScale = false;
   protected boolean tests[][] = new boolean[3][20];
 
   public DualJoysticksOI(int translatePort, int rotatePort) {
@@ -123,57 +121,36 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger isDriveScaling() {
-    return new Trigger(() -> updateDriveScale);
-  }
-
-  @Override
-  public double getDriveScaling() {
+  public boolean isDriveScaling() {
     int povVal = translateJoystick.getHID().getPOV();
 
-    if (updateDriveScale && povVal == -1) {
-      updateDriveScale = false;
-    } else if (!updateDriveScale && povVal == 0) {
+    if (updateDriveScale) {
+      updateDriveScale = (povVal != -1);
+    } else if (povVal == 0) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor + 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
-    } else if (!updateDriveScale && povVal == 180) {
+    } else if (povVal == 180) {
       driveScaleFactor = MathUtil.clamp(driveScaleFactor - 0.05, 0.1, 1.0);
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
     }
-    if (translateJoystickButtons[1].getAsBoolean()) {
-      updateDriveScale = true;
-      return 0.25;
-    }
+    return updateDriveScale;
+  }
+
+  @Override
+  public Trigger getDriveScaling() {
+    return new Trigger(() -> isDriveScaling());
+  }
+
+  @Override
+  public double driveScalingValue() {
     return driveScaleFactor;
   }
 
   @Override
-  public Trigger isRotateScaling() {
-    return new Trigger(() -> updateRotateScale);
-  }
-
-  @Override
-  public double getRotateScaling() {
-    int povVal = rotateJoystick.getHID().getPOV();
-
-    if (updateRotateScale && povVal == -1) {
-      updateRotateScale = false;
-    } else if (!updateRotateScale && povVal == 0) {
-      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor + 0.05, 0.1, 1.0);
-      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
-      updateRotateScale = true;
-    } else if (!updateRotateScale && povVal == 180) {
-      rotateScaleFactor = MathUtil.clamp(rotateScaleFactor - 0.05, 0.1, 1.0);
-      System.out.println("Setting rotateScaleFactor to " + rotateScaleFactor);
-      updateRotateScale = true;
-    }
-    if (rotateJoystickButtons[1].getAsBoolean()) {
-      updateRotateScale = true;
-      return 0.3;
-    }
-    return rotateScaleFactor;
+  public Trigger getDriveSlowMode() {
+    return translateJoystickButtons[1];
   }
 
   @Override

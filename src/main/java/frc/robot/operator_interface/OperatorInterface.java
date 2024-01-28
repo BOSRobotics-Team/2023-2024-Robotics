@@ -24,19 +24,19 @@ public interface OperatorInterface {
     return 0.0;
   }
 
-  public default double getDriveScaling() {
+  public default boolean isDriveScaling() {
+    return false;
+  }
+
+  public default Trigger getDriveScaling() {
+    return new Trigger(() -> isDriveScaling());
+  }
+
+  public default double driveScalingValue() {
     return 1.0;
   }
 
-  public default Trigger isDriveScaling() {
-    return new Trigger(() -> false);
-  }
-
-  public default double getRotateScaling() {
-    return 1.0;
-  }
-
-  public default Trigger isRotateScaling() {
+  public default Trigger getDriveSlowMode() {
     return new Trigger(() -> false);
   }
 
@@ -53,42 +53,6 @@ public interface OperatorInterface {
   }
 
   public default Trigger getXStanceButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default double getArmLift() {
-    return 0.0;
-  }
-
-  public default double getArmExtend() {
-    return 0.0;
-  }
-
-  public default Trigger getArmCalibrate() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getGripToggle() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getArmPosition0() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getArmPosition1() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getArmPosition2() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getArmPosition3() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getArmTargetToggle() {
     return new Trigger(() -> false);
   }
 
