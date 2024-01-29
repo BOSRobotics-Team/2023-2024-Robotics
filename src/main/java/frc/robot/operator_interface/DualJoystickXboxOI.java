@@ -1,8 +1,9 @@
 package frc.robot.operator_interface;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants;
 
 /** Class for controlling the robot with two Xbox controllers. */
 public class DualJoystickXboxOI extends DualJoysticksOI {
@@ -18,25 +19,21 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
       if (!test[testNum]) {
         switch (testNum) {
           case 0:
-            test[testNum] =
-                MathUtil.applyDeadband(contrl.getLeftY(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] = MathUtil.applyDeadband(contrl.getLeftY(), STICK_DEADBAND) > 0.0;
             break;
           case 1:
-            test[testNum] =
-                MathUtil.applyDeadband(contrl.getLeftX(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] = MathUtil.applyDeadband(contrl.getLeftX(), STICK_DEADBAND) > 0.0;
             break;
           case 2:
-            test[testNum] =
-                MathUtil.applyDeadband(contrl.getRightX(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] = MathUtil.applyDeadband(contrl.getRightX(), STICK_DEADBAND) > 0.0;
             break;
           case 3:
             test[testNum] =
-                MathUtil.applyDeadband(contrl.getLeftTriggerAxis(), Constants.STICK_DEADBAND) > 0.0;
+                MathUtil.applyDeadband(contrl.getLeftTriggerAxis(), STICK_DEADBAND) > 0.0;
             break;
           case 4:
             test[testNum] =
-                MathUtil.applyDeadband(contrl.getRightTriggerAxis(), Constants.STICK_DEADBAND)
-                    > 0.0;
+                MathUtil.applyDeadband(contrl.getRightTriggerAxis(), STICK_DEADBAND) > 0.0;
             break;
           case 5:
             test[testNum] = contrl.getPOV() == 0;

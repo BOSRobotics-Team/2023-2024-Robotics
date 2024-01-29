@@ -4,10 +4,11 @@
 
 package frc.robot.commands.swervedrive.drivebase;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -59,7 +60,7 @@ public class TeleopDrive extends Command {
     double yVelocity = yVel * yVel * yVel * maxVel;
     double angVelocity = rVel * rVel * rVel * maxAngularVel;
 
-    if (Constants.DEBUGGING) {
+    if (DEBUGGING) {
       SmartDashboard.putNumber("vX", xVelocity);
       SmartDashboard.putNumber("vY", yVelocity);
       SmartDashboard.putNumber("omega", angVelocity);

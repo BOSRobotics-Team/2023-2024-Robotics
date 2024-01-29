@@ -32,7 +32,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class VisionSubsystem extends SubsystemBase {
 
   // Create a vision photon camera
-  private final PhotonCamera camera = new PhotonCamera(kCameraName1);
+  private final PhotonCamera camera = new PhotonCamera(VisionConstants.kCameraName1);
   private final PhotonPoseEstimator photonEstimator;
   private double lastEstTimestamp = 0;
 
@@ -48,7 +48,10 @@ public class VisionSubsystem extends SubsystemBase {
 
     this.photonEstimator =
         new PhotonPoseEstimator(
-            kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, kRobotToCam1);
+            VisionConstants.kTagLayout,
+            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            camera,
+            VisionConstants.kRobotToCam1);
     this.photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     // ----- Simulation
@@ -56,7 +59,7 @@ public class VisionSubsystem extends SubsystemBase {
       // Create the vision system simulation which handles cameras and targets on the field.
       this.visionSim = new VisionSystemSim("main");
       // Add all the AprilTags inside the tag layout as visible targets to this simulated field.
-      this.visionSim.addAprilTags(kTagLayout);
+      this.visionSim.addAprilTags(VisionConstants.kTagLayout);
       // Create simulated camera properties. These can be set to mimic your actual camera.
       var cameraProp = new SimCameraProperties();
       cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
@@ -68,14 +71,14 @@ public class VisionSubsystem extends SubsystemBase {
       // targets.
       this.cameraSim = new PhotonCameraSim(camera, cameraProp);
       // Add the simulated camera to view the targets on this simulated field.
-      this.visionSim.addCamera(cameraSim, kRobotToCam1);
+      this.visionSim.addCamera(cameraSim, VisionConstants.kRobotToCam1);
 
       this.cameraSim.enableDrawWireframe(true);
     } else {
       // Port forward photon vision so we can access it with an ethernet cable
       // Make sure you only configure port forwarding once in your robot code.
       for (int port = 5800; port <= 5805; port++) {
-        PortForwarder.add(port, PHOTONVISIONURL, port);
+        PortForwarder.add(port, VisionConstants.PHOTONVISIONURL, port);
       }
     }
 
@@ -124,7 +127,7 @@ public class VisionSubsystem extends SubsystemBase {
    * @param estimatedPose The estimated pose to guess standard deviations for.
    */
   public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
-    var estStdDevs = kSingleTagStdDevs;
+    var estStdDevs = VisionConstants.kSingleTagStdDevs;
     var targets = cameraResult.getTargets();
     int numTags = 0;
     double avgDist = 0;
@@ -138,7 +141,7 @@ public class VisionSubsystem extends SubsystemBase {
     if (numTags == 0) return estStdDevs;
     avgDist /= numTags;
     // Decrease std devs if multiple targets are visible
-    if (numTags > 1) estStdDevs = kMultiTagStdDevs;
+    if (numTags > 1) estStdDevs = VisionConstants.kMultiTagStdDevs;
     // Increase std devs based on (average) distance
     if (numTags == 1 && avgDist > 4)
       estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);

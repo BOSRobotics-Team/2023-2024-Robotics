@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.swervedrive;
 
+import static frc.robot.Constants.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -22,8 +24,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.AutoConstants;
-import frc.robot.Constants;
 import java.io.File;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -42,7 +42,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
 
   /** Maximum speed of the robot in meters per second, used to limit acceleration. */
-  public double maximumSpeed = Constants.maxSpeed;
+  public double maximumSpeed = DriveTrainConstants.maxSpeed;
 
   private boolean isLockStance = false;
 

@@ -4,12 +4,13 @@
 
 package frc.robot.commands.swervedrive.drivebase;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -101,7 +102,7 @@ public class AbsoluteDriveAdv extends Command {
     // Dont overwrite a button press
     if (headingX == 0 && headingY == 0 && Math.abs(headingAdjust.getAsDouble()) > 0) {
       newHeading =
-          Rotation2d.fromRadians(Constants.TURN_CONSTANT * -headingAdjust.getAsDouble())
+          Rotation2d.fromRadians(TURN_CONSTANT * -headingAdjust.getAsDouble())
               .plus(swerve.getHeading());
       headingX = newHeading.getSin();
       headingY = newHeading.getCos();
@@ -131,9 +132,9 @@ public class AbsoluteDriveAdv extends Command {
             translation,
             swerve.getFieldVelocity(),
             swerve.getPose(),
-            Constants.LOOP_TIME,
-            Constants.ROBOT_MASS,
-            List.of(Constants.CHASSIS),
+            LOOP_TIME,
+            ROBOT_MASS,
+            List.of(CHASSIS),
             swerve.getSwerveDriveConfiguration());
     SmartDashboard.putNumber("LimitedTranslation", translation.getX());
     SmartDashboard.putString("Translation", translation.toString());

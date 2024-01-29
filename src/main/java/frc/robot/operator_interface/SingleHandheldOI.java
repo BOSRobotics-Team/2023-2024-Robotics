@@ -1,9 +1,10 @@
 package frc.robot.operator_interface;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 
 /** Class for controlling the robot with a single Xbox controller. */
 public class SingleHandheldOI implements OperatorInterface {
@@ -21,25 +22,21 @@ public class SingleHandheldOI implements OperatorInterface {
       if (!test[testNum]) {
         switch (testNum) {
           case 0:
-            test[testNum] =
-                MathUtil.applyDeadband(contrl.getLeftY(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] = MathUtil.applyDeadband(contrl.getLeftY(), STICK_DEADBAND) > 0.0;
             break;
           case 1:
-            test[testNum] =
-                MathUtil.applyDeadband(contrl.getLeftX(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] = MathUtil.applyDeadband(contrl.getLeftX(), STICK_DEADBAND) > 0.0;
             break;
           case 2:
-            test[testNum] =
-                MathUtil.applyDeadband(contrl.getRightX(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] = MathUtil.applyDeadband(contrl.getRightX(), STICK_DEADBAND) > 0.0;
             break;
           case 3:
             test[testNum] =
-                MathUtil.applyDeadband(contrl.getLeftTriggerAxis(), Constants.STICK_DEADBAND) > 0.0;
+                MathUtil.applyDeadband(contrl.getLeftTriggerAxis(), STICK_DEADBAND) > 0.0;
             break;
           case 4:
             test[testNum] =
-                MathUtil.applyDeadband(contrl.getRightTriggerAxis(), Constants.STICK_DEADBAND)
-                    > 0.0;
+                MathUtil.applyDeadband(contrl.getRightTriggerAxis(), STICK_DEADBAND) > 0.0;
             break;
           case 5:
             test[testNum] = contrl.getPOV() == 0;
@@ -107,22 +104,22 @@ public class SingleHandheldOI implements OperatorInterface {
 
   @Override
   public double getTranslateX() {
-    return -MathUtil.applyDeadband(controller.getLeftY(), Constants.STICK_DEADBAND);
+    return -MathUtil.applyDeadband(controller.getLeftY(), STICK_DEADBAND);
   }
 
   @Override
   public double getTranslateY() {
-    return -MathUtil.applyDeadband(controller.getLeftX(), Constants.STICK_DEADBAND);
+    return -MathUtil.applyDeadband(controller.getLeftX(), STICK_DEADBAND);
   }
 
   @Override
   public double getRotate() {
-    return -MathUtil.applyDeadband(controller.getRightX(), Constants.STICK_DEADBAND);
+    return -MathUtil.applyDeadband(controller.getRightX(), STICK_DEADBAND);
   }
 
   @Override
   public double getRotateY() {
-    return -MathUtil.applyDeadband(controller.getRightY(), Constants.STICK_DEADBAND);
+    return -MathUtil.applyDeadband(controller.getRightY(), STICK_DEADBAND);
   }
 
   @Override

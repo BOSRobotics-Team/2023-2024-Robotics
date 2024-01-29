@@ -1,11 +1,12 @@
 package frc.robot.testsystem;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.testsystem.TestInterface.TestStates;
 import java.util.ArrayList;
@@ -128,11 +129,12 @@ public class TestChecklist {
 
   private void CreateShuffleTestCard(String _test, TestStates _state) {
 
-    Integer _column = m_tests.size() != 0 ? (m_tests.size() % Constants.MAX_TEST_COLUMNS) * 2 : 0;
+    Integer _column =
+        m_tests.size() != 0 ? (m_tests.size() % TestsystemConstants.MAX_TEST_COLUMNS) * 2 : 0;
     Integer _row =
         m_tests.size() != 0
-            ? ((m_tests.size() - (m_tests.size() % Constants.MAX_TEST_COLUMNS))
-                / Constants.MAX_TEST_COLUMNS)
+            ? ((m_tests.size() - (m_tests.size() % TestsystemConstants.MAX_TEST_COLUMNS))
+                / TestsystemConstants.MAX_TEST_COLUMNS)
             : 0;
 
     SimpleWidget _newWidget =

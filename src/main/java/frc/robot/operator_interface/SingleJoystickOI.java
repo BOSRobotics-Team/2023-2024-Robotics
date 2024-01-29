@@ -1,9 +1,10 @@
 package frc.robot.operator_interface;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 
 /** Class for controlling the robot with a single joystick. */
 public class SingleJoystickOI implements OperatorInterface {
@@ -31,14 +32,13 @@ public class SingleJoystickOI implements OperatorInterface {
       if (!test[testNum]) {
         switch (testNum) {
           case 0:
-            test[testNum] = MathUtil.applyDeadband(contrl.getY(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] = MathUtil.applyDeadband(contrl.getY(), STICK_DEADBAND) > 0.0;
             break;
           case 1:
-            test[testNum] = MathUtil.applyDeadband(contrl.getX(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] = MathUtil.applyDeadband(contrl.getX(), STICK_DEADBAND) > 0.0;
             break;
           case 2:
-            test[testNum] =
-                MathUtil.applyDeadband(contrl.getTwist(), Constants.STICK_DEADBAND) > 0.0;
+            test[testNum] = MathUtil.applyDeadband(contrl.getTwist(), STICK_DEADBAND) > 0.0;
             break;
           case 3:
             test[testNum] = contrl.button(0).getAsBoolean();
@@ -88,22 +88,22 @@ public class SingleJoystickOI implements OperatorInterface {
 
   @Override
   public double getTranslateX() {
-    return -MathUtil.applyDeadband(joystick.getY(), Constants.STICK_DEADBAND);
+    return -MathUtil.applyDeadband(joystick.getY(), STICK_DEADBAND);
   }
 
   @Override
   public double getTranslateY() {
-    return -MathUtil.applyDeadband(joystick.getX(), Constants.STICK_DEADBAND);
+    return -MathUtil.applyDeadband(joystick.getX(), STICK_DEADBAND);
   }
 
   @Override
   public double getRotate() {
-    return -MathUtil.applyDeadband(joystick.getTwist(), Constants.STICK_DEADBAND);
+    return -MathUtil.applyDeadband(joystick.getTwist(), STICK_DEADBAND);
   }
 
   @Override
   public double getRotateY() {
-    return -MathUtil.applyDeadband(joystick.getTwist(), Constants.STICK_DEADBAND);
+    return -MathUtil.applyDeadband(joystick.getTwist(), STICK_DEADBAND);
   }
 
   @Override

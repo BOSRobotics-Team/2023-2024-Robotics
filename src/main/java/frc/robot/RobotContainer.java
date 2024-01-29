@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static frc.robot.Constants.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -44,10 +46,10 @@ public class RobotContainer {
   // public final VisionSubsystem vision = new VisionSubsystem();
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(
-          new File(Filesystem.getDeployDirectory(), Constants.swerveConfigurationName),
-          Constants.driveGearRatio,
-          Constants.angleGearRatio,
-          Constants.wheelDiameter);
+          new File(Filesystem.getDeployDirectory(), DriveTrainConstants.swerveConfigurationName),
+          DriveTrainConstants.driveGearRatio,
+          DriveTrainConstants.angleGearRatio,
+          DriveTrainConstants.wheelDiameter);
 
   /* Test System */
   //  private TestChecklist m_test;
