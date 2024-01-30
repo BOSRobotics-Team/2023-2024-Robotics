@@ -3,6 +3,7 @@ package frc.robot;
 import static frc.robot.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -183,26 +184,14 @@ public class RobotContainer {
   }
 
   private void configureAutoPaths() {
-    // for (int pos = 1; pos <= 3; ++pos) {
-    //   NamedCommands.registerCommand(
-    //       "CubePosition" + pos,
-    //       Commands.sequence(
-    //           Commands.runOnce(() -> arm.targetCones(false), arm), new PositionArm(arm, pos)));
-    // }
-    // for (int pos = 1; pos <= 3; ++pos) {
-    //   NamedCommands.registerCommand(
-    //       "ConePosition" + pos,
-    //       Commands.sequence(
-    //           Commands.runOnce(() -> arm.targetCones(true), arm), new PositionArm(arm, pos)));
-    // }
-    // NamedCommands.registerCommand("DropPiece", new Grip(arm, true));
-    // NamedCommands.registerCommand("GrabPiece", new Grip(arm, false));
-    // NamedCommands.registerCommand("ZeroArm", new PositionArm(arm, 0));
+    NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
+    NamedCommands.registerCommand("Shoot", new ShootCommand(intake, shooter));
   }
 
   public void simulationInit() {}
 
   public void simulationPeriodic() {}
+  \
 
   public void testInit() {
     // m_test.initialize();

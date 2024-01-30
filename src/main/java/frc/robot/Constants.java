@@ -29,7 +29,7 @@ public final class Constants {
     public static final String LIMELIGHTURL = "limelight.local";
     public static final String PHOTONVISIONURL = "photonvision.local";
 
-    public static final String kCameraName1 = "OV5647";
+    public static final String kCameraName1 = "OV9281";
     public static final String kCameraName2 = "camera2";
 
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
