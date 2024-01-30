@@ -18,7 +18,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.intake.IntakeCommand;
+import frc.robot.commands.intake.ShootCommand;
 import frc.robot.operator_interface.*;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 // import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
@@ -50,6 +54,9 @@ public class RobotContainer {
           DriveTrainConstants.driveGearRatio,
           DriveTrainConstants.angleGearRatio,
           DriveTrainConstants.wheelDiameter);
+
+  public final IntakeSubsystem intake = new IntakeSubsystem();
+  public final ShooterSubsystem shooter = new ShooterSubsystem();
 
   /* Test System */
   //  private TestChecklist m_test;
@@ -143,11 +150,17 @@ public class RobotContainer {
     oi.getXStanceButton()
         .onTrue(Commands.runOnce(driveTrain::enableXstance))
         .onFalse(Commands.runOnce(driveTrain::disableXstance));
+
     oi.getDriveScaling()
         .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
     oi.getDriveSlowMode()
         .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(0.25)))
         .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
+
+    oi.getRunIntake()
+      .onTrue(new IntakeCommand(intake));
+    oi.getShoot()
+      .onTrue(new ShootCommand(intake, shooter));
   }
 
   /**

@@ -56,6 +56,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getRunIntake() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getShoot() {
+    return new Trigger(() -> false);
+  }
+
   public default void testOI(int mode) {}
 
   public default boolean testResults(int mode) {

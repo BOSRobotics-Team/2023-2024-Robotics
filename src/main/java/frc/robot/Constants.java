@@ -78,9 +78,11 @@ public final class Constants {
     public static final double maxPIDOutput = 1.0;
     public static final double minPIDOutput = 0.0;
     public static final double velocityPIDTolerance = 30;
+    public static final double kTargetLeftVelocity = 0;
     public static int intakeSensorID;
     public static double intakeRunSpeed;
     public static double intakeReverseSpeed;
+    public static double kTargetRightVelocity;
   }
 
   public static final class AutoConstants {

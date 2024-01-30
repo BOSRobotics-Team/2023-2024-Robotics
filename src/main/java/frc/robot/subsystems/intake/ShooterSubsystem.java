@@ -73,6 +73,10 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightShooterMotor.set(rspeed);
   }
 
+  public void run() {
+    setVelocity(IntakeConstants.kTargetLeftVelocity, IntakeConstants.kTargetRightVelocity);
+  }
+
   public void stop() {
     this.setSpeed(0.0, 0.0);
   }

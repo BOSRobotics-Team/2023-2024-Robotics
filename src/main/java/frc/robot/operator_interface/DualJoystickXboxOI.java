@@ -4,6 +4,7 @@ import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with two Xbox controllers. */
 public class DualJoystickXboxOI extends DualJoysticksOI {
@@ -77,6 +78,16 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
         }
       }
     }
+  }
+
+  @Override
+  public Trigger getRunIntake() {
+    return new Trigger(operator::getYButton);
+  }
+
+  @Override
+  public Trigger getShoot() {
+    return new Trigger(operator::getAButton);
   }
 
   @Override

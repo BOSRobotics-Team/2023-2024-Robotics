@@ -153,4 +153,5 @@ public class SingleJoystickOI implements OperatorInterface {
   public Trigger getXStanceButton() {
     return joystickButtons[2];
   }
+  
 }

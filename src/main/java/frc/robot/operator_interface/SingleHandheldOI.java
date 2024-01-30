@@ -169,4 +169,14 @@ public class SingleHandheldOI implements OperatorInterface {
   public Trigger getXStanceButton() {
     return new Trigger(controller::getRightBumper);
   }
+
+  @Override
+  public Trigger getRunIntake() {
+    return new Trigger(controller::getYButton);
+  }
+
+  @Override
+  public Trigger getShoot() {
+    return new Trigger(controller::getAButton);
+  }
 }
