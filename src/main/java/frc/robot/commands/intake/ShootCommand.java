@@ -12,7 +12,6 @@ public class ShootCommand extends Command {
   private boolean m_isFinished = false;
   private int m_shootCounter = 0;
 
-
   public ShootCommand(IntakeSubsystem intake, ShooterSubsystem shooter) {
     this.m_intake = intake;
     this.m_shooter = shooter;
@@ -39,7 +38,7 @@ public class ShootCommand extends Command {
     if (!m_readyToShoot) {
       if (m_shooter.isOnTarget()) {
         m_readyToShoot = true;
-      System.out.println("Piece Loaded - ready to shoot");
+        System.out.println("Piece Loaded - ready to shoot");
       }
     }
     if (m_readyToShoot) {

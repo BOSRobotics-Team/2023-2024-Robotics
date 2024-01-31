@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.ShootCommand;
 import frc.robot.operator_interface.*;
+// import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -49,6 +50,8 @@ public class RobotContainer {
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
   // public final VisionSubsystem vision = new VisionSubsystem();
+  // public final ClimberSubsystem climber = new ClimberSubsystem();
+
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(
           new File(Filesystem.getDeployDirectory(), DriveTrainConstants.swerveConfigurationName),
@@ -158,10 +161,8 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(0.25)))
         .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
 
-    oi.getRunIntake()
-      .onTrue(new IntakeCommand(intake));
-    oi.getShoot()
-      .onTrue(new ShootCommand(intake, shooter));
+    oi.getRunIntake().onTrue(new IntakeCommand(intake));
+    oi.getShoot().onTrue(new ShootCommand(intake, shooter));
   }
 
   /**

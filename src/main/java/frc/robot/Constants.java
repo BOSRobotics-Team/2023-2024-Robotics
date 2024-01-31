@@ -85,6 +85,27 @@ public final class Constants {
     public static double kTargetRightVelocity;
   }
 
+  public static final class ClimberConstants {
+    public static final int LEFTCLIMBER_ID = 40;
+    public static final int RIGHTCLIMBER_ID = 41;
+    public static final float kLClimberMaxHeight = 1.0f;
+    public static final float kRClimberMaxHeight = 1.0f;
+
+    public static final double proportialPIDConstant = 0.0002;
+    public static final double integralPIDConstant = 0.0;
+    public static final double derivativePIDConstant = 0.0;
+    public static final double integralPIDZone = 0.0;
+    public static final double leftFeedForwardPIDConstant = 0.000175;
+    public static final double rightFeedForwardPIDConstant = 0.000170;
+    public static final double maxPIDOutput = 1.0;
+    public static final double minPIDOutput = 0.0;
+    public static final double velocityPIDTolerance = 30;
+    public static final double kClimberGearRatio = 1.0;
+    public static final double kClimberMetersPerRotation = 0.1;
+
+    public static final double MoveThreshold = 0.01;
+  }
+
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 2.2;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1.2;

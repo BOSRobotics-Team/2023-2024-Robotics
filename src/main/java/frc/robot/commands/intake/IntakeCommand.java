@@ -17,8 +17,7 @@ public class IntakeCommand extends Command {
   @Override
   public void initialize() {
     m_pieceLoaded = m_intake.get_intakeSensor();
-    if (!m_pieceLoaded) 
-        m_intake.run();
+    if (!m_pieceLoaded) m_intake.run();
   }
 
   @Override
@@ -30,6 +29,7 @@ public class IntakeCommand extends Command {
       System.out.println("Piece Loaded - stop intake");
     }
   }
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
