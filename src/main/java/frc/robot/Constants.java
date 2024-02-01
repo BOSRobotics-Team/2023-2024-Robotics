@@ -78,11 +78,11 @@ public final class Constants {
     public static final double maxPIDOutput = 1.0;
     public static final double minPIDOutput = 0.0;
     public static final double velocityPIDTolerance = 30;
-    public static final double kTargetLeftVelocity = 0;
-    public static int intakeSensorID;
-    public static double intakeRunSpeed;
-    public static double intakeReverseSpeed;
-    public static double kTargetRightVelocity;
+    public static final double kTargetLeftVelocity = 0.5;
+    public static final double kTargetRightVelocity = 0.5;
+    public static final int intakeSensorID = 24;
+    public static final double intakeRunSpeed = 0.3;
+    public static final double intakeReverseSpeed = -0.2;
   }
 
   public static final class ClimberConstants {
