@@ -21,10 +21,7 @@ public class TeleopClimber extends Command {
   /**
    * @param climber The subsystem used by this command.
    */
-  public TeleopClimber(
-      ClimberSubsystem climber,
-      DoubleSupplier vL,
-      DoubleSupplier vR) {
+  public TeleopClimber(ClimberSubsystem climber, DoubleSupplier vL, DoubleSupplier vR) {
     this.m_climber = climber;
     this.m_vL = vL;
     this.m_vR = vR;
