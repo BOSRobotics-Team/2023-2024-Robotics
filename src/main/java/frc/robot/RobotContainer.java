@@ -3,7 +3,7 @@ package frc.robot;
 import static frc.robot.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
+// import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -19,13 +19,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.commands.climber.TeleopClimber;
-import frc.robot.commands.intake.IntakeCommand;
-import frc.robot.commands.intake.ShootCommand;
+// import frc.robot.commands.climber.TeleopClimber;
+// import frc.robot.commands.intake.IntakeCommand;
+// import frc.robot.commands.intake.ShootCommand;
 import frc.robot.operator_interface.*;
-import frc.robot.subsystems.climber.ClimberSubsystem;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.ShooterSubsystem;
+// import frc.robot.subsystems.climber.ClimberSubsystem;
+// import frc.robot.subsystems.intake.IntakeSubsystem;
+// import frc.robot.subsystems.intake.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
@@ -59,9 +59,9 @@ public class RobotContainer {
           DriveTrainConstants.angleGearRatio,
           DriveTrainConstants.wheelDiameter);
 
-  public final IntakeSubsystem intake = new IntakeSubsystem();
-  public final ShooterSubsystem shooter = new ShooterSubsystem();
-  public final ClimberSubsystem climber = new ClimberSubsystem();
+  // public final IntakeSubsystem intake = new IntakeSubsystem();
+  // public final ShooterSubsystem shooter = new ShooterSubsystem();
+  // public final ClimberSubsystem climber = new ClimberSubsystem();
 
   /* Test System */
   //  private TestChecklist m_test;
@@ -140,7 +140,7 @@ public class RobotContainer {
     driveTrain.setDefaultCommand(
         !RobotBase.isSimulation() ? drivedAnglularVelocity : driveFieldOrientedAngleVelSim);
 
-    climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
+    // climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
   }
 
   /**
@@ -164,8 +164,8 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(0.25)))
         .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
 
-    oi.getRunIntake().onTrue(new IntakeCommand(intake));
-    oi.getShoot().onTrue(new ShootCommand(intake, shooter));
+    // oi.getRunIntake().onTrue(new IntakeCommand(intake));
+    // oi.getShoot().onTrue(new ShootCommand(intake, shooter));
   }
 
   /**
@@ -188,8 +188,8 @@ public class RobotContainer {
   }
 
   private void configureAutoPaths() {
-    NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
-    NamedCommands.registerCommand("Shoot", new ShootCommand(intake, shooter));
+    // NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
+    // NamedCommands.registerCommand("Shoot", new ShootCommand(intake, shooter));
   }
 
   public void simulationInit() {}
