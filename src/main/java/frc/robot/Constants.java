@@ -53,15 +53,15 @@ public final class Constants {
     public static final double maxAngularVelocity = 5.0;
 
     /* Module Gear Ratios */
-    public static final String swerveConfigurationName = "serve/neo";
-    public static final double wheelDiameter = SwerveDriveConstants.wheelDiameter_MK4i;
-    public static final double driveGearRatio = SwerveDriveConstants.driveGearRatio_MK4i_L2;
-    public static final double angleGearRatio = SwerveDriveConstants.angleGearRatio_MK4i;
+    // public static final String swerveConfigurationName = "serve/neo";
+    // public static final double wheelDiameter = SwerveDriveConstants.wheelDiameter_MK4i;
+    // public static final double driveGearRatio = SwerveDriveConstants.driveGearRatio_MK4i_L2;
+    // public static final double angleGearRatio = SwerveDriveConstants.angleGearRatio_MK4i;
 
-    // public static final String swerveConfigurationName = "serve/falcon";
-    // public static final double wheelDiameter = SwerveDriveConstants.wheelDiameter_MK4;
-    // public static final double driveGearRatio = SwerveDriveConstants.driveGearRatio_MK4_L2;
-    // public static final double angleGearRatio = SwerveDriveConstants.angleGearRatio_MK4;
+    public static final String swerveConfigurationName = "serve/falcon";
+    public static final double wheelDiameter = SwerveDriveConstants.wheelDiameter_MK4;
+    public static final double driveGearRatio = SwerveDriveConstants.driveGearRatio_MK4_L2;
+    public static final double angleGearRatio = SwerveDriveConstants.angleGearRatio_MK4;
   }
 
   public static final class IntakeConstants {
