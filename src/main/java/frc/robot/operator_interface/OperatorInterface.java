@@ -64,6 +64,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default double getLClimber() {
+    return 0.0;
+  }
+
+  public default double getRClimber() {
+    return 0.0;
+  }
+
   public default void testOI(int mode) {}
 
   public default boolean testResults(int mode) {

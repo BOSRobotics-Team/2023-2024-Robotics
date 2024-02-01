@@ -1,5 +1,8 @@
 package frc.robot.operator_interface;
 
+import static frc.robot.Constants.*;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -20,6 +23,16 @@ public class DualHandheldOI extends SingleHandheldOI {
   @Override
   public Trigger getShoot() {
     return new Trigger(operator::getAButton);
+  }
+
+  @Override
+  public double getLClimber() {
+    return -MathUtil.applyDeadband(operator.getLeftY(), STICK_DEADBAND);
+  }
+
+  @Override
+  public double getRClimber() {
+    return -MathUtil.applyDeadband(operator.getRightY(), STICK_DEADBAND);
   }
 
   @Override

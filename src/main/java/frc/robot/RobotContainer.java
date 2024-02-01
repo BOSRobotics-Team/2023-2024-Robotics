@@ -19,10 +19,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.climber.TeleopClimber;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.ShootCommand;
 import frc.robot.operator_interface.*;
-// import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -50,7 +51,6 @@ public class RobotContainer {
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
   // public final VisionSubsystem vision = new VisionSubsystem();
-  // public final ClimberSubsystem climber = new ClimberSubsystem();
 
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(
@@ -61,6 +61,7 @@ public class RobotContainer {
 
   public final IntakeSubsystem intake = new IntakeSubsystem();
   public final ShooterSubsystem shooter = new ShooterSubsystem();
+  public final ClimberSubsystem climber = new ClimberSubsystem();
 
   /* Test System */
   //  private TestChecklist m_test;
@@ -138,6 +139,8 @@ public class RobotContainer {
 
     driveTrain.setDefaultCommand(
         !RobotBase.isSimulation() ? drivedAnglularVelocity : driveFieldOrientedAngleVelSim);
+
+    climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
   }
 
   /**

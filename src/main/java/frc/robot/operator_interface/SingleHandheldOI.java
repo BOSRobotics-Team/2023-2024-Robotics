@@ -179,4 +179,15 @@ public class SingleHandheldOI implements OperatorInterface {
   public Trigger getShoot() {
     return new Trigger(controller::getAButton);
   }
+
+  @Override
+  public double getLClimber() {
+    return MathUtil.applyDeadband(controller.getLeftTriggerAxis(), STICK_DEADBAND);
+  }
+
+  @Override
+  public double getRClimber() {
+    return MathUtil.applyDeadband(controller.getRightTriggerAxis(), STICK_DEADBAND);
+  }
+
 }

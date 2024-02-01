@@ -91,6 +91,16 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
   }
 
   @Override
+  public double getLClimber() {
+    return -MathUtil.applyDeadband(operator.getLeftY(), STICK_DEADBAND);
+  }
+
+  @Override
+  public double getRClimber() {
+    return -MathUtil.applyDeadband(operator.getRightY(), STICK_DEADBAND);
+  }
+
+  @Override
   public boolean testResults(int mode) {
     boolean result = true;
     if (mode == DRIVER) {
