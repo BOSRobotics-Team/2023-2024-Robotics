@@ -10,7 +10,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -91,6 +94,7 @@ public class VisionSubsystem extends SubsystemBase {
     // LimelightHelpers.setStreamMode_Standard(Constants.LIMELIGHTNAME);
     // LimelightHelpers.setStreamMode_PiPMain("");
     // LimelightHelpers.setStreamMode_PiPSecondary("");
+    
   }
 
   /**
@@ -247,6 +251,20 @@ public class VisionSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Target Distance X-Plane", -1);
     }
     SmartDashboard.putString("LED State", camera.getLEDMode().toString());
+    
+    SmartDashboard.putNumber("Pose X", getEstimatedGlobalPose().get().estimatedPose.getX());
+    SmartDashboard.putNumber("Pose Y", getEstimatedGlobalPose().get().estimatedPose.getY());
+    SmartDashboard.putNumber("Pose Z", getEstimatedGlobalPose().get().estimatedPose.getZ());
+
+    Pose2d _pose = getEstimatedGlobalPose()
+                  .get()
+                  .estimatedPose
+                  .toPose2d();
+
+    Field2d _field = new Field2d();
+    _field.setRobotPose(_pose);
+    SmartDashboard.putData("Field Position", _field);
+
   }
 
   public void setLEDOn() {

@@ -27,7 +27,7 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-// import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +50,7 @@ public class RobotContainer {
 
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
-  // public final VisionSubsystem vision = new VisionSubsystem();
+  public final VisionSubsystem vision = new VisionSubsystem();
 
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(
