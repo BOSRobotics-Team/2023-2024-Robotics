@@ -248,17 +248,6 @@ public class VisionSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Target Distance X-Plane", -1);
     }
     SmartDashboard.putString("LED State", camera.getLEDMode().toString());
-
-    
-     if (!getEstimatedGlobalPose().isEmpty()) {
-      SmartDashboard.putNumber("Pose X", getEstimatedGlobalPose().get().estimatedPose.getX());
-      SmartDashboard.putNumber("Pose Y", getEstimatedGlobalPose().get().estimatedPose.getY());
-      SmartDashboard.putNumber("Pose Z", getEstimatedGlobalPose().get().estimatedPose.getZ());
-      // Pose2d _pose = getEstimatedGlobalPose().get().estimatedPose.toPose2d();
-      // Field2d _field = new Field2d();
-      // _field.setRobotPose(_pose);
-      // SmartDashboard.putData("Field Position", _field);
-    }
   }
 
   public void setLEDOn() {
