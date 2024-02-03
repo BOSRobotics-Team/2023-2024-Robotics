@@ -14,7 +14,7 @@ import frc.lib.util.SwerveDriveConstants;
 import swervelib.math.Matter;
 
 public final class Constants {
-  public static final boolean DEBUGGING = false;
+  public static final boolean DEBUGGING = true;
   public static final boolean TESTING = false;
 
   public static final double STICK_DEADBAND = 0.01;
