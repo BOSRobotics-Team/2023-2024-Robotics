@@ -189,5 +189,4 @@ public class SingleHandheldOI implements OperatorInterface {
   public double getRClimber() {
     return MathUtil.applyDeadband(controller.getRightTriggerAxis(), STICK_DEADBAND);
   }
-
 }

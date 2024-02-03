@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.vision.VisionCommand;
 // import frc.robot.commands.climber.TeleopClimber;
 // import frc.robot.commands.intake.IntakeCommand;
 // import frc.robot.commands.intake.ShootCommand;
@@ -141,6 +142,8 @@ public class RobotContainer {
         !RobotBase.isSimulation() ? drivedAnglularVelocity : driveFieldOrientedAngleVelSim);
 
     // climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
+    vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
+    
   }
 
   /**
