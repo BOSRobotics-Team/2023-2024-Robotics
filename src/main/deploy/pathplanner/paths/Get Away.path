@@ -3,54 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.8686726496887707,
-        "y": 6.887585009517068
+        "x": 0.76,
+        "y": 4.131
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.764499271395681,
-        "y": 6.726042503963363
+        "x": 1.0284843426829717,
+        "y": 3.225080735875758
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.8806111279485536,
-        "y": 7.0
+        "x": 1.4096302478319247,
+        "y": 1.5392430784861582
       },
       "prevControl": {
-        "x": 2.980200448595372,
-        "y": 7.0090535746037235
+        "x": 1.204397837367104,
+        "y": 1.9936862730868328
       },
       "nextControl": {
-        "x": 2.781021807301735,
-        "y": 6.9909464253962765
+        "x": 1.6499175702549795,
+        "y": 1.0071782931208222
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.8806111279485536,
-        "y": 7.0
+        "x": 7.771834972241374,
+        "y": 0.7476323524075632
       },
       "prevControl": {
-        "x": 2.896422516250112,
-        "y": 6.952565835097713
+        "x": 6.139518850466273,
+        "y": 0.9057295257447681
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 180.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
@@ -75,40 +69,6 @@
           ]
         }
       }
-    },
-    {
-      "name": "Intake",
-      "waypointRelativePos": 0.5,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Shoot",
-      "waypointRelativePos": 2.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Shoot"
-              }
-            }
-          ]
-        }
-      }
     }
   ],
   "globalConstraints": {
@@ -119,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -145.0,
-    "rotateFast": true
+    "rotation": 180.0,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -120.0,
+    "rotation": 120.0,
     "velocity": 0
   },
   "useDefaultConstraints": false
