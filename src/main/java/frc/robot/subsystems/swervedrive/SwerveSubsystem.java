@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveTrainConstants;
 
 import java.io.File;
 import java.util.function.BooleanSupplier;
@@ -164,6 +166,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
    */
   public Command getAutonomousCommand(String pathName, boolean setOdomToStart) {
+
     // Load the path you want to follow using its name in the GUI
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
 
@@ -172,7 +175,8 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     // Create a path following command using AutoBuilder. This will also trigger event markers.
-    return AutoBuilder.followPath(path);
+    return AutoBuilder.followPath(path); // Maybe replace with : new PathPlannerAuto(pathName); |
+
   }
 
   /**
@@ -491,10 +495,12 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /** Add a vision reading for correction. */
-  public void addVisionMeasurement(Pose2d robotPose, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs ) {
+  public void addVisionMeasurement(
+      Pose2d robotPose, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs) {
     swerveDrive.addVisionMeasurement(robotPose, timestamp, visionMeasurementStdDevs);
   }
-  public void addVisionMeasurement(Pose2d robotPose, double timestamp ) {
+
+  public void addVisionMeasurement(Pose2d robotPose, double timestamp) {
     swerveDrive.addVisionMeasurement(robotPose, timestamp);
   }
 
