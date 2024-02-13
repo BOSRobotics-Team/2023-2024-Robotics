@@ -10,7 +10,6 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -139,6 +138,5 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Avg Launcher On Target", isOnTargetAverage(7));
     SmartDashboard.putNumber("Left Target Velocity", leftTargetVelocity);
     SmartDashboard.putNumber("Right Target Velocity", rightTargetVelocity);
-
   }
 }

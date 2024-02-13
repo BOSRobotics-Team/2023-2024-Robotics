@@ -87,7 +87,6 @@ public class SwerveSubsystem extends SubsystemBase {
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
     setupPathPlanner();
-
   }
 
   /**
@@ -118,14 +117,12 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param controllerCfg Swerve Controller.
    */
   public SwerveSubsystem(
-
-    SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
+      SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, maximumSpeed);
-    
+
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
     setupPathPlanner();
-
   }
 
   /** Setup AutoBuilder for PathPlanner. */
@@ -178,8 +175,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     // Create a path following command using AutoBuilder. This will also trigger event markers.
-    return new PathPlannerAuto(
-        pathName); // AutoBuilder.followPath(path);
+    return new PathPlannerAuto(pathName); // AutoBuilder.followPath(path);
   }
 
   /**

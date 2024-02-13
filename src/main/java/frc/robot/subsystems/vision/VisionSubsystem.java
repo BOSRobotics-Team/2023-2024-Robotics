@@ -52,7 +52,7 @@ public class VisionSubsystem extends SubsystemBase {
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             camera,
             VisionConstants.kRobotToCam1);
-            
+
     this.photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     // ----- Simulation

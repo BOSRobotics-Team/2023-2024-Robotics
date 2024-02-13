@@ -47,7 +47,6 @@ public final class Constants {
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
-
   }
 
   public static final class DriveTrainConstants {
@@ -57,12 +56,11 @@ public final class Constants {
 
     public static final double maxAngularVelocity = 5.0;
 
-    /* Module Gear Ratios */
-    // public static final String swerveConfigurationName = "swerve/neo";
-    // public static final SwerveDriveConstants swerveConfig = SwerveDriveConstants.SDSMK4i_L2();
+    public static final String swerveConfigurationName = "swerve/neo";
+    public static final SwerveDriveConstants swerveConfig = SwerveDriveConstants.SDSMK4i_L2();
 
-    public static final String swerveConfigurationName = "swerve/falcon";
-    public static final SwerveDriveConstants swerveConfig = SwerveDriveConstants.SDSMK4_L2();
+    // public static final String swerveConfigurationName = "swerve/falcon";
+    // public static final SwerveDriveConstants swerveConfig = SwerveDriveConstants.SDSMK4_L2();
   }
 
   public static final class IntakeConstants {
@@ -91,7 +89,6 @@ public final class Constants {
     public static final int intakeSensorID = 24;
     public static final double intakeRunSpeed = 0.3;
     public static final double intakeReverseSpeed = -0.2;
-
   }
 
   public static final class ClimberConstants {
@@ -114,7 +111,6 @@ public final class Constants {
     public static final double kClimberMetersPerRotation = 0.1;
 
     public static final double MoveThreshold = 0.01;
-
   }
 
   public static final class AutoConstants {
@@ -133,12 +129,10 @@ public final class Constants {
     public static final double kPThetaController = 1;
     public static final double kIThetaController = 0;
     public static final double kDThetaController = 0;
-
   }
 
   public static final class TestsystemConstants {
 
     public static final int MAX_TEST_COLUMNS = 10;
-
   }
 }
