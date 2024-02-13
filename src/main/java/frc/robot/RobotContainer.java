@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.ShootCommand;
 import frc.robot.commands.vision.VisionCommand;
+import frc.robot.operator_interface.OISelector;
+import frc.robot.operator_interface.OperatorInterface;
 // import frc.robot.commands.climber.TeleopClimber;
 // import frc.robot.commands.intake.IntakeCommand;
 // import frc.robot.commands.intake.ShootCommand;
@@ -61,9 +63,9 @@ public class RobotContainer {
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(
           new File(Filesystem.getDeployDirectory(), DriveTrainConstants.swerveConfigurationName),
-          DriveTrainConstants.driveGearRatio,
-          DriveTrainConstants.angleGearRatio,
-          DriveTrainConstants.wheelDiameter);
+          DriveTrainConstants.swerveConfig.driveGearRatio,
+          DriveTrainConstants.swerveConfig.angleGearRatio,
+          DriveTrainConstants.swerveConfig.wheelDiameter);
 
   // public final IntakeSubsystem intake = new IntakeSubsystem();
   // public final ShooterSubsystem shooter = new ShooterSubsystem();
@@ -148,7 +150,6 @@ public class RobotContainer {
 
     // climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
     vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
-
   }
 
   /**
