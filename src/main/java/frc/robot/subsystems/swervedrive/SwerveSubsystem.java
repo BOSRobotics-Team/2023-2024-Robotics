@@ -27,8 +27,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveTrainConstants;
 
 import java.io.File;
 import java.util.function.BooleanSupplier;
@@ -176,7 +174,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Create a path following command using AutoBuilder. This will also trigger event markers.
     return AutoBuilder.followPath(path); // Maybe replace with : new PathPlannerAuto(pathName); |
-
   }
 
   /**

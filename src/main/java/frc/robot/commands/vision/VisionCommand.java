@@ -37,21 +37,22 @@ public class VisionCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(!RobotState.isAutonomous()) {
+    if (!RobotState.isAutonomous()) {
       var opRobotPose = m_vision.getEstimatedGlobalPose();
-      opRobotPose.ifPresent(est -> {
-        Pose2d estPose = est.estimatedPose.toPose2d();
-        var stdDevs = m_vision.getEstimationStdDevs(estPose);
+      opRobotPose.ifPresent(
+          est -> {
+            Pose2d estPose = est.estimatedPose.toPose2d();
+            var stdDevs = m_vision.getEstimationStdDevs(estPose);
 
-        m_swerve.addVisionMeasurement(estPose, est.timestampSeconds, stdDevs);
+            m_swerve.addVisionMeasurement(estPose, est.timestampSeconds, stdDevs);
 
-        if (DEBUGGING) {
-          System.out.println("Got New Position");          
-          SmartDashboard.putNumber("estPoseX", estPose.getX());
-          SmartDashboard.putNumber("estPoseY", estPose.getY());
-          SmartDashboard.putNumber("estPoseRotation", estPose.getRotation().getDegrees());
-        }
-      });
+            if (DEBUGGING) {
+              System.out.println("Got New Position");
+              SmartDashboard.putNumber("estPoseX", estPose.getX());
+              SmartDashboard.putNumber("estPoseY", estPose.getY());
+              SmartDashboard.putNumber("estPoseRotation", estPose.getRotation().getDegrees());
+            }
+          });
     }
   }
 

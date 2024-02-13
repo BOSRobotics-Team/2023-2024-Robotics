@@ -143,7 +143,6 @@ public class RobotContainer {
 
     // climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
     vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
-    
   }
 
   /**
