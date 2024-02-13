@@ -14,9 +14,11 @@ import frc.lib.util.SwerveDriveConstants;
 import swervelib.math.Matter;
 
 public final class Constants {
+
   public static final boolean DEBUGGING = true;
   public static final boolean TESTING = false;
 
+  public static final double TRIGGER_DEADBAND = 0.01;
   public static final double STICK_DEADBAND = 0.01;
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS =
@@ -25,6 +27,7 @@ public final class Constants {
   public static final double TURN_CONSTANT = 0.75;
 
   public static final class VisionConstants {
+
     public static final String LIMELIGHTNAME = "limelight";
     public static final String LIMELIGHTURL = "limelight.local";
     public static final String PHOTONVISIONURL = "photonvision.local";
@@ -44,27 +47,31 @@ public final class Constants {
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+
   }
 
   public static final class DriveTrainConstants {
+
     /** Maximum Speed - Meters per Second */
     public static final double maxSpeed = 4.5;
 
     public static final double maxAngularVelocity = 5.0;
 
     /* Module Gear Ratios */
-    // public static final String swerveConfigurationName = "swerve/neo";
-    // public static final double wheelDiameter = SwerveDriveConstants.wheelDiameter_MK4i;
-    // public static final double driveGearRatio = SwerveDriveConstants.driveGearRatio_MK4i_L2;
-    // public static final double angleGearRatio = SwerveDriveConstants.angleGearRatio_MK4i;
+    public static final String swerveConfigurationName = "swerve/neo";
+    public static final double wheelDiameter = SwerveDriveConstants.wheelDiameter_MK4i;
+    public static final double driveGearRatio = SwerveDriveConstants.driveGearRatio_MK4i_L2;
+    public static final double angleGearRatio = SwerveDriveConstants.angleGearRatio_MK4i;
 
-    public static final String swerveConfigurationName = "swerve/falcon";
-    public static final double wheelDiameter = SwerveDriveConstants.wheelDiameter_MK4;
-    public static final double driveGearRatio = SwerveDriveConstants.driveGearRatio_MK4_L2;
-    public static final double angleGearRatio = SwerveDriveConstants.angleGearRatio_MK4;
-  }
+  //   public static final String swerveConfigurationName = "swerve/falcon";
+  //   public static final double wheelDiameter = SwerveDriveConstants.wheelDiameter_MK4;
+  //   public static final double driveGearRatio = SwerveDriveConstants.driveGearRatio_MK4_L2;
+  //   public static final double angleGearRatio = SwerveDriveConstants.angleGearRatio_MK4;
+
+ }
 
   public static final class IntakeConstants {
+
     public static final int INTAKE_ID = 21;
     public static final int LEFTSHOOTER_ID = 22;
     public static final int RIGHTSHOOTER_ID = 23;
@@ -78,14 +85,22 @@ public final class Constants {
     public static final double maxPIDOutput = 1.0;
     public static final double minPIDOutput = 0.0;
     public static final double velocityPIDTolerance = 30;
+
     public static final double kTargetLeftVelocity = 0.5;
     public static final double kTargetRightVelocity = 0.5;
+
+    /* Just in case :) */
+    public static final double SPEAKER_VELOCITY = 0.5;
+    public static final double AMP_VELOCITY = 0.2;
+
     public static final int intakeSensorID = 24;
     public static final double intakeRunSpeed = 0.3;
     public static final double intakeReverseSpeed = -0.2;
+
   }
 
   public static final class ClimberConstants {
+
     public static final int LEFTCLIMBER_ID = 40;
     public static final int RIGHTCLIMBER_ID = 41;
     public static final float kLClimberMaxHeight = 1.0f;
@@ -104,9 +119,11 @@ public final class Constants {
     public static final double kClimberMetersPerRotation = 0.1;
 
     public static final double MoveThreshold = 0.01;
+
   }
 
   public static final class AutoConstants {
+
     public static final double kMaxSpeedMetersPerSecond = 2.2;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1.2;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
@@ -121,10 +138,12 @@ public final class Constants {
     public static final double kPThetaController = 1;
     public static final double kIThetaController = 0;
     public static final double kDThetaController = 0;
+
   }
 
   public static final class TestsystemConstants {
 
     public static final int MAX_TEST_COLUMNS = 10;
+
   }
 }

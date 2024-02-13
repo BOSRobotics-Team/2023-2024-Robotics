@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
 public class IntakeCommand extends Command {
+  
   private final IntakeSubsystem m_intake;
 
   private boolean m_pieceLoaded = false;

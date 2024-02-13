@@ -7,6 +7,7 @@ package frc.robot.subsystems.swervedrive;
 import static frc.robot.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -29,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveTrainConstants;
-
 import java.io.File;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -85,10 +85,11 @@ public class SwerveSubsystem extends SubsystemBase {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
-
     setupPathPlanner();
+
   }
 
   /**
@@ -97,6 +98,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param directory Directory of swerve drive config files.
    */
   public SwerveSubsystem(File directory) {
+
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being
     // created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
@@ -105,9 +107,9 @@ public class SwerveSubsystem extends SubsystemBase {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
-
     setupPathPlanner();
   }
 
@@ -118,11 +120,14 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param controllerCfg Swerve Controller.
    */
   public SwerveSubsystem(
-      SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
+
+    SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, maximumSpeed);
+    
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
     setupPathPlanner();
+
   }
 
   /** Setup AutoBuilder for PathPlanner. */
@@ -175,8 +180,8 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     // Create a path following command using AutoBuilder. This will also trigger event markers.
-    return AutoBuilder.followPath(path); // Maybe replace with : new PathPlannerAuto(pathName); |
-
+    return new PathPlannerAuto(
+        pathName); // AutoBuilder.followPath(path);
   }
 
   /**

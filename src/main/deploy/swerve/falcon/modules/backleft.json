@@ -3,7 +3,7 @@
     "front": -12,
     "left": 12
   },
-  "absoluteEncoderOffset": 350.332,
+  "absoluteEncoderOffset": 169.805,
   "drive": {
     "type": "falcon",
     "id": 5,
@@ -24,7 +24,7 @@
     "canbus": "Swerve"
   },
   "inverted": {
-    "drive": false,
+    "drive": true,
     "angle": false
   }
 }

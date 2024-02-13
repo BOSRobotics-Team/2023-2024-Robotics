@@ -10,6 +10,7 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IntakeConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -73,6 +74,11 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightShooterMotor.set(rspeed);
   }
 
+  public void reverse() {
+    m_leftShooterMotor.set(IntakeConstants.intakeReverseSpeed);
+    m_rightShooterMotor.set(IntakeConstants.intakeReverseSpeed);
+  }
+
   public void run() {
     setVelocity(IntakeConstants.kTargetLeftVelocity, IntakeConstants.kTargetRightVelocity);
   }
@@ -125,6 +131,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Update the smart dashboard
   private void updateSmartDashboard() {
+
     SmartDashboard.putNumber("Left Velocity", m_leftShooterEncoder.getVelocity());
     SmartDashboard.putNumber("Right Velocity", m_rightShooterEncoder.getVelocity());
     SmartDashboard.putNumber("Average Velocity", getVelocity());
@@ -132,5 +139,6 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Avg Launcher On Target", isOnTargetAverage(7));
     SmartDashboard.putNumber("Left Target Velocity", leftTargetVelocity);
     SmartDashboard.putNumber("Right Target Velocity", rightTargetVelocity);
+
   }
 }

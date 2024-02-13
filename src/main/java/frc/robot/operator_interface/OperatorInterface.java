@@ -60,6 +60,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getUnStuckIntake() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getUnStuckShooter() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getShoot() {
     return new Trigger(() -> false);
   }
