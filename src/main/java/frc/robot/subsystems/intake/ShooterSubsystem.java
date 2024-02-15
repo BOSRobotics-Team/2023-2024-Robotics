@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.Constants.*;
 
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -12,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
+
+  private final VictorSPX m_aimMotor = new VictorSPX(IntakeConstants.SHOOTERMOTOR_ID);
 
   private final SimableCANSparkMax m_leftShooterMotor =
       new SimableCANSparkMax(IntakeConstants.LEFTSHOOTER_ID, MotorType.kBrushless);
@@ -31,7 +35,8 @@ public class ShooterSubsystem extends SubsystemBase {
   // Subsystem Constructor
   public ShooterSubsystem() {
 
-    m_rightShooterMotor.setInverted(true);
+    m_leftShooterMotor.setInverted(true);
+    m_rightShooterMotor.setInverted(false);
 
     m_leftShooterEncoder = m_leftShooterMotor.getEncoder();
     m_rightShooterEncoder = m_rightShooterMotor.getEncoder();
@@ -58,6 +63,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     m_leftShooterMotor.burnFlash();
     m_rightShooterMotor.burnFlash();
+  }
+
+  public void runAimMotor(double percent) {
+    System.out.printf("Motor: " + percent);
+    m_aimMotor.set(VictorSPXControlMode.PercentOutput, percent);
+  }
+
+  public void stopAimMotor() {
+    m_aimMotor.set(VictorSPXControlMode.PercentOutput, 0.0);
+    System.out.printf("Motor Stop\n");
   }
 
   public void setVelocity(double lvelocity, double rvelocity) {
@@ -96,12 +111,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // For the target velocity
   public boolean isOnTarget() {
+    double leftVel = m_leftShooterEncoder.getVelocity();
+    double rightVel = m_rightShooterEncoder.getVelocity();
     boolean leftOnTarget =
-        Math.abs(leftTargetVelocity - m_leftShooterEncoder.getVelocity())
-            <= IntakeConstants.velocityPIDTolerance;
+        Math.abs(leftTargetVelocity - leftVel) <= IntakeConstants.velocityPIDTolerance;
     boolean rightOnTarget =
-        Math.abs(rightTargetVelocity - m_rightShooterEncoder.getVelocity())
-            <= IntakeConstants.velocityPIDTolerance;
+        Math.abs(rightTargetVelocity - rightVel) <= IntakeConstants.velocityPIDTolerance;
+
     return (rightOnTarget && leftOnTarget);
   }
 
@@ -134,8 +150,8 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Velocity", m_leftShooterEncoder.getVelocity());
     SmartDashboard.putNumber("Right Velocity", m_rightShooterEncoder.getVelocity());
     SmartDashboard.putNumber("Average Velocity", getVelocity());
-    SmartDashboard.putBoolean("Launcher On Target", isOnTarget());
-    SmartDashboard.putBoolean("Avg Launcher On Target", isOnTargetAverage(7));
+    // SmartDashboard.putBoolean("Launcher On Target", isOnTarget());
+    // SmartDashboard.putBoolean("Avg Launcher On Target", isOnTargetAverage(7));
     SmartDashboard.putNumber("Left Target Velocity", leftTargetVelocity);
     SmartDashboard.putNumber("Right Target Velocity", rightTargetVelocity);
   }

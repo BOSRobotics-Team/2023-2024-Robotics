@@ -35,6 +35,7 @@ public class ShootCommand extends Command {
 
   @Override
   public void execute() {
+
     if (!m_readyToShoot) {
       if (m_shooter.isOnTarget()) {
         m_readyToShoot = true;

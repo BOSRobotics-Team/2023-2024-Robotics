@@ -9,6 +9,7 @@ import frc.robot.Constants;
 
 /** Class for controlling the robot with two Xbox controllers. */
 public class DualJoystickXboxOI extends DualJoysticksOI {
+
   private final XboxController operator;
 
   public DualJoystickXboxOI(int translatePort, int rotatePort, int xboxPort) {
@@ -94,6 +95,16 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
   @Override
   public Trigger getUnStuckShooter() {
     return new Trigger(operator::getRightBumper);
+  }
+
+  @Override
+  public Trigger getAimMotorUp() {
+    return new Trigger(() -> operator.getPOV() == 0);
+  }
+
+  @Override
+  public Trigger getAimMotorDown() {
+    return new Trigger(() -> operator.getPOV() == 180);
   }
 
   @Override

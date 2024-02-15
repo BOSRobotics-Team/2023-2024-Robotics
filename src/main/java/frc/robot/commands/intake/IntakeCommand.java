@@ -23,7 +23,7 @@ public class IntakeCommand extends Command {
 
   @Override
   public void execute() {
-    if (m_intake.get_intakeSensor()) {
+    if (m_intake.get_intakeSensor() || m_intake.m_interuptIntake) {
       // Disable the intake motors
       m_intake.stop();
       m_pieceLoaded = true;

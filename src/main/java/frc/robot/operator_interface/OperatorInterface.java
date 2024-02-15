@@ -68,6 +68,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getAimMotorUp() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAimMotorDown() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getShoot() {
     return new Trigger(() -> false);
   }

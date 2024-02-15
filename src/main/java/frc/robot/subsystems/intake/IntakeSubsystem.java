@@ -17,13 +17,16 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput m_intakeSensor = new DigitalInput(IntakeConstants.intakeSensorID);
 
   private boolean m_useLimit = true;
+  public boolean m_interuptIntake = false;
 
   // Subsystem Constructor
   public IntakeSubsystem() {
 
     m_intakeMotor.restoreFactoryDefaults();
     // initialze PID controller and encoder objects
-    m_intakeLimit = m_intakeMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+    m_intakeLimit = m_intakeMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+    m_intakeLimit.enableLimitSwitch(false);
+    m_intakeMotor.setInverted(true);
 
     stop();
 
@@ -35,10 +38,12 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void reverse() {
+    m_interuptIntake = true;
     m_intakeMotor.set(IntakeConstants.intakeReverseSpeed);
   }
 
   public void stop() {
+    m_interuptIntake = false;
     m_intakeMotor.set(0.0);
   }
 

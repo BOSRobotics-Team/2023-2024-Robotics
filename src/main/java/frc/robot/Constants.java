@@ -66,8 +66,9 @@ public final class Constants {
   public static final class IntakeConstants {
 
     public static final int INTAKE_ID = 21;
-    public static final int LEFTSHOOTER_ID = 22;
-    public static final int RIGHTSHOOTER_ID = 23;
+    public static final int LEFTSHOOTER_ID = 23;
+    public static final int RIGHTSHOOTER_ID = 22;
+    public static final int SHOOTERMOTOR_ID = 32;
 
     public static final double proportialPIDConstant = 0.0002;
     public static final double integralPIDConstant = 0.0;
@@ -77,10 +78,10 @@ public final class Constants {
     public static final double rightFeedForwardPIDConstant = 0.000170;
     public static final double maxPIDOutput = 1.0;
     public static final double minPIDOutput = 0.0;
-    public static final double velocityPIDTolerance = 30;
+    public static final double velocityPIDTolerance = 100.0;
 
-    public static final double kTargetLeftVelocity = 0.5;
-    public static final double kTargetRightVelocity = 0.5;
+    public static final double kTargetLeftVelocity = 3600.0;
+    public static final double kTargetRightVelocity = 3600.0;
 
     /* Just in case :) */
     public static final double SPEAKER_VELOCITY = 0.5;

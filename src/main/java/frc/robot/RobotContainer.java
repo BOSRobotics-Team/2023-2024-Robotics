@@ -173,6 +173,14 @@ public class RobotContainer {
     oi.getUnStuckShooter()
         .onTrue(Commands.runOnce(() -> shooter.reverse()))
         .onFalse(Commands.runOnce(() -> shooter.stop()));
+
+    oi.getAimMotorDown()
+        .onTrue(Commands.runOnce(() -> shooter.runAimMotor(-1.0)))
+        .onFalse(Commands.runOnce(() -> shooter.stopAimMotor()));
+
+    oi.getAimMotorUp()
+        .onTrue(Commands.runOnce(() -> shooter.runAimMotor(1.0)))
+        .onFalse(Commands.runOnce(() -> shooter.stopAimMotor()));
   }
 
   /**
