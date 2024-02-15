@@ -24,6 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intakeMotor.restoreFactoryDefaults();
     // initialze PID controller and encoder objects
     m_intakeLimit = m_intakeMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+    m_intakeLimit.enableLimitSwitch(false);
 
     stop();
 
