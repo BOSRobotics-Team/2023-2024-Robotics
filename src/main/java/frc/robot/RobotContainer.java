@@ -19,8 +19,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.intake.IntakeCommand;
-import frc.robot.commands.intake.ShootCommand;
+import frc.robot.commands.intake.JustShootCommand;
+// import frc.robot.commands.intake.ShootCommand;
+import frc.robot.commands.intake.SpinDnShootersCommand;
+import frc.robot.commands.intake.SpinUpShootersCommand;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -169,7 +173,11 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> intake.reverse()))
         .onFalse(Commands.runOnce(() -> intake.stop()));
 
-    oi.getShoot().onTrue(new ShootCommand(intake, shooter));
+    oi.getShoot().onTrue(new SequentialCommandGroup(
+                          new SpinUpShootersCommand(shooter),
+                          new JustShootCommand(intake),
+                          new SpinDnShootersCommand(shooter)));
+    // oi.getShoot().onTrue(new ShootCommand(intake, shooter));
     oi.getUnStuckShooter()
         .onTrue(Commands.runOnce(() -> shooter.reverse()))
         .onFalse(Commands.runOnce(() -> shooter.stop()));

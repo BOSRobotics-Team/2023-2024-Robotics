@@ -29,6 +29,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private double leftTargetVelocity = 0;
   private double rightTargetVelocity = 0;
+  private double aveTargetVelocity = 0;
 
   private int rollingAvg = 0;
 
@@ -66,37 +67,39 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void runAimMotor(double percent) {
-    System.out.printf("Motor: " + percent);
     m_aimMotor.set(VictorSPXControlMode.PercentOutput, percent);
   }
 
   public void stopAimMotor() {
     m_aimMotor.set(VictorSPXControlMode.PercentOutput, 0.0);
-    System.out.printf("Motor Stop\n");
   }
 
   public void setVelocity(double lvelocity, double rvelocity) {
     leftTargetVelocity = lvelocity;
     rightTargetVelocity = rvelocity;
+    aveTargetVelocity = (leftTargetVelocity + rightTargetVelocity) / 2.0;
 
     m_leftShooterController.setReference(leftTargetVelocity, ControlType.kVelocity);
     m_rightShooterController.setReference(rightTargetVelocity, ControlType.kVelocity);
   }
 
   public void setSpeed(double lspeed, double rspeed) {
+    leftTargetVelocity = 0;
+    rightTargetVelocity = 0;
+    aveTargetVelocity = 0;
+
     m_leftShooterMotor.set(lspeed);
     m_rightShooterMotor.set(rspeed);
   }
 
-  public void reverse() {
-    m_leftShooterMotor.set(IntakeConstants.intakeReverseSpeed);
-    m_rightShooterMotor.set(IntakeConstants.intakeReverseSpeed);
-  }
-
   public void run() {
-    setVelocity(IntakeConstants.kTargetLeftVelocity, IntakeConstants.kTargetRightVelocity);
+    this.setVelocity(IntakeConstants.kTargetLeftVelocity, IntakeConstants.kTargetRightVelocity);
   }
 
+  public void reverse() {
+    this.setSpeed(IntakeConstants.intakeReverseSpeed, IntakeConstants.intakeReverseSpeed);
+  }
+  
   public void stop() {
     this.setSpeed(0.0, 0.0);
   }
@@ -111,14 +114,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // For the target velocity
   public boolean isOnTarget() {
-    double leftVel = m_leftShooterEncoder.getVelocity();
-    double rightVel = m_rightShooterEncoder.getVelocity();
-    boolean leftOnTarget =
-        Math.abs(leftTargetVelocity - leftVel) <= IntakeConstants.velocityPIDTolerance;
-    boolean rightOnTarget =
-        Math.abs(rightTargetVelocity - rightVel) <= IntakeConstants.velocityPIDTolerance;
+    double vel = this.getVelocity();
+    boolean onTarget =
+        Math.abs(aveTargetVelocity - vel) <= IntakeConstants.velocityPIDTolerance;
 
-    return (rightOnTarget && leftOnTarget);
+    return onTarget;
   }
 
   public boolean isOnTargetAverage(int percent) {
