@@ -99,7 +99,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void reverse() {
     this.setSpeed(IntakeConstants.intakeReverseSpeed, IntakeConstants.intakeReverseSpeed);
   }
-  
+
   public void stop() {
     this.setSpeed(0.0, 0.0);
   }
@@ -115,8 +115,7 @@ public class ShooterSubsystem extends SubsystemBase {
   // For the target velocity
   public boolean isOnTarget() {
     double vel = this.getVelocity();
-    boolean onTarget =
-        Math.abs(aveTargetVelocity - vel) <= IntakeConstants.velocityPIDTolerance;
+    boolean onTarget = Math.abs(aveTargetVelocity - vel) <= IntakeConstants.velocityPIDTolerance;
 
     return onTarget;
   }

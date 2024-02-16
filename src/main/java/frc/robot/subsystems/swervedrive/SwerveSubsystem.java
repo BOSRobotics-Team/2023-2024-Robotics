@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-
 import java.io.File;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -206,18 +205,14 @@ public class SwerveSubsystem extends SubsystemBase {
         );
   }
 
-    /**
+  /**
    * Command to characterize the robot drive motors using SysId
    *
    * @return SysId Drive Command
    */
-  public Command sysIdDriveMotorCommand()
-  {
+  public Command sysIdDriveMotorCommand() {
     return SwerveDriveTest.generateSysIdCommand(
-        SwerveDriveTest.setDriveSysIdRoutine(
-            new Config(),
-            this, swerveDrive, 12),
-        3.0, 5.0, 3.0);
+        SwerveDriveTest.setDriveSysIdRoutine(new Config(), this, swerveDrive, 12), 3.0, 5.0, 3.0);
   }
 
   /**
@@ -225,13 +220,9 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @return SysId Angle Command
    */
-  public Command sysIdAngleMotorCommand()
-  {
+  public Command sysIdAngleMotorCommand() {
     return SwerveDriveTest.generateSysIdCommand(
-        SwerveDriveTest.setAngleSysIdRoutine(
-            new Config(),
-            this, swerveDrive),
-        3.0, 5.0, 3.0);
+        SwerveDriveTest.setAngleSysIdRoutine(new Config(), this, swerveDrive), 3.0, 5.0, 3.0);
   }
 
   /**

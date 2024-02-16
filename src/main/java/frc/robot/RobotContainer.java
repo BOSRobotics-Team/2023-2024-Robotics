@@ -173,10 +173,12 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> intake.reverse()))
         .onFalse(Commands.runOnce(() -> intake.stop()));
 
-    oi.getShoot().onTrue(new SequentialCommandGroup(
-                          new SpinUpShootersCommand(shooter),
-                          new JustShootCommand(intake),
-                          new SpinDnShootersCommand(shooter)));
+    oi.getShoot()
+        .onTrue(
+            new SequentialCommandGroup(
+                new SpinUpShootersCommand(shooter),
+                new JustShootCommand(intake),
+                new SpinDnShootersCommand(shooter)));
     // oi.getShoot().onTrue(new ShootCommand(intake, shooter));
     oi.getUnStuckShooter()
         .onTrue(Commands.runOnce(() -> shooter.reverse()))

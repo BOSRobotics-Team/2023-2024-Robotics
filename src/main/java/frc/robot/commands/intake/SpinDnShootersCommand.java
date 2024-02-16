@@ -22,14 +22,13 @@ public class SpinDnShootersCommand extends Command {
 
   @Override
   public void execute() {
-      m_isFinished = true;
-      System.out.println("Shooters stopping");
+    m_isFinished = true;
+    System.out.println("Shooters stopping");
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
