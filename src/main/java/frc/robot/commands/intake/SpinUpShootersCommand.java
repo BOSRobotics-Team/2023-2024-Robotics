@@ -23,7 +23,7 @@ public class SpinUpShootersCommand extends Command {
   @Override
   public void execute() {
 
-    if (m_shooter.isOnTarget()) {
+    if (m_shooter.isOnTargetAverage(7)) {
       m_isFinished = true;
       System.out.println("Shooters ready to shoot");
     }

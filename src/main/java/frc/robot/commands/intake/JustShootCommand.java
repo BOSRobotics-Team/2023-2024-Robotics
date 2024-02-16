@@ -17,15 +17,14 @@ public class JustShootCommand extends Command {
 
   @Override
   public void initialize() {
-    m_shootCounter = 25;
+    m_shootCounter = 50;
     m_isFinished = false;
+    m_intake.run();
+    System.out.println("Piece Loaded - shooting");
   }
 
   @Override
   public void execute() {
-
-    m_intake.run();
-    System.out.println("Piece Loaded - shooting");
     m_isFinished = (--m_shootCounter <= 0);
   }
 

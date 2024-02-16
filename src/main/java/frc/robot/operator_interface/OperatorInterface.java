@@ -80,6 +80,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getSpinupShooter() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getSpinDownShooter() {
+    return new Trigger(() -> false);
+  }
+
   public default double getLClimber() {
     return 0.0;
   }

@@ -88,6 +88,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
+    swerveDrive.setCosineCompensator(false);
     setupPathPlanner();
   }
 
@@ -109,6 +110,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
+    swerveDrive.setCosineCompensator(false);
     setupPathPlanner();
   }
 
@@ -124,6 +126,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
+    swerveDrive.setCosineCompensator(false);
     setupPathPlanner();
   }
 

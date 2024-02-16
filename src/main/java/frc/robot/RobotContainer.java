@@ -191,6 +191,9 @@ public class RobotContainer {
     oi.getAimMotorUp()
         .onTrue(Commands.runOnce(() -> shooter.runAimMotor(1.0)))
         .onFalse(Commands.runOnce(() -> shooter.stopAimMotor()));
+
+    oi.getSpinupShooter().onTrue(new SpinUpShootersCommand(shooter));
+    oi.getSpinDownShooter().onTrue(new SpinDnShootersCommand(shooter));
   }
 
   /**

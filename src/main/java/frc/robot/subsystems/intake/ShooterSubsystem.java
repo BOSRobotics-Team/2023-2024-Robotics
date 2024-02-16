@@ -15,15 +15,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final VictorSPX m_aimMotor = new VictorSPX(IntakeConstants.SHOOTERMOTOR_ID);
+  private final VictorSPX m_aimMotor = new VictorSPX(ShooterConstants.AIMMOTOR_ID);
 
   private final SimableCANSparkMax m_leftShooterMotor =
-      new SimableCANSparkMax(IntakeConstants.LEFTSHOOTER_ID, MotorType.kBrushless);
+      new SimableCANSparkMax(ShooterConstants.LEFTSHOOTERMOTOR_ID, MotorType.kBrushless);
   private final RelativeEncoder m_leftShooterEncoder;
   private final SparkPIDController m_leftShooterController;
 
   private final SimableCANSparkMax m_rightShooterMotor =
-      new SimableCANSparkMax(IntakeConstants.RIGHTSHOOTER_ID, MotorType.kBrushless);
+      new SimableCANSparkMax(ShooterConstants.RIGHTSHOOTERMOTOR_ID, MotorType.kBrushless);
   private final RelativeEncoder m_rightShooterEncoder;
   private final SparkPIDController m_rightShooterController;
 
@@ -45,21 +45,21 @@ public class ShooterSubsystem extends SubsystemBase {
     m_leftShooterController = m_leftShooterMotor.getPIDController();
     m_rightShooterController = m_rightShooterMotor.getPIDController();
 
-    m_leftShooterController.setP(IntakeConstants.proportialPIDConstant);
-    m_leftShooterController.setI(IntakeConstants.integralPIDConstant);
-    m_leftShooterController.setD(IntakeConstants.derivativePIDConstant);
-    m_leftShooterController.setIZone(IntakeConstants.integralPIDConstant);
-    m_leftShooterController.setFF(IntakeConstants.leftFeedForwardPIDConstant);
+    m_leftShooterController.setP(ShooterConstants.proportialPIDConstant);
+    m_leftShooterController.setI(ShooterConstants.integralPIDConstant);
+    m_leftShooterController.setD(ShooterConstants.derivativePIDConstant);
+    m_leftShooterController.setIZone(ShooterConstants.integralPIDConstant);
+    m_leftShooterController.setFF(ShooterConstants.leftFeedForwardPIDConstant);
     m_leftShooterController.setOutputRange(
-        IntakeConstants.minPIDOutput, IntakeConstants.maxPIDOutput);
+        ShooterConstants.minPIDOutput, ShooterConstants.maxPIDOutput);
 
-    m_rightShooterController.setP(IntakeConstants.proportialPIDConstant);
-    m_rightShooterController.setI(IntakeConstants.integralPIDConstant);
-    m_rightShooterController.setD(IntakeConstants.derivativePIDConstant);
-    m_rightShooterController.setIZone(IntakeConstants.integralPIDConstant);
-    m_rightShooterController.setFF(IntakeConstants.rightFeedForwardPIDConstant);
+    m_rightShooterController.setP(ShooterConstants.proportialPIDConstant);
+    m_rightShooterController.setI(ShooterConstants.integralPIDConstant);
+    m_rightShooterController.setD(ShooterConstants.derivativePIDConstant);
+    m_rightShooterController.setIZone(ShooterConstants.integralPIDConstant);
+    m_rightShooterController.setFF(ShooterConstants.rightFeedForwardPIDConstant);
     m_rightShooterController.setOutputRange(
-        IntakeConstants.minPIDOutput, IntakeConstants.maxPIDOutput);
+        ShooterConstants.minPIDOutput, ShooterConstants.maxPIDOutput);
     stop();
 
     m_leftShooterMotor.burnFlash();
@@ -67,7 +67,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void runAimMotor(double percent) {
-    m_aimMotor.set(VictorSPXControlMode.PercentOutput, percent);
+    m_aimMotor.set(
+        VictorSPXControlMode.PercentOutput, -percent); // negative because motor is upside down
   }
 
   public void stopAimMotor() {
@@ -93,11 +94,11 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void run() {
-    this.setVelocity(IntakeConstants.kTargetLeftVelocity, IntakeConstants.kTargetRightVelocity);
+    this.setVelocity(ShooterConstants.kTargetLeftVelocity, ShooterConstants.kTargetRightVelocity);
   }
 
   public void reverse() {
-    this.setSpeed(IntakeConstants.intakeReverseSpeed, IntakeConstants.intakeReverseSpeed);
+    this.setSpeed(ShooterConstants.shooterReverseSpeed, ShooterConstants.shooterReverseSpeed);
   }
 
   public void stop() {
@@ -115,7 +116,7 @@ public class ShooterSubsystem extends SubsystemBase {
   // For the target velocity
   public boolean isOnTarget() {
     double vel = this.getVelocity();
-    boolean onTarget = Math.abs(aveTargetVelocity - vel) <= IntakeConstants.velocityPIDTolerance;
+    boolean onTarget = Math.abs(aveTargetVelocity - vel) <= ShooterConstants.velocityTolerance;
 
     return onTarget;
   }

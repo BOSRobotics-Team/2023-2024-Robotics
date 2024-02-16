@@ -113,6 +113,16 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
   }
 
   @Override
+  public Trigger getSpinupShooter() {
+    return new Trigger(operator::getYButton);
+  }
+
+  @Override
+  public Trigger getSpinDownShooter() {
+    return new Trigger(operator::getAButton);
+  }
+
+  @Override
   public double getLClimber() {
     return -MathUtil.applyDeadband(operator.getLeftY(), STICK_DEADBAND);
   }

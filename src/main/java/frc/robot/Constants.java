@@ -64,32 +64,29 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
+    public static final int INTAKEMOTOR_ID = 21;
+    public static final double intakeRunSpeed = 0.3;
+    public static final double intakeReverseSpeed = -0.2;
+  }
 
-    public static final int INTAKE_ID = 21;
-    public static final int LEFTSHOOTER_ID = 23;
-    public static final int RIGHTSHOOTER_ID = 22;
-    public static final int SHOOTERMOTOR_ID = 32;
+  public static final class ShooterConstants {
+    public static final int LEFTSHOOTERMOTOR_ID = 23;
+    public static final int RIGHTSHOOTERMOTOR_ID = 22;
+    public static final int AIMMOTOR_ID = 32;
 
-    public static final double proportialPIDConstant = 0.0002;
+    public static final double kTargetLeftVelocity = 5000.0;
+    public static final double kTargetRightVelocity = 4800.0;
+    public static final double shooterReverseSpeed = -0.2;
+
+    public static final double proportialPIDConstant = 0.00012;
     public static final double integralPIDConstant = 0.0;
     public static final double derivativePIDConstant = 0.0;
     public static final double integralPIDZone = 0.0;
-    public static final double leftFeedForwardPIDConstant = 0.000175;
-    public static final double rightFeedForwardPIDConstant = 0.000170;
+    public static final double leftFeedForwardPIDConstant = 0.0001;
+    public static final double rightFeedForwardPIDConstant = 0.0001;
     public static final double maxPIDOutput = 1.0;
     public static final double minPIDOutput = 0.0;
-    public static final double velocityPIDTolerance = 100.0;
-
-    public static final double kTargetLeftVelocity = 3600.0;
-    public static final double kTargetRightVelocity = 3600.0;
-
-    /* Just in case :) */
-    public static final double SPEAKER_VELOCITY = 0.5;
-    public static final double AMP_VELOCITY = 0.2;
-
-    public static final int intakeSensorID = 24;
-    public static final double intakeRunSpeed = 0.3;
-    public static final double intakeReverseSpeed = -0.2;
+    public static final double velocityTolerance = 50.0;
   }
 
   public static final class ClimberConstants {
@@ -107,10 +104,9 @@ public final class Constants {
     public static final double rightFeedForwardPIDConstant = 0.000170;
     public static final double maxPIDOutput = 1.0;
     public static final double minPIDOutput = 0.0;
-    public static final double velocityPIDTolerance = 30;
+
     public static final double kClimberGearRatio = 1.0;
     public static final double kClimberMetersPerRotation = 0.1;
-
     public static final double MoveThreshold = 0.01;
   }
 
