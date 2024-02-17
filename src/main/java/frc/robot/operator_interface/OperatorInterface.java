@@ -60,6 +60,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getManualIntake() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getUnStuckIntake() {
     return new Trigger(() -> false);
   }

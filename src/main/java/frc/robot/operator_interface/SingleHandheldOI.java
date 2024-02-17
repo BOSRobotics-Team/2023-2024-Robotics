@@ -152,7 +152,7 @@ public class SingleHandheldOI implements OperatorInterface {
 
   @Override
   public boolean isRobotRelative() {
-    return controller.getLeftBumper();
+    return !controller.getLeftBumper();
   }
 
   @Override
@@ -173,6 +173,11 @@ public class SingleHandheldOI implements OperatorInterface {
   @Override
   public Trigger getRunIntake() {
     return new Trigger(controller::getYButton);
+  }
+
+  @Override
+  public Trigger getManualIntake() {
+    return new Trigger(controller::getBButton);
   }
 
   @Override

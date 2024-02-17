@@ -155,7 +155,7 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public boolean isRobotRelative() {
-    return rotateJoystickButtons[4].getAsBoolean();
+    return !rotateJoystickButtons[4].getAsBoolean();
   }
 
   @Override

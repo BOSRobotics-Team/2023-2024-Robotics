@@ -127,11 +127,6 @@ public class ShooterSubsystem extends SubsystemBase {
     return (rollingAvg >= MathUtil.clamp(percent, 0, 10));
   }
 
-  public static double distanceToVelocity(double distance) {
-    // TODO tune distance convertion
-    return 0.0;
-  }
-
   @Override
   public void periodic() {
     if (isOnTarget()) {
@@ -139,7 +134,7 @@ public class ShooterSubsystem extends SubsystemBase {
         rollingAvg++;
       }
     } else if (rollingAvg > 0) {
-        rollingAvg--;
+      rollingAvg--;
     }
     updateSmartDashboard();
   }

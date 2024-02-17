@@ -173,6 +173,9 @@ public class RobotContainer {
     oi.getUnStuckIntake()
         .onTrue(Commands.runOnce(() -> intake.reverse()))
         .onFalse(Commands.runOnce(() -> intake.stop()));
+    oi.getManualIntake()
+        .onTrue(Commands.runOnce(() -> intake.run()))
+        .onFalse(Commands.runOnce(() -> intake.stop()));
 
     oi.getShoot()
         .onTrue(

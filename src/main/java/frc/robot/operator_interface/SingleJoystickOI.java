@@ -136,7 +136,7 @@ public class SingleJoystickOI implements OperatorInterface {
 
   @Override
   public boolean isRobotRelative() {
-    return joystickButtons[4].getAsBoolean();
+    return !joystickButtons[4].getAsBoolean();
   }
 
   @Override

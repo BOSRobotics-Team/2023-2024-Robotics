@@ -88,6 +88,11 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
   }
 
   @Override
+  public Trigger getManualIntake() {
+    return new Trigger(operator::getBButton);
+  }
+
+  @Override
   public Trigger getUnStuckIntake() {
     return new Trigger(operator::getLeftBumper);
   }
