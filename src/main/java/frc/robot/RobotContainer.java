@@ -3,6 +3,7 @@ package frc.robot;
 import static frc.robot.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 // import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -22,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.JustShootCommand;
-// import frc.robot.commands.intake.ShootCommand;
+import frc.robot.commands.intake.ShootCommand;
 import frc.robot.commands.intake.SpinDnShootersCommand;
 import frc.robot.commands.intake.SpinUpShootersCommand;
 import frc.robot.operator_interface.OISelector;
@@ -216,8 +217,8 @@ public class RobotContainer {
   }
 
   private void configureAutoPaths() {
-    // NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
-    // NamedCommands.registerCommand("Shoot", new ShootCommand(intake, shooter));
+    NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
+    NamedCommands.registerCommand("Shoot", new ShootCommand(intake, shooter));
   }
 
   public void simulationInit() {}

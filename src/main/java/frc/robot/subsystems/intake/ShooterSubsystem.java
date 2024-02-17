@@ -79,6 +79,7 @@ public class ShooterSubsystem extends SubsystemBase {
     leftTargetVelocity = lvelocity;
     rightTargetVelocity = rvelocity;
     aveTargetVelocity = (leftTargetVelocity + rightTargetVelocity) / 2.0;
+    rollingAvg = 0;
 
     m_leftShooterController.setReference(leftTargetVelocity, ControlType.kVelocity);
     m_rightShooterController.setReference(rightTargetVelocity, ControlType.kVelocity);
@@ -88,6 +89,7 @@ public class ShooterSubsystem extends SubsystemBase {
     leftTargetVelocity = 0;
     rightTargetVelocity = 0;
     aveTargetVelocity = 0;
+    rollingAvg = 0;
 
     m_leftShooterMotor.set(lspeed);
     m_rightShooterMotor.set(rspeed);
@@ -137,9 +139,7 @@ public class ShooterSubsystem extends SubsystemBase {
         rollingAvg++;
       }
     } else if (rollingAvg > 0) {
-      if (rollingAvg > 0) {
         rollingAvg--;
-      }
     }
     updateSmartDashboard();
   }
@@ -147,12 +147,12 @@ public class ShooterSubsystem extends SubsystemBase {
   // Update the smart dashboard
   private void updateSmartDashboard() {
 
-    SmartDashboard.putNumber("Left Velocity", m_leftShooterEncoder.getVelocity());
-    SmartDashboard.putNumber("Right Velocity", m_rightShooterEncoder.getVelocity());
-    SmartDashboard.putNumber("Average Velocity", getVelocity());
+    SmartDashboard.putNumber("LShooter Vel", m_leftShooterEncoder.getVelocity());
+    SmartDashboard.putNumber("RShooter Vel", m_rightShooterEncoder.getVelocity());
+    SmartDashboard.putNumber("Ave Shooter Vel", getVelocity());
     // SmartDashboard.putBoolean("Launcher On Target", isOnTarget());
     // SmartDashboard.putBoolean("Avg Launcher On Target", isOnTargetAverage(7));
-    SmartDashboard.putNumber("Left Target Velocity", leftTargetVelocity);
-    SmartDashboard.putNumber("Right Target Velocity", rightTargetVelocity);
+    SmartDashboard.putNumber("LShooter Target Vel", leftTargetVelocity);
+    SmartDashboard.putNumber("RShooter Target Vel", rightTargetVelocity);
   }
 }
