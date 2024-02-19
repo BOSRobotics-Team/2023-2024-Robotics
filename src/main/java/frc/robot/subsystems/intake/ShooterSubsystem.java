@@ -99,6 +99,10 @@ public class ShooterSubsystem extends SubsystemBase {
     this.setVelocity(ShooterConstants.kTargetLeftVelocity, ShooterConstants.kTargetRightVelocity);
   }
 
+  public void run2() {
+    this.setVelocity(ShooterConstants.kTargetLeftVelocity2, ShooterConstants.kTargetRightVelocity2);
+  }
+
   public void reverse() {
     this.setSpeed(ShooterConstants.shooterReverseSpeed, ShooterConstants.shooterReverseSpeed);
   }
@@ -146,7 +150,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("RShooter Vel", m_rightShooterEncoder.getVelocity());
     SmartDashboard.putNumber("Ave Shooter Vel", getVelocity());
     // SmartDashboard.putBoolean("Launcher On Target", isOnTarget());
-    // SmartDashboard.putBoolean("Avg Launcher On Target", isOnTargetAverage(7));
+    SmartDashboard.putBoolean("Avg Shooter OnTarget", isOnTargetAverage(7));
     SmartDashboard.putNumber("LShooter Target Vel", leftTargetVelocity);
     SmartDashboard.putNumber("RShooter Target Vel", rightTargetVelocity);
   }

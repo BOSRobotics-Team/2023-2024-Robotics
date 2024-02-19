@@ -76,6 +76,8 @@ public final class Constants {
 
     public static final double kTargetLeftVelocity = 5400.0;
     public static final double kTargetRightVelocity = 5400.0;
+    public static final double kTargetLeftVelocity2 = 3800.0;
+    public static final double kTargetRightVelocity2 = 3600.0;
     public static final double shooterReverseSpeed = -0.2;
 
     public static final double proportialPIDConstant = 0.00012;

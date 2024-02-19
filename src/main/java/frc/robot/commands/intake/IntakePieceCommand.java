@@ -3,13 +3,13 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
-public class IntakeCommand extends Command {
+public class IntakePieceCommand extends Command {
 
   private final IntakeSubsystem m_intake;
 
   private boolean m_pieceLoaded = false;
 
-  public IntakeCommand(IntakeSubsystem intake) {
+  public IntakePieceCommand(IntakeSubsystem intake) {
     this.m_intake = intake;
 
     addRequirements(intake);

@@ -4,7 +4,6 @@ import static frc.robot.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-// import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -21,16 +20,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.intake.IntakeCommand;
+import frc.robot.commands.climber.TeleopClimber;
+import frc.robot.commands.intake.IntakePieceCommand;
 import frc.robot.commands.intake.JustShootCommand;
 import frc.robot.commands.intake.ShootCommand;
 import frc.robot.commands.intake.SpinDnShootersCommand;
 import frc.robot.commands.intake.SpinUpShootersCommand;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.ShooterSubsystem;
-// import frc.robot.commands.climber.TeleopClimber;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import java.util.HashMap;
@@ -65,7 +65,7 @@ public class RobotContainer {
 
   public final IntakeSubsystem intake = new IntakeSubsystem();
   public final ShooterSubsystem shooter = new ShooterSubsystem();
-  // public final ClimberSubsystem climber = new ClimberSubsystem();
+  public final ClimberSubsystem climber = new ClimberSubsystem();
 
   /* Test System */
   //  private TestChecklist m_test;
@@ -120,31 +120,16 @@ public class RobotContainer {
 
     configureButtonBindings();
 
-    // AbsoluteDriveAdv closedAbsoluteDriveAdv =
-    //    new AbsoluteDriveAdv(driveTrain,
-    //         oi::getTranslateX,
-    //         oi::getTranslateY,
-    //         oi::getRotate,
-    //         driverXbox::getYButtonPressed,
-    //         driverXbox::getAButtonPressed,
-    //         driverXbox::getXButtonPressed,
-    //         driverXbox::getBButtonPressed);
+    if (RobotBase.isSimulation()) {
+      driveTrain.setDefaultCommand(
+          driveTrain.simDriveCommand(oi::getTranslateX, oi::getTranslateY, oi::getRotate));
+    } else {
+      driveTrain.setDefaultCommand(
+          driveTrain.driveCommand(
+              oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::isRobotRelative));
+    }
 
-    // Command driveFieldOrientedDirectAngle =
-    //     driveTrain.driveCommand(
-    //         oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::getRotateY);
-
-    Command drivedAnglularVelocity =
-        driveTrain.driveCommand(
-            oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::isRobotRelative);
-
-    Command driveFieldOrientedAngleVelSim =
-        driveTrain.simDriveCommand(oi::getTranslateX, oi::getTranslateY, oi::getRotate);
-
-    driveTrain.setDefaultCommand(
-        !RobotBase.isSimulation() ? drivedAnglularVelocity : driveFieldOrientedAngleVelSim);
-
-    // climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
+    climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
     // vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
   }
 
@@ -169,13 +154,16 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(0.25)))
         .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
 
-    oi.getRunIntake().onTrue(new IntakeCommand(intake));
+    oi.getRunIntake().onTrue(new IntakePieceCommand(intake));
     oi.getUnStuckIntake()
-        .onTrue(Commands.runOnce(() -> intake.reverse()))
-        .onFalse(Commands.runOnce(() -> intake.stop()));
+        .onTrue(Commands.runOnce(intake::reverse))
+        .onFalse(Commands.runOnce(intake::stop));
     oi.getManualIntake()
-        .onTrue(Commands.runOnce(() -> intake.run()))
-        .onFalse(Commands.runOnce(() -> intake.stop()));
+        .onTrue(Commands.runOnce(intake::run))
+        .onFalse(Commands.runOnce(intake::stop));
+
+    oi.getSpinupShooter().onTrue(new SpinUpShootersCommand(shooter));
+    oi.getSpinDownShooter().onTrue(new SpinDnShootersCommand(shooter));
 
     oi.getShoot()
         .onTrue(
@@ -183,21 +171,18 @@ public class RobotContainer {
                 new SpinUpShootersCommand(shooter),
                 new JustShootCommand(intake),
                 new SpinDnShootersCommand(shooter)));
-    // oi.getShoot().onTrue(new ShootCommand(intake, shooter));
-    oi.getUnStuckShooter()
-        .onTrue(Commands.runOnce(() -> shooter.reverse()))
-        .onFalse(Commands.runOnce(() -> shooter.stop()));
 
-    oi.getAimMotorDown()
-        .onTrue(Commands.runOnce(() -> shooter.runAimMotor(-1.0)))
-        .onFalse(Commands.runOnce(() -> shooter.stopAimMotor()));
+    oi.getUnStuckShooter()
+        .onTrue(Commands.runOnce(shooter::reverse))
+        .onFalse(Commands.runOnce(shooter::stop));
 
     oi.getAimMotorUp()
         .onTrue(Commands.runOnce(() -> shooter.runAimMotor(1.0)))
-        .onFalse(Commands.runOnce(() -> shooter.stopAimMotor()));
+        .onFalse(Commands.runOnce(shooter::stopAimMotor));
 
-    oi.getSpinupShooter().onTrue(new SpinUpShootersCommand(shooter));
-    oi.getSpinDownShooter().onTrue(new SpinDnShootersCommand(shooter));
+    oi.getAimMotorDown()
+        .onTrue(Commands.runOnce(() -> shooter.runAimMotor(-1.0)))
+        .onFalse(Commands.runOnce(shooter::stopAimMotor));
   }
 
   /**
@@ -211,7 +196,6 @@ public class RobotContainer {
 
   /** Use this method to define your commands for autonomous mode. */
   private void configureAutoCommands() {
-
     // Add commands to Autonomous Sendable Chooser
     autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -220,7 +204,7 @@ public class RobotContainer {
   }
 
   private void configureAutoPaths() {
-    NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
+    NamedCommands.registerCommand("Intake", new IntakePieceCommand(intake));
     NamedCommands.registerCommand("Shoot", new ShootCommand(intake, shooter));
   }
 
