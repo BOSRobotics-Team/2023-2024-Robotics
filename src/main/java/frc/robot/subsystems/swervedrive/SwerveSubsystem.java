@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.swervedrive;
 
-import static frc.robot.Constants.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
@@ -29,6 +27,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.lib.util.SwerveDriveConstants;
+import frc.robot.Constants.AutoConstants;
 import java.io.File;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -48,7 +48,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
 
   /** Maximum speed of the robot in meters per second, used to limit acceleration. */
-  public double maximumSpeed = DriveTrainConstants.maxSpeed;
+  public double maximumSpeed = 4.5;
 
   private boolean isLockStance = false;
 
@@ -57,16 +57,18 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param directory Directory of swerve drive config files.
    */
-  public SwerveSubsystem(
-      File directory, double driveGearRatio, double angleGearRatio, double wheelDiameter) {
+  public SwerveSubsystem(File directory, SwerveDriveConstants swerveConstants, double maxSpeed) {
+    maximumSpeed = maxSpeed;
     // Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER RESOLUTION).
     //  The encoder resolution per motor revolution is 1 per motor revolution.
     double driveConversionFactor =
-        SwerveMath.calculateMetersPerRotation(wheelDiameter, driveGearRatio);
+        SwerveMath.calculateMetersPerRotation(
+            swerveConstants.wheelDiameter, swerveConstants.driveGearRatio);
 
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     //  The encoder resolution per motor revolution is 1 per motor revolution.
-    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(angleGearRatio);
+    double angleConversionFactor =
+        SwerveMath.calculateDegreesPerSteeringRotation(swerveConstants.angleGearRatio);
 
     System.out.println("\"conversionFactor\": {");
     System.out.println("\t\"angle\": " + angleConversionFactor + ",");
@@ -97,7 +99,8 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param directory Directory of swerve drive config files.
    */
-  public SwerveSubsystem(File directory) {
+  public SwerveSubsystem(File directory, double maxSpeed) {
+    maximumSpeed = maxSpeed;
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being
     // created.
@@ -121,7 +124,10 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param controllerCfg Swerve Controller.
    */
   public SwerveSubsystem(
-      SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
+      SwerveDriveConfiguration driveCfg,
+      SwerveControllerConfiguration controllerCfg,
+      double maxSpeed) {
+    maximumSpeed = maxSpeed;
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, maximumSpeed);
 
     // Heading correction should only be used while controlling the robot via angle.

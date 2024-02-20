@@ -59,9 +59,8 @@ public class RobotContainer {
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(
           new File(Filesystem.getDeployDirectory(), DriveTrainConstants.swerveConfigurationName),
-          DriveTrainConstants.swerveConfig.driveGearRatio,
-          DriveTrainConstants.swerveConfig.angleGearRatio,
-          DriveTrainConstants.swerveConfig.wheelDiameter);
+          DriveTrainConstants.swerveConfig,
+          DriveTrainConstants.maxSpeed);
 
   public final IntakeSubsystem intake = new IntakeSubsystem();
   public final ShooterSubsystem shooter = new ShooterSubsystem();
