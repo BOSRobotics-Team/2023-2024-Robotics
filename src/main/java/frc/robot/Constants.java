@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -95,39 +96,21 @@ public final class Constants {
 
     public static final int LEFTCLIMBER_ID = 40;
     public static final int RIGHTCLIMBER_ID = 41;
-    public static final float kLClimberMaxHeight = 1.0f;
-    public static final float kRClimberMaxHeight = 1.0f;
-
-    public static final double proportialPIDConstant = 0.00012;
-    public static final double integralPIDConstant = 0.0;
-    public static final double derivativePIDConstant = 0.0;
-    public static final double integralPIDZone = 0.0;
-    public static final double leftFeedForwardPIDConstant = 0.000175;
-    public static final double rightFeedForwardPIDConstant = 0.000170;
-    public static final double maxPIDOutput = 1.0;
-    public static final double minPIDOutput = 0.0;
+    public static final float kLClimberMaxHeight = 150.0f;
+    public static final float kRClimberMaxHeight = 150.0f;
 
     public static final double kClimberGearRatio = 1.0;
-    public static final double kClimberMetersPerRotation = 0.1;
-    public static final double MoveThreshold = 0.01;
   }
 
   public static final class AutoConstants {
 
-    public static final double kMaxSpeedMetersPerSecond = 2.2;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 1.2;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI * 0.75;
+    public static final double kMaxSpeedMetersPerSecond = 1.0;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1.0;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI * 1.5;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
-    public static final double kPXController = 5.0;
-    public static final double kIXController = 0.0;
-    public static final double kDXController = 0.0;
-    public static final double kPYController = 5.0;
-    public static final double kIYController = 0.0;
-    public static final double kDYController = 0.0;
-    public static final double kPThetaController = 1;
-    public static final double kIThetaController = 0;
-    public static final double kDThetaController = 0;
+    public static final PIDConstants kPIDTranslation = new PIDConstants(0.7, 0.0, 0.0);
+    public static final PIDConstants kPIDRotation = new PIDConstants(0.4, 0.0, 0.01);
   }
 
   public static final class TestsystemConstants {

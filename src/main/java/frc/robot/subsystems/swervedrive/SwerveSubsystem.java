@@ -9,7 +9,6 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
@@ -145,20 +144,10 @@ public class SwerveSubsystem extends SubsystemBase {
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
         // ChassisSpeeds
-        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-            // your Constants class
-            new PIDConstants(
-                AutoConstants.kPXController,
-                AutoConstants.kIXController,
-                AutoConstants.kDXController),
-            // Translation PID constants
-            new PIDConstants(
-                AutoConstants.kPYController,
-                AutoConstants.kIYController,
-                AutoConstants.kDYController),
-            // Rotation PID constants
-            AutoConstants.kMaxSpeedMetersPerSecond,
-            // Max module speed, in m/s
+        new HolonomicPathFollowerConfig(
+            AutoConstants.kPIDTranslation, // Translation PID constants
+            AutoConstants.kPIDRotation, // Rotation PID constants
+            AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
             swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
             // Drive base radius in meters. Distance from robot center to furthest module.
             new ReplanningConfig()

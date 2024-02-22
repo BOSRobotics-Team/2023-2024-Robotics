@@ -52,7 +52,8 @@ public class ClimberSubsystem extends SubsystemBase {
     m_leftClimberMotor.setInverted(false);
     m_leftClimberMotor.setIdleMode(IdleMode.kBrake);
     // m_leftClimberMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    m_leftClimberMotor.setSoftLimit(SoftLimitDirection.kForward, ClimberConstants.kLClimberMaxHeight);
+    m_leftClimberMotor.setSoftLimit(
+        SoftLimitDirection.kForward, ClimberConstants.kLClimberMaxHeight);
 
     m_rightClimberMotor.restoreFactoryDefaults();
     m_rightClimberEncoder = m_rightClimberMotor.getEncoder();
@@ -62,7 +63,8 @@ public class ClimberSubsystem extends SubsystemBase {
     m_rightClimberMotor.setInverted(false);
     m_rightClimberMotor.setIdleMode(IdleMode.kBrake);
     // m_rightClimberMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    m_rightClimberMotor.setSoftLimit(SoftLimitDirection.kForward, ClimberConstants.kRClimberMaxHeight);
+    m_rightClimberMotor.setSoftLimit(
+        SoftLimitDirection.kForward, ClimberConstants.kRClimberMaxHeight);
 
     if (RobotBase.isSimulation()) {
       mLeftSim =
