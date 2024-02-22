@@ -26,12 +26,14 @@ import frc.robot.commands.intake.JustShootCommand;
 import frc.robot.commands.intake.ShootCommand;
 import frc.robot.commands.intake.SpinDnShootersCommand;
 import frc.robot.commands.intake.SpinUpShootersCommand;
+import frc.robot.commands.vision.VisionCommand;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +56,7 @@ public class RobotContainer {
 
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
-  // public final VisionSubsystem vision = new VisionSubsystem();
+  public final VisionSubsystem vision = new VisionSubsystem();
 
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(
@@ -91,8 +93,8 @@ public class RobotContainer {
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 
-    configureAutoCommands();
     configureAutoPaths();
+    configureAutoCommands();
 
     // cam0 = CameraServer.startAutomaticCapture(0);
     // cam0.setConnectVerbose(0);
@@ -129,7 +131,7 @@ public class RobotContainer {
     }
 
     climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
-    // vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
+    vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
   }
 
   /**

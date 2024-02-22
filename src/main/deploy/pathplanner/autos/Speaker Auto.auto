@@ -16,18 +16,6 @@
           "data": {
             "pathName": "Speaker Start"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Speaker Continued"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Speaker More"
-          }
         }
       ]
     }

@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ClimberConstants;
+
 import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
 import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
@@ -159,28 +161,28 @@ public class ClimberSubsystem extends SubsystemBase {
       Shuffleboard.addEventMarker("isResetRClimber - done: ", EventImportance.kHigh);
       System.out.println("isResetRClimber - done");
     }
-    if (!isResetting()) {
-      double _lextendPos = getLClimberPosition();
-      double _rextendPos = getRClimberPosition();
+    // if (!isResetting()) {
+    //   double _lextendPos = getLClimberPosition();
+    //   double _rextendPos = getRClimberPosition();
 
-      boolean extendLDone =
-          Math.abs(_lextendPos - m_LTargetSetpoint) <= ClimberConstants.MoveThreshold;
-      boolean extendRDone =
-          Math.abs(_rextendPos - m_RTargetSetpoint) <= ClimberConstants.MoveThreshold;
+    //   boolean extendLDone =
+    //       Math.abs(_lextendPos - m_LTargetSetpoint) <= ClimberConstants.MoveThreshold;
+    //   boolean extendRDone =
+    //       Math.abs(_rextendPos - m_RTargetSetpoint) <= ClimberConstants.MoveThreshold;
 
-      if (!extendLDone) {
-        m_leftClimberController.setReference(m_LTargetSetpoint, CANSparkMax.ControlType.kPosition);
-        if (DEBUGGING) {
-          System.out.println("leftClimber - pos:" + _lextendPos + " setPt:" + m_LTargetSetpoint);
-        }
-      }
-      if (!extendRDone) {
-        m_rightClimberController.setReference(m_RTargetSetpoint, CANSparkMax.ControlType.kPosition);
-        if (DEBUGGING) {
-          System.out.println("rightClimber - pos:" + _rextendPos + " setPt:" + m_RTargetSetpoint);
-        }
-      }
-    }
+    //   if (!extendLDone) {
+    //     m_leftClimberController.setReference(m_LTargetSetpoint, CANSparkMax.ControlType.kPosition);
+    //     if (DEBUGGING) {
+    //       System.out.println("leftClimber - pos:" + _lextendPos + " setPt:" + m_LTargetSetpoint);
+    //     }
+    //   }
+    //   if (!extendRDone) {
+    //     m_rightClimberController.setReference(m_RTargetSetpoint, CANSparkMax.ControlType.kPosition);
+    //     if (DEBUGGING) {
+    //       System.out.println("rightClimber - pos:" + _rextendPos + " setPt:" + m_RTargetSetpoint);
+    //     }
+    //   }
+    // }
   }
 
   public void logPeriodic() {
@@ -232,9 +234,11 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void teleop(double lval, double rval) {
     if (!isResetting()) {
-      if ((lval != 0.0) && (rval != 0.0)) {
-        this.setClimberPosition(m_LTargetSetpoint + lval, m_RTargetSetpoint + rval);
-      }
+      lval = MathUtil.applyDeadband(lval, STICK_DEADBAND);
+      rval = MathUtil.applyDeadband(rval, STICK_DEADBAND);
+
+        m_leftClimberMotor.set(lval);
+        m_rightClimberMotor.set(rval);
     }
   }
 }

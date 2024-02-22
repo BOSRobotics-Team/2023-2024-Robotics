@@ -74,8 +74,8 @@ public final class Constants {
     public static final int RIGHTSHOOTERMOTOR_ID = 22;
     public static final int AIMMOTOR_ID = 32;
 
-    public static final double kTargetLeftVelocity = 2000.0;
-    public static final double kTargetRightVelocity = 2000.0;
+    public static final double kTargetLeftVelocity = 5600.0;
+    public static final double kTargetRightVelocity = 5000.0;
     public static final double kTargetLeftVelocity2 = 1500.0;
     public static final double kTargetRightVelocity2 = 1500.0;
     public static final double shooterReverseSpeed = -0.2;
@@ -85,7 +85,7 @@ public final class Constants {
     public static final double derivativePIDConstant = 0.0;
     public static final double integralPIDZone = 0.0;
     public static final double leftFeedForwardPIDConstant = 0.00017;
-    public static final double rightFeedForwardPIDConstant = 0.00017;
+    public static final double rightFeedForwardPIDConstant = 0.00018;
     public static final double maxPIDOutput = 1.0;
     public static final double minPIDOutput = 0.0;
     public static final double velocityTolerance = 50.0;

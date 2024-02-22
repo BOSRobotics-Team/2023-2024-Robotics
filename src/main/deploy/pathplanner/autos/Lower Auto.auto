@@ -16,18 +16,6 @@
           "data": {
             "pathName": "Lower Start"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Lower Continued"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Lower More"
-          }
         }
       ]
     }

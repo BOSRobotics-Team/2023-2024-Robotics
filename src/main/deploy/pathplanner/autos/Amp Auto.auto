@@ -5,22 +5,28 @@
       "x": 0.87,
       "y": 6.89
     },
-    "rotation": -120.0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Position1-S-Intake-S"
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Continued"
+            "pathName": "Position1-S-Intake-S"
           }
         }
       ]
