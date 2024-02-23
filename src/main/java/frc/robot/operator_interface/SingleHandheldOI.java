@@ -104,28 +104,31 @@ public class SingleHandheldOI implements OperatorInterface {
 
   @Override
   public double getTranslateX() {
-    return -MathUtil.applyDeadband(controller.getLeftY(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(controller.getLeftY(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
   public double getTranslateY() {
-    return -MathUtil.applyDeadband(controller.getLeftX(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(controller.getLeftX(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
   public double getRotate() {
-    return -MathUtil.applyDeadband(controller.getRightX(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(controller.getRightX(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
   public double getRotateY() {
-    return -MathUtil.applyDeadband(controller.getRightY(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(controller.getRightY(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
-  public boolean isDriveScaling() {
+  public double driveScalingValue() {
     int povVal = controller.getPOV();
-
     if (updateDriveScale) {
       updateDriveScale = (povVal != -1);
     } else if (povVal == 0) {
@@ -137,16 +140,6 @@ public class SingleHandheldOI implements OperatorInterface {
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
     }
-    return updateDriveScale;
-  }
-
-  @Override
-  public Trigger getDriveScaling() {
-    return new Trigger(() -> isDriveScaling());
-  }
-
-  @Override
-  public double driveScalingValue() {
     return driveScaleFactor;
   }
 

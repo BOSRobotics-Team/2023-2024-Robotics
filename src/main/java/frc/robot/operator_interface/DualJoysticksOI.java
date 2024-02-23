@@ -102,26 +102,30 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public double getTranslateX() {
-    return -MathUtil.applyDeadband(translateJoystick.getY(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(translateJoystick.getY(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
   public double getTranslateY() {
-    return -MathUtil.applyDeadband(translateJoystick.getX(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(translateJoystick.getX(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
   public double getRotate() {
-    return -MathUtil.applyDeadband(rotateJoystick.getX(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(rotateJoystick.getX(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
   public double getRotateY() {
-    return -MathUtil.applyDeadband(rotateJoystick.getY(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(rotateJoystick.getY(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
-  public boolean isDriveScaling() {
+  public double driveScalingValue() {
     int povVal = translateJoystick.getHID().getPOV();
 
     if (updateDriveScale) {
@@ -135,22 +139,7 @@ public class DualJoysticksOI implements OperatorInterface {
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
     }
-    return updateDriveScale;
-  }
-
-  @Override
-  public Trigger getDriveScaling() {
-    return new Trigger(() -> isDriveScaling());
-  }
-
-  @Override
-  public double driveScalingValue() {
-    return driveScaleFactor;
-  }
-
-  @Override
-  public Trigger getDriveSlowMode() {
-    return translateJoystickButtons[1];
+    return translateJoystickButtons[1].getAsBoolean() ? 0.25 : driveScaleFactor;
   }
 
   @Override

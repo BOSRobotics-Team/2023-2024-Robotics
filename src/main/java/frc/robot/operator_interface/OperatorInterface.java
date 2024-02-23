@@ -24,20 +24,8 @@ public interface OperatorInterface {
     return 0.0;
   }
 
-  public default boolean isDriveScaling() {
-    return false;
-  }
-
-  public default Trigger getDriveScaling() {
-    return new Trigger(() -> isDriveScaling());
-  }
-
   public default double driveScalingValue() {
     return 1.0;
-  }
-
-  public default Trigger getDriveSlowMode() {
-    return new Trigger(() -> false);
   }
 
   public default boolean isRobotRelative() {

@@ -88,26 +88,30 @@ public class SingleJoystickOI implements OperatorInterface {
 
   @Override
   public double getTranslateX() {
-    return -MathUtil.applyDeadband(joystick.getY(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(joystick.getY(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
   public double getTranslateY() {
-    return -MathUtil.applyDeadband(joystick.getX(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(joystick.getX(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
   public double getRotate() {
-    return -MathUtil.applyDeadband(joystick.getTwist(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(joystick.getTwist(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
   public double getRotateY() {
-    return -MathUtil.applyDeadband(joystick.getTwist(), STICK_DEADBAND);
+    double scaleVal = driveScalingValue();
+    return -MathUtil.applyDeadband(joystick.getTwist(), STICK_DEADBAND) * scaleVal;
   }
 
   @Override
-  public boolean isDriveScaling() {
+  public double driveScalingValue() {
     int povVal = joystick.getHID().getPOV();
 
     if (updateDriveScale) {
@@ -121,16 +125,6 @@ public class SingleJoystickOI implements OperatorInterface {
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
     }
-    return updateDriveScale;
-  }
-
-  @Override
-  public Trigger getDriveScaling() {
-    return new Trigger(() -> isDriveScaling());
-  }
-
-  @Override
-  public double driveScalingValue() {
     return driveScaleFactor;
   }
 

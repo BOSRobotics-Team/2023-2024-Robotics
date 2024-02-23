@@ -149,11 +149,11 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(driveTrain::enableXstance))
         .onFalse(Commands.runOnce(driveTrain::disableXstance));
 
-    oi.getDriveScaling()
-        .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
-    oi.getDriveSlowMode()
-        .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(0.25)))
-        .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
+    // oi.getDriveScaling()
+    //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
+    // oi.getDriveSlowMode()
+    //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(0.25)))
+    //     .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
 
     oi.getRunIntake().onTrue(new IntakePieceCommand(intake));
     oi.getUnStuckIntake()
