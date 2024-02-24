@@ -118,6 +118,11 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
   }
 
   @Override
+  public Trigger getShootSlow() {
+    return new Trigger(operator::getBackButton);
+  }
+
+  @Override
   public Trigger getSpinupShooter() {
     return new Trigger(operator::getYButton);
   }

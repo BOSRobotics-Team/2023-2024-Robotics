@@ -17,6 +17,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
@@ -51,7 +52,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     m_leftClimberMotor.setInverted(false);
     m_leftClimberMotor.setIdleMode(IdleMode.kBrake);
-    // m_leftClimberMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    m_leftClimberMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
     m_leftClimberMotor.setSoftLimit(
         SoftLimitDirection.kForward, ClimberConstants.kLClimberMaxHeight);
 
@@ -62,7 +63,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     m_rightClimberMotor.setInverted(false);
     m_rightClimberMotor.setIdleMode(IdleMode.kBrake);
-    // m_rightClimberMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    m_rightClimberMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
     m_rightClimberMotor.setSoftLimit(
         SoftLimitDirection.kForward, ClimberConstants.kRClimberMaxHeight);
 
@@ -105,16 +106,17 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Put code here to be run every loop
-    if (m_isLReset && isLClimbMinLimitSwitch()) {
+    if (/*m_isLReset && */ isLClimbMinLimitSwitch()) {
       m_leftClimberEncoder.setPosition(0);
-      m_leftClimberMotor.set(0.0);
-      m_isLReset = false;
+      // m_leftClimberMotor.set(0.0);
+      // m_isLReset = false;
     }
-    if (m_isRReset && isRClimbMinLimitSwitch()) {
+    if (/*m_isRReset && */ isRClimbMinLimitSwitch()) {
       m_rightClimberEncoder.setPosition(0);
-      m_rightClimberMotor.set(0.0);
-      m_isRReset = false;
+      // m_rightClimberMotor.set(0.0);
+      // m_isRReset = false;
     }
+    updateSmartDashboard();
   }
 
   public double getLClimberPosition() {
@@ -139,8 +141,16 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void teleop(double lval, double rval) {
     if (!isResetting()) {
-      m_leftClimberMotor.set(MathUtil.applyDeadband(lval, STICK_DEADBAND));
-      m_rightClimberMotor.set(MathUtil.applyDeadband(rval, STICK_DEADBAND));
+      // m_leftClimberMotor.set(MathUtil.applyDeadband(lval, STICK_DEADBAND));
+      // m_rightClimberMotor.set(MathUtil.applyDeadband(rval, STICK_DEADBAND));
     }
+  }
+
+   // Update the smart dashboard
+  private void updateSmartDashboard() {
+    SmartDashboard.putNumber("LClimber Postion", m_leftClimberEncoder.getPosition());
+    SmartDashboard.putNumber("RClimber Postion", m_rightClimberEncoder.getPosition());
+    SmartDashboard.putBoolean("LClimber Limit", isLClimbMinLimitSwitch());
+    SmartDashboard.putBoolean("RClimber Limit", isRClimbMinLimitSwitch());
   }
 }

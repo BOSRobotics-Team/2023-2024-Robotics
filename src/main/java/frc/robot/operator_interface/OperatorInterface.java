@@ -72,6 +72,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getShootSlow() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getSpinupShooter() {
     return new Trigger(() -> false);
   }

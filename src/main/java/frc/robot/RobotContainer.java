@@ -152,7 +152,7 @@ public class RobotContainer {
     // oi.getDriveScaling()
     //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
     // oi.getDriveSlowMode()
-    //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(0.25)))
+    //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(TRIGGER_SPEEDFACTOR)))
     //     .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
 
     oi.getRunIntake().onTrue(new IntakePieceCommand(intake));
@@ -172,6 +172,9 @@ public class RobotContainer {
                 new SpinUpShootersCommand(shooter),
                 new JustShootCommand(intake),
                 new SpinDnShootersCommand(shooter)));
+    oi.getShootSlow()
+        .onTrue(Commands.runOnce(() -> shooter.setVelocity(600.0, 600.0)))
+        .onFalse(Commands.runOnce(shooter::stop));
 
     oi.getUnStuckShooter()
         .onTrue(Commands.runOnce(shooter::reverse))

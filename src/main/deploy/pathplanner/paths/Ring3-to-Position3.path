@@ -16,22 +16,6 @@
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 4.1
-      },
-      "prevControl": {
-        "x": 1.95,
-        "y": 4.1
-      },
-      "nextControl": {
-        "x": 2.05,
-        "y": 4.1
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 0.7,
         "y": 4.35
       },

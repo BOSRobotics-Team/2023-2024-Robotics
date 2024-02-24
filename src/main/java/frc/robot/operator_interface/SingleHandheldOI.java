@@ -179,6 +179,11 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getShootSlow() {
+    return new Trigger(controller::getBackButton);
+  }
+
+  @Override
   public double getLClimber() {
     return MathUtil.applyDeadband(controller.getLeftTriggerAxis(), STICK_DEADBAND);
   }

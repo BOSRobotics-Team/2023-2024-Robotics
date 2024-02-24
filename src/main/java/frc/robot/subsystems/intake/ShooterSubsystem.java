@@ -67,8 +67,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void runAimMotor(double percent) {
-    m_aimMotor.set(
-        VictorSPXControlMode.PercentOutput, -percent); // negative because motor is upside down
+    // m_aimMotor.set(
+    //     VictorSPXControlMode.PercentOutput, -percent); // negative because motor is upside down
   }
 
   public void stopAimMotor() {

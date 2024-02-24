@@ -21,6 +21,8 @@ public final class Constants {
 
   public static final double TRIGGER_DEADBAND = 0.01;
   public static final double STICK_DEADBAND = 0.01;
+  public static final double TRIGGER_SPEEDFACTOR = 0.5;
+
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS =
       new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
@@ -38,7 +40,7 @@ public final class Constants {
 
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
     public static final Transform3d kRobotToCam1 =
-        new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+        new Transform3d(new Translation3d(0.0, -0.33, 0.4), new Rotation3d(0, 0, Math.PI));
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout kTagLayout =
@@ -75,18 +77,18 @@ public final class Constants {
     public static final int RIGHTSHOOTERMOTOR_ID = 22;
     public static final int AIMMOTOR_ID = 32;
 
-    public static final double kTargetLeftVelocity = 5600.0;
-    public static final double kTargetRightVelocity = 5000.0;
+    public static final double kTargetLeftVelocity = 3200.0;
+    public static final double kTargetRightVelocity = 3200.0;
     public static final double kTargetLeftVelocity2 = 1500.0;
     public static final double kTargetRightVelocity2 = 1500.0;
     public static final double shooterReverseSpeed = -0.2;
 
     public static final double proportialPIDConstant = 0.00012;
     public static final double integralPIDConstant = 0.0;
-    public static final double derivativePIDConstant = 0.0;
+    public static final double derivativePIDConstant = 0.001;
     public static final double integralPIDZone = 0.0;
     public static final double leftFeedForwardPIDConstant = 0.00017;
-    public static final double rightFeedForwardPIDConstant = 0.00018;
+    public static final double rightFeedForwardPIDConstant = 0.00017;
     public static final double maxPIDOutput = 1.0;
     public static final double minPIDOutput = 0.0;
     public static final double velocityTolerance = 50.0;
@@ -96,8 +98,8 @@ public final class Constants {
 
     public static final int LEFTCLIMBER_ID = 40;
     public static final int RIGHTCLIMBER_ID = 41;
-    public static final float kLClimberMaxHeight = 150.0f;
-    public static final float kRClimberMaxHeight = 150.0f;
+    public static final float kLClimberMaxHeight = 335.0f;
+    public static final float kRClimberMaxHeight = 335.0f;
 
     public static final double kClimberGearRatio = 1.0;
   }

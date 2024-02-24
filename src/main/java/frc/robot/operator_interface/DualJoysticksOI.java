@@ -139,7 +139,7 @@ public class DualJoysticksOI implements OperatorInterface {
       System.out.println("Setting driveScaleFactor to " + driveScaleFactor);
       updateDriveScale = true;
     }
-    return translateJoystickButtons[1].getAsBoolean() ? 0.25 : driveScaleFactor;
+    return translateJoystickButtons[1].getAsBoolean() ? TRIGGER_SPEEDFACTOR : driveScaleFactor;
   }
 
   @Override
