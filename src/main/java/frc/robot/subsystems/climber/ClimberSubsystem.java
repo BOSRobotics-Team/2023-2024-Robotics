@@ -12,7 +12,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SimableCANSparkMax;
 import com.revrobotics.SparkLimitSwitch;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -106,12 +105,14 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Put code here to be run every loop
-    if (/*m_isLReset && */ isLClimbMinLimitSwitch()) {
+    if (
+    /*m_isLReset && */ isLClimbMinLimitSwitch()) {
       m_leftClimberEncoder.setPosition(0);
       // m_leftClimberMotor.set(0.0);
       // m_isLReset = false;
     }
-    if (/*m_isRReset && */ isRClimbMinLimitSwitch()) {
+    if (
+    /*m_isRReset && */ isRClimbMinLimitSwitch()) {
       m_rightClimberEncoder.setPosition(0);
       // m_rightClimberMotor.set(0.0);
       // m_isRReset = false;
@@ -146,7 +147,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
   }
 
-   // Update the smart dashboard
+  // Update the smart dashboard
   private void updateSmartDashboard() {
     SmartDashboard.putNumber("LClimber Postion", m_leftClimberEncoder.getPosition());
     SmartDashboard.putNumber("RClimber Postion", m_rightClimberEncoder.getPosition());
