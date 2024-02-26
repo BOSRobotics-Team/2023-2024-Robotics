@@ -17,7 +17,7 @@ public class SpinUpShootersCommand extends Command {
   @Override
   public void initialize() {
     m_isFinished = false;
-    m_shooter.run();
+    m_shooter.shoot();
   }
 
   @Override

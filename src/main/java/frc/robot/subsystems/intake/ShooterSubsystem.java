@@ -82,16 +82,16 @@ public class ShooterSubsystem extends SubsystemBase {
     m_bottomShooterMotor.set(speed);
   }
 
-  public void run() {
+  public void intake() {
+    this.setSpeed(ShooterConstants.shooterReverseSpeed);
+  }
+
+  public void shoot() {
     this.setVelocity(ShooterConstants.kTargetVelocity);
   }
 
-  public void run2() {
+  public void shoot2() {
     this.setVelocity(ShooterConstants.kTargetVelocity2);
-  }
-
-  public void reverse() {
-    this.setSpeed(ShooterConstants.shooterReverseSpeed);
   }
 
   public void stop() {

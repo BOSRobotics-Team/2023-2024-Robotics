@@ -18,16 +18,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.intake.SpinDnShootersCommand;
-import frc.robot.commands.intake.SpinUpShootersCommand;
-import frc.robot.commands.vision.VisionCommand;
+// import frc.robot.commands.vision.VisionCommand;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.climber.ElevatorSubsystem; // Make Sure this is right
+import frc.robot.subsystems.intake.ElevatorSubsystem;
 import frc.robot.subsystems.intake.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.vision.VisionSubsystem;
+// import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +47,7 @@ public class RobotContainer {
 
   /* Subsystems */
   public final PowerDistribution power = new PowerDistribution();
-  public final VisionSubsystem vision = new VisionSubsystem();
+  // public final VisionSubsystem vision = new VisionSubsystem();
 
   public final SwerveSubsystem driveTrain =
       new SwerveSubsystem(
@@ -123,7 +120,7 @@ public class RobotContainer {
               oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::isRobotRelative));
     }
 
-    vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
+    // vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
   }
 
   /**
@@ -147,20 +144,14 @@ public class RobotContainer {
     //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(TRIGGER_SPEEDFACTOR)))
     //     .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
 
-    oi.getSpinupShooter().onTrue(new SpinUpShootersCommand(shooter));
-    oi.getSpinDownShooter().onTrue(new SpinDnShootersCommand(shooter));
-
+    oi.getRunIntake().onTrue(Commands.runOnce(shooter::intake));
     oi.getShoot()
-        .onTrue(
-            new SequentialCommandGroup(
-                new SpinUpShootersCommand(shooter), new SpinDnShootersCommand(shooter)));
+      .onTrue(Commands.runOnce(shooter::shoot))
+      .onFalse(Commands.runOnce(shooter::stop));
     oi.getShootSlow()
-        .onTrue(Commands.runOnce(() -> shooter.setVelocity(600.0)))
-        .onFalse(Commands.runOnce(shooter::stop));
+      .onTrue(Commands.runOnce(shooter::shoot2))
+      .onFalse(Commands.runOnce(shooter::stop));
 
-    oi.getUnStuckShooter()
-        .onTrue(Commands.runOnce(shooter::reverse))
-        .onFalse(Commands.runOnce(shooter::stop));
   }
 
   /**

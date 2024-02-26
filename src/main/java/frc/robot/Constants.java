@@ -66,16 +66,9 @@ public final class Constants {
     // public static final SwerveDriveConstants swerveConfig = SwerveDriveConstants.SDSMK4_L2();
   }
 
-  public static final class IntakeConstants {
-    public static final int INTAKEMOTOR_ID = 21;
-    public static final double intakeRunSpeed = 0.2;
-    public static final double intakeReverseSpeed = -0.2;
-  }
-
   public static final class ShooterConstants {
     public static final int TOPSHOOTERMOTOR_ID = 23;
     public static final int BOTTOMSHOOTERMOTOR_ID = 22;
-    public static final int WRISTMOTOR_ID = 98; // Figure it out
 
     public static final double kTargetVelocity = 3200.0;
     public static final double kTargetVelocity2 = 1500.0;
@@ -126,24 +119,27 @@ public final class Constants {
   }
 
   public static final class WristConstants {
+    public static final int WRISTMOTOR_ID = 31; // Figure it out
+    public static final int CANCODER_ID = 32;
+
     public static final double wristMotorKS = 0.0;
     public static final double wristMotorKV = 0.0;
     public static final double wristMotorKP = 0.0;
     public static final double wristMotorKI = 0.0;
     public static final double wristMotorKD = 0.0;
-    public static final double kTargetWristVelocity = 0.0;
-    public static final double wristReverseSpeed = 0.0;
+    public static final double kTargetWristHigh = 100.0;
+    public static final double kTargetWristLow = 0.0;
   }
 
-  // public static final class ClimberConstants {
+  public static final class ElevatorConstants {
 
-  // public static final int LEFTCLIMBER_ID = 40;
-  // public static final int RIGHTCLIMBER_ID = 41;
-  // public static final float kLClimberMaxHeight = 335.0f;
-  // public static final float kRClimberMaxHeight = 335.0f;
+  public static final int LEFTELEVATOR_ID = 40;
+  public static final int RIGHTELEVATOR_ID = 41;
+  public static final int CANCODER_ID = 42;
+  public static final float kElevatorMaxHeight = 335.0f;
 
   // public static final double kClimberGearRatio = 1.0;
-  // }
+  }
 
   public static final class AutoConstants {
 
