@@ -1,22 +1,20 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.ShooterSubsystem;
 
 public class ShootCommand extends Command {
-  private final IntakeSubsystem m_intake;
   private final ShooterSubsystem m_shooter;
 
   private boolean m_readyToShoot = false;
   private boolean m_isFinished = false;
   private int m_shootCounter = 0;
 
-  public ShootCommand(IntakeSubsystem intake, ShooterSubsystem shooter) {
-    this.m_intake = intake;
+  public ShootCommand(ShooterSubsystem shooter) {
+
     this.m_shooter = shooter;
 
-    addRequirements(intake, shooter);
+    addRequirements(shooter);
   }
 
   @Override
@@ -25,8 +23,8 @@ public class ShootCommand extends Command {
     m_readyToShoot = false;
     m_isFinished = false;
 
-    if (m_intake.get_intakeSensor()) {
-      m_intake.stop();
+    if (true) {
+      // m_intake.stop();
       m_shooter.run();
     } else {
       m_isFinished = true;
@@ -43,7 +41,7 @@ public class ShootCommand extends Command {
       }
     }
     if (m_readyToShoot) {
-      m_intake.run();
+      // m_intake.run();
       System.out.println("Piece Loaded - shooting");
       m_isFinished = (--m_shootCounter <= 0);
     }
@@ -52,7 +50,7 @@ public class ShootCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_intake.stop();
+    // m_intake.stop();
     m_shooter.stop();
   }
 

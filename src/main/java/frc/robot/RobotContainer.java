@@ -3,7 +3,6 @@ package frc.robot;
 import static frc.robot.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -20,17 +19,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.climber.TeleopClimber;
-import frc.robot.commands.intake.IntakePieceCommand;
-import frc.robot.commands.intake.JustShootCommand;
-import frc.robot.commands.intake.ShootCommand;
 import frc.robot.commands.intake.SpinDnShootersCommand;
 import frc.robot.commands.intake.SpinUpShootersCommand;
 import frc.robot.commands.vision.VisionCommand;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.climber.ClimberSubsystem;
-import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.climber.ElevatorSubsystem; // Make Sure this is right
 import frc.robot.subsystems.intake.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -64,9 +58,8 @@ public class RobotContainer {
           DriveTrainConstants.swerveConfig,
           DriveTrainConstants.maxSpeed);
 
-  public final IntakeSubsystem intake = new IntakeSubsystem();
   public final ShooterSubsystem shooter = new ShooterSubsystem();
-  public final ClimberSubsystem climber = new ClimberSubsystem();
+  public final ElevatorSubsystem climber = new ElevatorSubsystem();
 
   /* Test System */
   //  private TestChecklist m_test;
@@ -130,7 +123,6 @@ public class RobotContainer {
               oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::isRobotRelative));
     }
 
-    climber.setDefaultCommand(new TeleopClimber(climber, oi::getLClimber, oi::getRClimber));
     vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
   }
 
@@ -155,23 +147,13 @@ public class RobotContainer {
     //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(TRIGGER_SPEEDFACTOR)))
     //     .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
 
-    oi.getRunIntake().onTrue(new IntakePieceCommand(intake));
-    oi.getUnStuckIntake()
-        .onTrue(Commands.runOnce(intake::reverse))
-        .onFalse(Commands.runOnce(intake::stop));
-    oi.getManualIntake()
-        .onTrue(Commands.runOnce(intake::run))
-        .onFalse(Commands.runOnce(intake::stop));
-
     oi.getSpinupShooter().onTrue(new SpinUpShootersCommand(shooter));
     oi.getSpinDownShooter().onTrue(new SpinDnShootersCommand(shooter));
 
     oi.getShoot()
         .onTrue(
             new SequentialCommandGroup(
-                new SpinUpShootersCommand(shooter),
-                new JustShootCommand(intake),
-                new SpinDnShootersCommand(shooter)));
+                new SpinUpShootersCommand(shooter), new SpinDnShootersCommand(shooter)));
     oi.getShootSlow()
         .onTrue(Commands.runOnce(() -> shooter.setVelocity(600.0, 600.0)))
         .onFalse(Commands.runOnce(shooter::stop));
@@ -179,14 +161,6 @@ public class RobotContainer {
     oi.getUnStuckShooter()
         .onTrue(Commands.runOnce(shooter::reverse))
         .onFalse(Commands.runOnce(shooter::stop));
-
-    oi.getAimMotorUp()
-        .onTrue(Commands.runOnce(() -> shooter.runAimMotor(1.0)))
-        .onFalse(Commands.runOnce(shooter::stopAimMotor));
-
-    oi.getAimMotorDown()
-        .onTrue(Commands.runOnce(() -> shooter.runAimMotor(-1.0)))
-        .onFalse(Commands.runOnce(shooter::stopAimMotor));
   }
 
   /**
@@ -207,10 +181,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto chooser", autoChooser);
   }
 
-  private void configureAutoPaths() {
-    NamedCommands.registerCommand("Intake", new IntakePieceCommand(intake));
-    NamedCommands.registerCommand("Shoot", new ShootCommand(intake, shooter));
-  }
+  private void configureAutoPaths() {}
 
   public void simulationInit() {}
 

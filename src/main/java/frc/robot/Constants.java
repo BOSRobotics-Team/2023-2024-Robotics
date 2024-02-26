@@ -73,36 +73,56 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
-    public static final int LEFTSHOOTERMOTOR_ID = 23;
-    public static final int RIGHTSHOOTERMOTOR_ID = 22;
-    public static final int AIMMOTOR_ID = 32;
+    public static final int TOPSHOOTERMOTOR_ID = 23;
+    public static final int BOTTOMSHOOTERMOTOR_ID = 22;
+    public static final int WRISTMOTOR_ID = 98; // Figure it out
 
-    public static final double kTargetLeftVelocity = 3200.0;
-    public static final double kTargetRightVelocity = 3200.0;
-    public static final double kTargetLeftVelocity2 = 1500.0;
-    public static final double kTargetRightVelocity2 = 1500.0;
+    public static final double kTargetTopVelocity = 3200.0;
+    public static final double kTargetBottomVelocity = 3200.0;
+    public static final double kTargetTopVelocity2 = 1500.0;
+    public static final double kTargetBottomVelocity2 = 1500.0;
     public static final double shooterReverseSpeed = -0.2;
 
     public static final double proportialPIDConstant = 0.00012;
     public static final double integralPIDConstant = 0.0;
     public static final double derivativePIDConstant = 0.001;
     public static final double integralPIDZone = 0.0;
-    public static final double leftFeedForwardPIDConstant = 0.00017;
-    public static final double rightFeedForwardPIDConstant = 0.00017;
+    public static final double topFeedForwardPIDConstant = 0.00017;
+    public static final double bottomFeedForwardPIDConstant = 0.00017;
     public static final double maxPIDOutput = 1.0;
     public static final double minPIDOutput = 0.0;
     public static final double velocityTolerance = 50.0;
+    public static final double topMotorKS = 0.0;
+    public static final double topMotorKV = 0.0;
+    public static final double topMotorKP = 0.0;
+    public static final double topMotorKI = 0.0;
+    public static final double topMotorKD = 0.0;
+    public static final double bottomMotorKS = 0.0;
+    public static final double bottomMotorKV = 0.0;
+    public static final double bottomMotorKP = 0.0;
+    public static final double bottomMotorKI = 0.0;
+    public static final double bottomMotorKD = 0.0;
   }
 
-  public static final class ClimberConstants {
-
-    public static final int LEFTCLIMBER_ID = 40;
-    public static final int RIGHTCLIMBER_ID = 41;
-    public static final float kLClimberMaxHeight = 335.0f;
-    public static final float kRClimberMaxHeight = 335.0f;
-
-    public static final double kClimberGearRatio = 1.0;
+  public static final class WristConstants {
+    public static final double wristMotorKS = 0.0;
+    public static final double wristMotorKV = 0.0;
+    public static final double wristMotorKP = 0.0;
+    public static final double wristMotorKI = 0.0;
+    public static final double wristMotorKD = 0.0;
+    public static final double kTargetWristVelocity = 0.0;
+    public static final double wristReverseSpeed = 0.0;
   }
+
+  // public static final class ClimberConstants {
+
+  // public static final int LEFTCLIMBER_ID = 40;
+  // public static final int RIGHTCLIMBER_ID = 41;
+  // public static final float kLClimberMaxHeight = 335.0f;
+  // public static final float kRClimberMaxHeight = 335.0f;
+
+  // public static final double kClimberGearRatio = 1.0;
+  // }
 
   public static final class AutoConstants {
 

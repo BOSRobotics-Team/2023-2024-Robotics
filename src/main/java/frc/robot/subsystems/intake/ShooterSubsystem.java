@@ -2,33 +2,28 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.Constants.*;
 
-import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SimableCANSparkMax;
-import com.revrobotics.SparkPIDController;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final VictorSPX m_aimMotor = new VictorSPX(ShooterConstants.AIMMOTOR_ID);
+  private final TalonFX m_topShooterMotor = new TalonFX(ShooterConstants.TOPSHOOTERMOTOR_ID, "Rio");
 
-  private final SimableCANSparkMax m_leftShooterMotor =
-      new SimableCANSparkMax(ShooterConstants.LEFTSHOOTERMOTOR_ID, MotorType.kBrushless);
-  private final RelativeEncoder m_leftShooterEncoder;
-  private final SparkPIDController m_leftShooterController;
+  private final VelocityVoltage m_topRequest;
+  private TalonFXConfiguration configTopShooter = new TalonFXConfiguration();
 
-  private final SimableCANSparkMax m_rightShooterMotor =
-      new SimableCANSparkMax(ShooterConstants.RIGHTSHOOTERMOTOR_ID, MotorType.kBrushless);
-  private final RelativeEncoder m_rightShooterEncoder;
-  private final SparkPIDController m_rightShooterController;
+  private final TalonFX m_bottomShooterMotor =
+      new TalonFX(ShooterConstants.BOTTOMSHOOTERMOTOR_ID, "Rio");
 
-  private double leftTargetVelocity = 0;
-  private double rightTargetVelocity = 0;
+  private final VelocityVoltage m_bottomRequest;
+  private TalonFXConfiguration configBottomShooter = new TalonFXConfiguration();
+
+  private double topTargetVelocity = 0;
+  private double bottomTargetVelocity = 0;
   private double aveTargetVelocity = 0;
 
   private int rollingAvg = 0;
@@ -36,71 +31,51 @@ public class ShooterSubsystem extends SubsystemBase {
   // Subsystem Constructor
   public ShooterSubsystem() {
 
-    m_leftShooterMotor.setInverted(true);
-    m_rightShooterMotor.setInverted(false);
+    configTopShooter.Slot0.kS = ShooterConstants.topMotorKS;
+    configTopShooter.Slot0.kV = ShooterConstants.topMotorKV;
+    configTopShooter.Slot0.kP = ShooterConstants.topMotorKP;
+    configTopShooter.Slot0.kI = ShooterConstants.topMotorKI;
+    configTopShooter.Slot0.kD = ShooterConstants.topMotorKD;
+    configBottomShooter.Slot0.kS = ShooterConstants.bottomMotorKS;
+    configBottomShooter.Slot0.kV = ShooterConstants.bottomMotorKV;
+    configBottomShooter.Slot0.kP = ShooterConstants.bottomMotorKP;
+    configBottomShooter.Slot0.kI = ShooterConstants.bottomMotorKI;
+    configBottomShooter.Slot0.kD = ShooterConstants.bottomMotorKD;
 
-    m_leftShooterEncoder = m_leftShooterMotor.getEncoder();
-    m_rightShooterEncoder = m_rightShooterMotor.getEncoder();
+    m_bottomShooterMotor.getConfigurator().apply(configBottomShooter);
+    m_topShooterMotor.getConfigurator().apply(configTopShooter);
 
-    m_leftShooterController = m_leftShooterMotor.getPIDController();
-    m_rightShooterController = m_rightShooterMotor.getPIDController();
+    m_topRequest = new VelocityVoltage(0).withSlot(0);
 
-    m_leftShooterController.setP(ShooterConstants.proportialPIDConstant);
-    m_leftShooterController.setI(ShooterConstants.integralPIDConstant);
-    m_leftShooterController.setD(ShooterConstants.derivativePIDConstant);
-    m_leftShooterController.setIZone(ShooterConstants.integralPIDConstant);
-    m_leftShooterController.setFF(ShooterConstants.leftFeedForwardPIDConstant);
-    m_leftShooterController.setOutputRange(
-        ShooterConstants.minPIDOutput, ShooterConstants.maxPIDOutput);
-
-    m_rightShooterController.setP(ShooterConstants.proportialPIDConstant);
-    m_rightShooterController.setI(ShooterConstants.integralPIDConstant);
-    m_rightShooterController.setD(ShooterConstants.derivativePIDConstant);
-    m_rightShooterController.setIZone(ShooterConstants.integralPIDConstant);
-    m_rightShooterController.setFF(ShooterConstants.rightFeedForwardPIDConstant);
-    m_rightShooterController.setOutputRange(
-        ShooterConstants.minPIDOutput, ShooterConstants.maxPIDOutput);
-    stop();
-
-    m_leftShooterMotor.burnFlash();
-    m_rightShooterMotor.burnFlash();
+    m_bottomRequest = new VelocityVoltage(0).withSlot(0);
   }
 
-  public void runAimMotor(double percent) {
-    // m_aimMotor.set(
-    //     VictorSPXControlMode.PercentOutput, -percent); // negative because motor is upside down
-  }
-
-  public void stopAimMotor() {
-    m_aimMotor.set(VictorSPXControlMode.PercentOutput, 0.0);
-  }
-
-  public void setVelocity(double lvelocity, double rvelocity) {
-    leftTargetVelocity = lvelocity;
-    rightTargetVelocity = rvelocity;
-    aveTargetVelocity = (leftTargetVelocity + rightTargetVelocity) / 2.0;
+  public void setVelocity(double tvelocity, double bvelocity) {
+    topTargetVelocity = tvelocity;
+    bottomTargetVelocity = bvelocity;
+    aveTargetVelocity = (topTargetVelocity + bottomTargetVelocity) / 2.0;
     rollingAvg = 0;
 
-    m_leftShooterController.setReference(leftTargetVelocity, ControlType.kVelocity);
-    m_rightShooterController.setReference(rightTargetVelocity, ControlType.kVelocity);
+    m_topShooterMotor.setControl(m_topRequest.withVelocity(topTargetVelocity));
+    m_bottomShooterMotor.setControl(m_bottomRequest.withVelocity(bottomTargetVelocity));
   }
 
-  public void setSpeed(double lspeed, double rspeed) {
-    leftTargetVelocity = 0;
-    rightTargetVelocity = 0;
+  public void setSpeed(double tspeed, double bspeed) {
+    topTargetVelocity = 0;
+    bottomTargetVelocity = 0;
     aveTargetVelocity = 0;
     rollingAvg = 0;
 
-    m_leftShooterMotor.set(lspeed);
-    m_rightShooterMotor.set(rspeed);
+    m_topShooterMotor.set(tspeed);
+    m_bottomShooterMotor.set(bspeed);
   }
 
   public void run() {
-    this.setVelocity(ShooterConstants.kTargetLeftVelocity, ShooterConstants.kTargetRightVelocity);
+    this.setVelocity(ShooterConstants.kTargetTopVelocity, ShooterConstants.kTargetBottomVelocity);
   }
 
   public void run2() {
-    this.setVelocity(ShooterConstants.kTargetLeftVelocity2, ShooterConstants.kTargetRightVelocity2);
+    this.setVelocity(ShooterConstants.kTargetTopVelocity2, ShooterConstants.kTargetBottomVelocity2);
   }
 
   public void reverse() {
@@ -113,7 +88,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Finds the average velocity of the two motors
   public double getVelocity() {
-    double sum = m_leftShooterEncoder.getVelocity() + m_rightShooterEncoder.getVelocity();
+    double sum =
+        m_topShooterMotor.getVelocity().getValue() + m_bottomShooterMotor.getVelocity().getValue();
     double average = sum / 2;
 
     return average;
@@ -146,12 +122,12 @@ public class ShooterSubsystem extends SubsystemBase {
   // Update the smart dashboard
   private void updateSmartDashboard() {
 
-    SmartDashboard.putNumber("LShooter Vel", m_leftShooterEncoder.getVelocity());
-    SmartDashboard.putNumber("RShooter Vel", m_rightShooterEncoder.getVelocity());
+    SmartDashboard.putNumber("LShooter Vel", m_topShooterMotor.getVelocity().getValue());
+    SmartDashboard.putNumber("RShooter Vel", m_bottomShooterMotor.getVelocity().getValue());
     SmartDashboard.putNumber("Ave Shooter Vel", getVelocity());
     // SmartDashboard.putBoolean("Launcher On Target", isOnTarget());
     SmartDashboard.putBoolean("Avg Shooter OnTarget", isOnTargetAverage(7));
-    SmartDashboard.putNumber("LShooter Target Vel", leftTargetVelocity);
-    SmartDashboard.putNumber("RShooter Target Vel", rightTargetVelocity);
+    SmartDashboard.putNumber("LShooter Target Vel", topTargetVelocity);
+    SmartDashboard.putNumber("RShooter Target Vel", bottomTargetVelocity);
   }
 }
