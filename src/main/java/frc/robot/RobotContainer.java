@@ -155,7 +155,7 @@ public class RobotContainer {
             new SequentialCommandGroup(
                 new SpinUpShootersCommand(shooter), new SpinDnShootersCommand(shooter)));
     oi.getShootSlow()
-        .onTrue(Commands.runOnce(() -> shooter.setVelocity(600.0, 600.0)))
+        .onTrue(Commands.runOnce(() -> shooter.setVelocity(600.0)))
         .onFalse(Commands.runOnce(shooter::stop));
 
     oi.getUnStuckShooter()

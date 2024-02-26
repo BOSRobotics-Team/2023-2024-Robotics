@@ -77,20 +77,41 @@ public final class Constants {
     public static final int BOTTOMSHOOTERMOTOR_ID = 22;
     public static final int WRISTMOTOR_ID = 98; // Figure it out
 
-    public static final double kTargetTopVelocity = 3200.0;
-    public static final double kTargetBottomVelocity = 3200.0;
-    public static final double kTargetTopVelocity2 = 1500.0;
-    public static final double kTargetBottomVelocity2 = 1500.0;
+    public static final double kTargetVelocity = 3200.0;
+    public static final double kTargetVelocity2 = 1500.0;
     public static final double shooterReverseSpeed = -0.2;
 
-    public static final double proportialPIDConstant = 0.00012;
-    public static final double integralPIDConstant = 0.0;
-    public static final double derivativePIDConstant = 0.001;
-    public static final double integralPIDZone = 0.0;
-    public static final double topFeedForwardPIDConstant = 0.00017;
-    public static final double bottomFeedForwardPIDConstant = 0.00017;
-    public static final double maxPIDOutput = 1.0;
-    public static final double minPIDOutput = 0.0;
+    /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
+    public static final double KSConstant = 0.0; // Static feedforward gain
+    public static final double proportialPIDConstant =
+        0.11; // An error of 1 rotation per second results in 2V output
+    public static final double integralPIDConstant =
+        0.5; // An error of 1 rotation per second increases output by 0.5V every second
+    public static final double derivativePIDConstant =
+        0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
+    public static final double feedForwardPIDConstant =
+        0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts /
+    // Rotation per second
+    public static final double peakForwardVoltage = 8.0; // Peak output of 8 volts
+    public static final double peakReverseVoltage = -8.0; // Peak output of 8 volts
+    /* Torque-based velocity does not require a feed forward, as torque will accelerate the rotor up to the desired velocity by itself */
+    public static final double proportialTorquePIDConstant =
+        5.0; // An error of 1 rotation per second results in 5 amps output
+    public static final double integralTorquePIDConstant =
+        0.1; // An error of 1 rotation per second increases output by 0.1 amps every second
+    public static final double derivativeTorquePIDConstant =
+        0.001; // A change of 1000 rotation per second squared results in 1 amp output
+    public static final double peakForwardTorqueCurrent = 40.0; // Peak output of 40 amps
+    public static final double peakReverseTorqueCurrent = -40.0; // Peak output of 40 amps
+
+    // public static final double proportialPIDConstant = 0.00012;
+    // public static final double integralPIDConstant = 0.0;
+    // public static final double derivativePIDConstant = 0.001;
+    // public static final double integralPIDZone = 0.0;
+    // public static final double topFeedForwardPIDConstant = 0.00017;
+    // public static final double bottomFeedForwardPIDConstant = 0.00017;
+    // public static final double maxPIDOutput = 1.0;
+    // public static final double minPIDOutput = 0.0;
     public static final double velocityTolerance = 50.0;
     public static final double topMotorKS = 0.0;
     public static final double topMotorKV = 0.0;

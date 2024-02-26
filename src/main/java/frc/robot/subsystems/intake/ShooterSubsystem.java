@@ -2,88 +2,100 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.Constants.*;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+// import com.ctre.phoenix6.controls.NeutralOut;
+// import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final TalonFX m_topShooterMotor = new TalonFX(ShooterConstants.TOPSHOOTERMOTOR_ID, "Rio");
+  private final TalonFX m_topShooterMotor = new TalonFX(ShooterConstants.TOPSHOOTERMOTOR_ID);
+  private final TalonFX m_bottomShooterMotor = new TalonFX(ShooterConstants.BOTTOMSHOOTERMOTOR_ID);
 
-  private final VelocityVoltage m_topRequest;
+  /* Start at velocity 0, enable FOC, no feed forward, use slot 0 */
+  private final VelocityVoltage m_voltageVelocity =
+      new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+  /* Start at velocity 0, no feed forward, use slot 1 */
+  // private final VelocityTorqueCurrentFOC m_torqueVelocity = new VelocityTorqueCurrentFOC(0, 0, 0,
+  // 1, false, false, false);
+  /* Keep a neutral out so we can disable the motor */
+  // private final NeutralOut m_brake = new NeutralOut();
+
   private TalonFXConfiguration configTopShooter = new TalonFXConfiguration();
-
-  private final TalonFX m_bottomShooterMotor =
-      new TalonFX(ShooterConstants.BOTTOMSHOOTERMOTOR_ID, "Rio");
-
-  private final VelocityVoltage m_bottomRequest;
   private TalonFXConfiguration configBottomShooter = new TalonFXConfiguration();
 
-  private double topTargetVelocity = 0;
-  private double bottomTargetVelocity = 0;
-  private double aveTargetVelocity = 0;
-
+  private double targetVelocity = 0;
   private int rollingAvg = 0;
 
   // Subsystem Constructor
   public ShooterSubsystem() {
 
-    configTopShooter.Slot0.kS = ShooterConstants.topMotorKS;
-    configTopShooter.Slot0.kV = ShooterConstants.topMotorKV;
-    configTopShooter.Slot0.kP = ShooterConstants.topMotorKP;
-    configTopShooter.Slot0.kI = ShooterConstants.topMotorKI;
-    configTopShooter.Slot0.kD = ShooterConstants.topMotorKD;
-    configBottomShooter.Slot0.kS = ShooterConstants.bottomMotorKS;
-    configBottomShooter.Slot0.kV = ShooterConstants.bottomMotorKV;
-    configBottomShooter.Slot0.kP = ShooterConstants.bottomMotorKP;
-    configBottomShooter.Slot0.kI = ShooterConstants.bottomMotorKI;
-    configBottomShooter.Slot0.kD = ShooterConstants.bottomMotorKD;
+    TalonFXConfiguration configs = new TalonFXConfiguration();
 
-    m_bottomShooterMotor.getConfigurator().apply(configBottomShooter);
-    m_topShooterMotor.getConfigurator().apply(configTopShooter);
+    configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    configs.Slot0.kS = ShooterConstants.KSConstant;
+    configs.Slot0.kP = ShooterConstants.proportialPIDConstant;
+    configs.Slot0.kI = ShooterConstants.integralPIDConstant;
+    configs.Slot0.kD = ShooterConstants.derivativePIDConstant;
+    configs.Slot0.kV = ShooterConstants.feedForwardPIDConstant;
+    configs.Voltage.PeakForwardVoltage = ShooterConstants.peakForwardVoltage;
+    configs.Voltage.PeakReverseVoltage = ShooterConstants.peakReverseVoltage;
 
-    m_topRequest = new VelocityVoltage(0).withSlot(0);
+    configs.Slot1.kP = ShooterConstants.proportialTorquePIDConstant;
+    configs.Slot1.kI = ShooterConstants.integralTorquePIDConstant;
+    configs.Slot1.kD = ShooterConstants.derivativeTorquePIDConstant;
+    configs.TorqueCurrent.PeakForwardTorqueCurrent = ShooterConstants.peakForwardTorqueCurrent;
+    configs.TorqueCurrent.PeakReverseTorqueCurrent = ShooterConstants.peakReverseTorqueCurrent;
 
-    m_bottomRequest = new VelocityVoltage(0).withSlot(0);
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    status = m_topShooterMotor.getConfigurator().apply(configTopShooter);
+    if (!status.isOK()) {
+      System.out.println("Could not apply top configs, error code: " + status.toString());
+    }
+    status = m_bottomShooterMotor.getConfigurator().apply(configBottomShooter);
+    if (!status.isOK()) {
+      System.out.println("Could not apply bottom configs, error code: " + status.toString());
+    }
+    m_bottomShooterMotor.setControl(new Follower(m_topShooterMotor.getDeviceID(), true));
   }
 
-  public void setVelocity(double tvelocity, double bvelocity) {
-    topTargetVelocity = tvelocity;
-    bottomTargetVelocity = bvelocity;
-    aveTargetVelocity = (topTargetVelocity + bottomTargetVelocity) / 2.0;
+  public void setVelocity(double velocity) {
+    targetVelocity = velocity;
     rollingAvg = 0;
 
-    m_topShooterMotor.setControl(m_topRequest.withVelocity(topTargetVelocity));
-    m_bottomShooterMotor.setControl(m_bottomRequest.withVelocity(bottomTargetVelocity));
+    m_topShooterMotor.setControl(m_voltageVelocity.withVelocity(targetVelocity));
+    // m_topShooterMotor.setControl(m_torqueVelocity.withVelocity(targetVelocity).withFeedForward(1.0));
   }
 
-  public void setSpeed(double tspeed, double bspeed) {
-    topTargetVelocity = 0;
-    bottomTargetVelocity = 0;
-    aveTargetVelocity = 0;
+  public void setSpeed(double speed) {
+    targetVelocity = 0;
     rollingAvg = 0;
 
-    m_topShooterMotor.set(tspeed);
-    m_bottomShooterMotor.set(bspeed);
+    m_topShooterMotor.set(speed);
+    m_bottomShooterMotor.set(speed);
   }
 
   public void run() {
-    this.setVelocity(ShooterConstants.kTargetTopVelocity, ShooterConstants.kTargetBottomVelocity);
+    this.setVelocity(ShooterConstants.kTargetVelocity);
   }
 
   public void run2() {
-    this.setVelocity(ShooterConstants.kTargetTopVelocity2, ShooterConstants.kTargetBottomVelocity2);
+    this.setVelocity(ShooterConstants.kTargetVelocity2);
   }
 
   public void reverse() {
-    this.setSpeed(ShooterConstants.shooterReverseSpeed, ShooterConstants.shooterReverseSpeed);
+    this.setSpeed(ShooterConstants.shooterReverseSpeed);
   }
 
   public void stop() {
-    this.setSpeed(0.0, 0.0);
+    this.setSpeed(0.0);
   }
 
   // Finds the average velocity of the two motors
@@ -98,7 +110,7 @@ public class ShooterSubsystem extends SubsystemBase {
   // For the target velocity
   public boolean isOnTarget() {
     double vel = this.getVelocity();
-    boolean onTarget = Math.abs(aveTargetVelocity - vel) <= ShooterConstants.velocityTolerance;
+    boolean onTarget = Math.abs(targetVelocity - vel) <= ShooterConstants.velocityTolerance;
 
     return onTarget;
   }
@@ -127,7 +139,6 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Ave Shooter Vel", getVelocity());
     // SmartDashboard.putBoolean("Launcher On Target", isOnTarget());
     SmartDashboard.putBoolean("Avg Shooter OnTarget", isOnTargetAverage(7));
-    SmartDashboard.putNumber("LShooter Target Vel", topTargetVelocity);
-    SmartDashboard.putNumber("RShooter Target Vel", bottomTargetVelocity);
+    SmartDashboard.putNumber("Shooter Target Vel", targetVelocity);
   }
 }

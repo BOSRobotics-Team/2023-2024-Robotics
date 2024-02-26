@@ -16,8 +16,6 @@ public class WristSubsystem extends SubsystemBase {
 
   private double wristTargetVelocity = 0;
 
-  private int rollingAvg = 0;
-
   public WristSubsystem() {
 
     configWrist.Slot0.kS = WristConstants.wristMotorKS;
@@ -33,14 +31,12 @@ public class WristSubsystem extends SubsystemBase {
 
   public void setVelocity(double wvelocity) {
     wristTargetVelocity = wvelocity;
-    rollingAvg = 0;
 
     m_wristMotor.setControl(m_wristrequest.withVelocity(wristTargetVelocity));
   }
 
   public void setSpeed(double wspeed) {
     wristTargetVelocity = 0;
-    rollingAvg = 0;
 
     m_wristMotor.set(wspeed);
   }
