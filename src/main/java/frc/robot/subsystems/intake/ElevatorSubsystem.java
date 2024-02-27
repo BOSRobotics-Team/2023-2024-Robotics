@@ -125,6 +125,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_leftElevatorController.setReference(m_targetHeight, CANSparkBase.ControlType.kPosition);
   }
 
+  public void stop() {
+    m_targetHeight = 0.0;
+    m_leftElevatorMotor.set(0);
+    m_rightElevatorMotor.set(0);
+  }
+
   public double getPosition() {
     return m_canCoder.getPosition().getValue();
   }
