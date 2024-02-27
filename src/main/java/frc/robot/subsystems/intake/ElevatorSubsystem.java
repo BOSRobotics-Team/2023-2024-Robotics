@@ -8,6 +8,7 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.Constants.*;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -24,7 +25,6 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-
 import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
 import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
@@ -133,8 +133,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void teleop(double val) {
-      m_leftElevatorMotor.set(MathUtil.applyDeadband(val, STICK_DEADBAND));
-      // m_rightElevatorMotor.set(MathUtil.applyDeadband(rval, STICK_DEADBAND));
+    m_leftElevatorMotor.set(MathUtil.applyDeadband(val, STICK_DEADBAND));
+    // m_rightElevatorMotor.set(MathUtil.applyDeadband(rval, STICK_DEADBAND));
   }
 
   // Update the smart dashboard

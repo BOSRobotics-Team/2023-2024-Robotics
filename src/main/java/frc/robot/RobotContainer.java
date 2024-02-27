@@ -145,13 +145,10 @@ public class RobotContainer {
     //     .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
 
     oi.getRunIntake().onTrue(Commands.runOnce(shooter::intake));
-    oi.getShoot()
-      .onTrue(Commands.runOnce(shooter::shoot))
-      .onFalse(Commands.runOnce(shooter::stop));
+    oi.getShoot().onTrue(Commands.runOnce(shooter::shoot)).onFalse(Commands.runOnce(shooter::stop));
     oi.getShootSlow()
-      .onTrue(Commands.runOnce(shooter::shoot2))
-      .onFalse(Commands.runOnce(shooter::stop));
-
+        .onTrue(Commands.runOnce(shooter::shoot2))
+        .onFalse(Commands.runOnce(shooter::stop));
   }
 
   /**
