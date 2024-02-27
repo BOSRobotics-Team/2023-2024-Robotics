@@ -9,14 +9,12 @@ package frc.robot.subsystems.intake;
 import static frc.robot.Constants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SimableCANSparkMax;
 import com.revrobotics.SparkPIDController;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -56,36 +54,39 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     m_rightElevatorEncoder = m_rightElevatorMotor.getEncoder();
     m_rightElevatorController = m_rightElevatorMotor.getPIDController();
-    
+
     m_leftElevatorMotor.restoreFactoryDefaults();
     m_leftElevatorMotor.setInverted(false);
     m_leftElevatorMotor.setIdleMode(IdleMode.kBrake);
     m_leftElevatorEncoder.setPositionConversionFactor(1.0 / ElevatorConstants.kElevatorGearRatio);
-    m_leftElevatorEncoder.setPosition(m_canCoder.getPosition().getValue() * ElevatorConstants.kElevatorGearRatio);
+    m_leftElevatorEncoder.setPosition(
+        m_canCoder.getPosition().getValue() * ElevatorConstants.kElevatorGearRatio);
 
     m_leftElevatorController.setP(ElevatorConstants.proportialPIDConstant);
     m_leftElevatorController.setI(ElevatorConstants.integralPIDConstant);
     m_leftElevatorController.setD(ElevatorConstants.derivativePIDConstant);
     m_leftElevatorController.setIZone(ElevatorConstants.integralPIDZone);
     m_leftElevatorController.setFF(ElevatorConstants.feedForwardPIDConstant);
-    m_leftElevatorController.setOutputRange(ElevatorConstants.minPIDOutput, ElevatorConstants.maxPIDOutput);
+    m_leftElevatorController.setOutputRange(
+        ElevatorConstants.minPIDOutput, ElevatorConstants.maxPIDOutput);
     m_leftElevatorMotor.burnFlash();
 
     m_rightElevatorMotor.restoreFactoryDefaults();
     m_rightElevatorMotor.setInverted(true);
     m_rightElevatorMotor.setIdleMode(IdleMode.kBrake);
     m_rightElevatorEncoder.setPositionConversionFactor(1.0 / ElevatorConstants.kElevatorGearRatio);
-    m_rightElevatorEncoder.setPosition(m_canCoder.getPosition().getValue() * ElevatorConstants.kElevatorGearRatio);
+    m_rightElevatorEncoder.setPosition(
+        m_canCoder.getPosition().getValue() * ElevatorConstants.kElevatorGearRatio);
     m_rightElevatorController.setP(ElevatorConstants.proportialPIDConstant);
     m_rightElevatorController.setI(ElevatorConstants.integralPIDConstant);
     m_rightElevatorController.setD(ElevatorConstants.derivativePIDConstant);
     m_rightElevatorController.setIZone(ElevatorConstants.integralPIDZone);
     m_rightElevatorController.setFF(ElevatorConstants.feedForwardPIDConstant);
-    m_rightElevatorController.setOutputRange(ElevatorConstants.minPIDOutput, ElevatorConstants.maxPIDOutput);
+    m_rightElevatorController.setOutputRange(
+        ElevatorConstants.minPIDOutput, ElevatorConstants.maxPIDOutput);
     m_rightElevatorMotor.burnFlash();
 
     m_rightElevatorMotor.follow(m_leftElevatorMotor);
-
 
     if (RobotBase.isSimulation()) {
       mLeftSim =
