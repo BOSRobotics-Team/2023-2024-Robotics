@@ -106,39 +106,42 @@ public final class Constants {
     // public static final double maxPIDOutput = 1.0;
     // public static final double minPIDOutput = 0.0;
     public static final double velocityTolerance = 50.0;
-    public static final double topMotorKS = 0.0;
-    public static final double topMotorKV = 0.0;
-    public static final double topMotorKP = 0.0;
-    public static final double topMotorKI = 0.0;
-    public static final double topMotorKD = 0.0;
-    public static final double bottomMotorKS = 0.0;
-    public static final double bottomMotorKV = 0.0;
-    public static final double bottomMotorKP = 0.0;
-    public static final double bottomMotorKI = 0.0;
-    public static final double bottomMotorKD = 0.0;
   }
 
   public static final class WristConstants {
     public static final int WRISTMOTOR_ID = 31; // Figure it out
     public static final int CANCODER_ID = 32;
 
-    public static final double wristMotorKS = 0.0;
-    public static final double wristMotorKV = 0.0;
-    public static final double wristMotorKP = 0.0;
+    public static final double wristMotorKS = 0.25;
+    public static final double wristMotorKV = 0.12;
+    public static final double wristMotorKA = 0.01;
+    public static final double wristMotorKP = 4.0;
     public static final double wristMotorKI = 0.0;
-    public static final double wristMotorKD = 0.0;
-    public static final double kTargetWristHigh = 100.0;
+    public static final double wristMotorKD = 0.1;
+    public static final double MMagicCruiseVelocity = 80;
+    public static final double MMagicAcceleration = 160;
+    public static final double MMagicJerk = 1600;
+
+    public static final double kTargetWristHigh = 200.0;
     public static final double kTargetWristLow = 0.0;
   }
 
   public static final class ElevatorConstants {
 
-  public static final int LEFTELEVATOR_ID = 40;
-  public static final int RIGHTELEVATOR_ID = 41;
-  public static final int CANCODER_ID = 42;
-  public static final float kElevatorMaxHeight = 335.0f;
+    public static final int LEFTELEVATOR_ID = 40;
+    public static final int RIGHTELEVATOR_ID = 41;
+    public static final int CANCODER_ID = 42;
 
-  // public static final double kClimberGearRatio = 1.0;
+    public static final double proportialPIDConstant = 0.00012;
+    public static final double integralPIDConstant = 0.0;
+    public static final double derivativePIDConstant = 0.001;
+    public static final double integralPIDZone = 0.0;
+    public static final double feedForwardPIDConstant = 0.00017;
+    public static final double maxPIDOutput = 1.0;
+    public static final double minPIDOutput = 0.0;
+    public static final double kElevatorGearRatio = 9.0; // gear ratio is 9:1
+    public static final float kElevatorMaxHeight = 335.0f;
+    public static final double kOnTargetThreshold = 5.0;
   }
 
   public static final class AutoConstants {

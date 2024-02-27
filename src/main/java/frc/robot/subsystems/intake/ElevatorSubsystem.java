@@ -11,8 +11,10 @@ import static frc.robot.Constants.*;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SimableCANSparkMax;
+import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -32,10 +34,13 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private final SimableCANSparkMax m_leftElevatorMotor =
       new SimableCANSparkMax(ElevatorConstants.LEFTELEVATOR_ID, MotorType.kBrushless);
-  private final RelativeEncoder m_leftElevatorEncoder = m_leftElevatorMotor.getEncoder();
+  private final RelativeEncoder m_leftElevatorEncoder;
+  private final SparkPIDController m_leftElevatorController;
 
   private final SimableCANSparkMax m_rightElevatorMotor =
       new SimableCANSparkMax(ElevatorConstants.RIGHTELEVATOR_ID, MotorType.kBrushless);
+  private final RelativeEncoder m_rightElevatorEncoder;
+  private final SparkPIDController m_rightElevatorController;
 
   private final CANcoder m_canCoder = new CANcoder(ElevatorConstants.CANCODER_ID);
 
@@ -46,16 +51,41 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public ElevatorSubsystem() {
 
+    m_leftElevatorEncoder = m_leftElevatorMotor.getEncoder();
+    m_leftElevatorController = m_leftElevatorMotor.getPIDController();
+
+    m_rightElevatorEncoder = m_rightElevatorMotor.getEncoder();
+    m_rightElevatorController = m_rightElevatorMotor.getPIDController();
+    
     m_leftElevatorMotor.restoreFactoryDefaults();
     m_leftElevatorMotor.setInverted(false);
     m_leftElevatorMotor.setIdleMode(IdleMode.kBrake);
+    m_leftElevatorEncoder.setPositionConversionFactor(1.0 / ElevatorConstants.kElevatorGearRatio);
+    m_leftElevatorEncoder.setPosition(m_canCoder.getPosition().getValue() * ElevatorConstants.kElevatorGearRatio);
+
+    m_leftElevatorController.setP(ElevatorConstants.proportialPIDConstant);
+    m_leftElevatorController.setI(ElevatorConstants.integralPIDConstant);
+    m_leftElevatorController.setD(ElevatorConstants.derivativePIDConstant);
+    m_leftElevatorController.setIZone(ElevatorConstants.integralPIDZone);
+    m_leftElevatorController.setFF(ElevatorConstants.feedForwardPIDConstant);
+    m_leftElevatorController.setOutputRange(ElevatorConstants.minPIDOutput, ElevatorConstants.maxPIDOutput);
+    m_leftElevatorMotor.burnFlash();
 
     m_rightElevatorMotor.restoreFactoryDefaults();
     m_rightElevatorMotor.setInverted(true);
     m_rightElevatorMotor.setIdleMode(IdleMode.kBrake);
+    m_rightElevatorEncoder.setPositionConversionFactor(1.0 / ElevatorConstants.kElevatorGearRatio);
+    m_rightElevatorEncoder.setPosition(m_canCoder.getPosition().getValue() * ElevatorConstants.kElevatorGearRatio);
+    m_rightElevatorController.setP(ElevatorConstants.proportialPIDConstant);
+    m_rightElevatorController.setI(ElevatorConstants.integralPIDConstant);
+    m_rightElevatorController.setD(ElevatorConstants.derivativePIDConstant);
+    m_rightElevatorController.setIZone(ElevatorConstants.integralPIDZone);
+    m_rightElevatorController.setFF(ElevatorConstants.feedForwardPIDConstant);
+    m_rightElevatorController.setOutputRange(ElevatorConstants.minPIDOutput, ElevatorConstants.maxPIDOutput);
+    m_rightElevatorMotor.burnFlash();
+
     m_rightElevatorMotor.follow(m_leftElevatorMotor);
 
-    m_leftElevatorEncoder.setPosition(m_canCoder.getPosition().getValue());
 
     if (RobotBase.isSimulation()) {
       mLeftSim =
@@ -82,7 +112,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Put code here to be run every loop
-    if (this.getPosition() <= 0.0) {
+    if (this.getPosition() <= 0.01) {
       m_leftElevatorMotor.stopMotor();
     }
 
@@ -91,6 +121,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void setHeight(double ht) {
     m_targetHeight = ht;
+    m_leftElevatorController.setReference(m_targetHeight, CANSparkBase.ControlType.kPosition);
   }
 
   public double getPosition() {
@@ -98,7 +129,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean getOnTarget() {
-    return Math.abs(this.getPosition() - m_targetHeight) < 0.1;
+    return Math.abs(this.getPosition() - m_targetHeight) < ElevatorConstants.kOnTargetThreshold;
   }
 
   public void teleop(double val) {
@@ -108,7 +139,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   // Update the smart dashboard
   private void updateSmartDashboard() {
-    SmartDashboard.putNumber("LClimber Postion", m_leftElevatorEncoder.getPosition());
+    SmartDashboard.putNumber("Elevator Postion", m_leftElevatorEncoder.getPosition());
+    SmartDashboard.putNumber("ElevatorCanCoder Postion", m_canCoder.getPosition().getValue());
+    SmartDashboard.putNumber("Elevator TargetPostion", m_targetHeight);
     // SmartDashboard.putNumber("RClimber Postion", m_rightElevatorEncoder.getPosition());
   }
 }
