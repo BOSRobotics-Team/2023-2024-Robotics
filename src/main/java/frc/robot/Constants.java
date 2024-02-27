@@ -133,12 +133,12 @@ public final class Constants {
 
   public static final class ElevatorConstants {
 
-  public static final int LEFTELEVATOR_ID = 40;
-  public static final int RIGHTELEVATOR_ID = 41;
-  public static final int CANCODER_ID = 42;
-  public static final float kElevatorMaxHeight = 335.0f;
+    public static final int LEFTELEVATOR_ID = 40;
+    public static final int RIGHTELEVATOR_ID = 41;
+    public static final int CANCODER_ID = 42;
+    public static final float kElevatorMaxHeight = 335.0f;
 
-  // public static final double kClimberGearRatio = 1.0;
+    // public static final double kClimberGearRatio = 1.0;
   }
 
   public static final class AutoConstants {
