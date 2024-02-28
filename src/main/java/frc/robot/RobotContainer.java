@@ -55,8 +55,8 @@ public class RobotContainer {
           DriveTrainConstants.swerveConfig,
           DriveTrainConstants.maxSpeed);
 
-  public final ShooterSubsystem shooter = new ShooterSubsystem();
-  public final ElevatorSubsystem climber = new ElevatorSubsystem();
+  // public final ShooterSubsystem shooter = new ShooterSubsystem();
+  // public final ElevatorSubsystem climber = new ElevatorSubsystem();
 
   /* Test System */
   //  private TestChecklist m_test;
@@ -144,11 +144,11 @@ public class RobotContainer {
     //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(TRIGGER_SPEEDFACTOR)))
     //     .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
 
-    oi.getRunIntake().onTrue(Commands.runOnce(shooter::intake));
-    oi.getShoot().onTrue(Commands.runOnce(shooter::shoot)).onFalse(Commands.runOnce(shooter::stop));
-    oi.getShootSlow()
-        .onTrue(Commands.runOnce(shooter::shoot2))
-        .onFalse(Commands.runOnce(shooter::stop));
+    // oi.getRunIntake().onTrue(Commands.runOnce(shooter::intake));
+    // oi.getShoot().onTrue(Commands.runOnce(shooter::shoot)).onFalse(Commands.runOnce(shooter::stop));
+    // oi.getShootSlow()
+    //     .onTrue(Commands.runOnce(shooter::shoot2))
+    //     .onFalse(Commands.runOnce(shooter::stop));
   }
 
   /**
