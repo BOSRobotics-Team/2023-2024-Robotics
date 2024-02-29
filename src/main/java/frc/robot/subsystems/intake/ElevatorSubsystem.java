@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConstants;
 import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
 import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
@@ -75,6 +74,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_rightElevatorMotor.setIdleMode(IdleMode.kCoast);
     m_rightElevatorEncoder.setPositionConversionFactor(1.0 / ElevatorConstants.kElevatorGearRatio);
     m_rightElevatorEncoder.setPosition(m_canCoder.getAbsolutePosition().getValue());
+
     m_rightElevatorController.setP(ElevatorConstants.proportialPIDConstant);
     m_rightElevatorController.setI(ElevatorConstants.integralPIDConstant);
     m_rightElevatorController.setD(ElevatorConstants.derivativePIDConstant);
@@ -116,6 +116,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     // }
 
     updateSmartDashboard();
+  }
+
+  public void up() {
+    this.setHeight(ElevatorConstants.kTargetElevatorHigh);
+  }
+
+  public void down() {
+    this.setHeight(ElevatorConstants.kTargetElevatorLow);
   }
 
   public void setHeight(double ht) {

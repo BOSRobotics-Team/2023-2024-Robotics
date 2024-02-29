@@ -3,6 +3,7 @@ package frc.robot;
 import static frc.robot.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -18,7 +19,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.commands.intake.TeleopWrist;
+import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.commands.intake.ElevateCommand;
+import frc.robot.commands.intake.IntakeCommand;
+import frc.robot.commands.intake.RotateWristCommand;
+import frc.robot.commands.intake.ShootCommand;
+// import frc.robot.commands.intake.TeleopWrist;
 // import frc.robot.commands.vision.VisionCommand;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
@@ -150,11 +156,11 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(shooter::shoot2))
         .onFalse(Commands.runOnce(shooter::stop));
 
-    oi.getElevatorUp().onTrue(Commands.runOnce(() -> elevator.setHeight(2.55)));
-    oi.getElevatorDown().onTrue(Commands.runOnce(() -> elevator.setHeight(0)));
+    oi.getElevatorUp().onTrue(Commands.runOnce(elevator::up));
+    oi.getElevatorDown().onTrue(Commands.runOnce(elevator::down));
 
-    oi.getWristUp().onTrue(Commands.runOnce(() -> wrist.setPosition(25)));
-    oi.getWristDown().onTrue(Commands.runOnce(() -> wrist.setPosition(0)));
+    oi.getWristUp().onTrue(Commands.runOnce(wrist::up));
+    oi.getWristDown().onTrue(Commands.runOnce(wrist::down));
   }
 
   /**
@@ -175,7 +181,18 @@ public class RobotContainer {
     SmartDashboard.putData("Auto chooser", autoChooser);
   }
 
-  private void configureAutoPaths() {}
+  private void configureAutoPaths() {
+    NamedCommands.registerCommand("Intake", new IntakeCommand(shooter));
+    NamedCommands.registerCommand(
+        "ElevateUp", new ElevateCommand(elevator, ElevatorConstants.kTargetElevatorHigh));
+    NamedCommands.registerCommand(
+        "ElevateDown", new ElevateCommand(elevator, ElevatorConstants.kTargetElevatorLow));
+    NamedCommands.registerCommand(
+        "RotateUp", new RotateWristCommand(wrist, WristConstants.kTargetWristHigh));
+    NamedCommands.registerCommand(
+        "RotateDown", new RotateWristCommand(wrist, WristConstants.kTargetWristLow));
+    NamedCommands.registerCommand("Shoot", new ShootCommand(shooter));
+  }
 
   public void simulationInit() {}
 

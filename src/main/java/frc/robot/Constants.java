@@ -143,6 +143,9 @@ public final class Constants {
     public static final double kElevatorGearRatio = 9.0; // gear ratio is 9:1
     public static final float kElevatorMaxHeight = 2.5f;
     public static final double kOnTargetThreshold = 5.0;
+
+    public static final double kTargetElevatorHigh = 2.55;
+    public static final double kTargetElevatorLow = 0;
   }
 
   public static final class AutoConstants {
