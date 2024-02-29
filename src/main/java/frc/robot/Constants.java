@@ -124,6 +124,7 @@ public final class Constants {
 
     public static final double kTargetWristHigh = 200.0;
     public static final double kTargetWristLow = 0.0;
+    public static final double kWristGearRatio = 64.0; // gear ratio is 64:1
   }
 
   public static final class ElevatorConstants {

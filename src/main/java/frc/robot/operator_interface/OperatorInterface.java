@@ -84,11 +84,11 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default double getLClimber() {
+  public default double getElevator() {
     return 0.0;
   }
 
-  public default double getRClimber() {
+  public default double getWrist() {
     return 0.0;
   }
 

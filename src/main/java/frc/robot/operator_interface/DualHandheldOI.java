@@ -26,12 +26,12 @@ public class DualHandheldOI extends SingleHandheldOI {
   }
 
   @Override
-  public double getLClimber() {
+  public double getElevator() {
     return -MathUtil.applyDeadband(operator.getLeftY(), STICK_DEADBAND);
   }
 
   @Override
-  public double getRClimber() {
+  public double getWrist() {
     return -MathUtil.applyDeadband(operator.getRightY(), STICK_DEADBAND);
   }
 

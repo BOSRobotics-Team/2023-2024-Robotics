@@ -60,7 +60,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_leftElevatorMotor.setIdleMode(IdleMode.kBrake);
     m_leftElevatorEncoder.setPositionConversionFactor(1.0 / ElevatorConstants.kElevatorGearRatio);
     m_leftElevatorEncoder.setPosition(
-        m_canCoder.getPosition().getValue() * ElevatorConstants.kElevatorGearRatio);
+        m_canCoder.getAbsolutePosition().getValue());
 
     m_leftElevatorController.setP(ElevatorConstants.proportialPIDConstant);
     m_leftElevatorController.setI(ElevatorConstants.integralPIDConstant);
@@ -76,7 +76,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_rightElevatorMotor.setIdleMode(IdleMode.kBrake);
     m_rightElevatorEncoder.setPositionConversionFactor(1.0 / ElevatorConstants.kElevatorGearRatio);
     m_rightElevatorEncoder.setPosition(
-        m_canCoder.getPosition().getValue() * ElevatorConstants.kElevatorGearRatio);
+        m_canCoder.getAbsolutePosition().getValue());
     m_rightElevatorController.setP(ElevatorConstants.proportialPIDConstant);
     m_rightElevatorController.setI(ElevatorConstants.integralPIDConstant);
     m_rightElevatorController.setD(ElevatorConstants.derivativePIDConstant);
@@ -113,9 +113,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Put code here to be run every loop
-    if (this.getPosition() <= 0.01) {
-      m_leftElevatorMotor.stopMotor();
-    }
+    // if (this.getPosition() <= 0.01) {
+    //   m_leftElevatorMotor.stopMotor();
+    // }
 
     updateSmartDashboard();
   }

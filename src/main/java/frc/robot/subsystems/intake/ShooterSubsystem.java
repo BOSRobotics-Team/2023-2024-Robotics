@@ -16,8 +16,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final TalonFX m_topShooterMotor = new TalonFX(ShooterConstants.TOPSHOOTERMOTOR_ID);
-  private final TalonFX m_bottomShooterMotor = new TalonFX(ShooterConstants.BOTTOMSHOOTERMOTOR_ID);
+  private final TalonFX m_topShooterMotor =
+      new TalonFX(ShooterConstants.TOPSHOOTERMOTOR_ID, "CANivore");
+  private final TalonFX m_bottomShooterMotor =
+      new TalonFX(ShooterConstants.BOTTOMSHOOTERMOTOR_ID, "CANivore");
 
   /* Start at velocity 0, enable FOC, no feed forward, use slot 0 */
   private final VelocityVoltage m_voltageVelocity =

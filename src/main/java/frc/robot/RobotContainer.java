@@ -18,11 +18,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.intake.TeleopElevator;
+import frc.robot.commands.intake.TeleopWrist;
 // import frc.robot.commands.vision.VisionCommand;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.intake.ElevatorSubsystem;
 import frc.robot.subsystems.intake.ShooterSubsystem;
+import frc.robot.subsystems.intake.WristSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 // import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
@@ -55,8 +58,9 @@ public class RobotContainer {
           DriveTrainConstants.swerveConfig,
           DriveTrainConstants.maxSpeed);
 
-  // public final ShooterSubsystem shooter = new ShooterSubsystem();
-  // public final ElevatorSubsystem climber = new ElevatorSubsystem();
+  public final ShooterSubsystem shooter = new ShooterSubsystem();
+  public final WristSubsystem wrist = new WristSubsystem();
+  public final ElevatorSubsystem elevator = new ElevatorSubsystem();
 
   /* Test System */
   //  private TestChecklist m_test;
@@ -119,7 +123,8 @@ public class RobotContainer {
           driveTrain.driveCommand(
               oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::isRobotRelative));
     }
-
+    elevator.setDefaultCommand(new TeleopElevator(elevator, oi::getElevator));
+    wrist.setDefaultCommand(new TeleopWrist(wrist, oi::getWrist));
     // vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
   }
 
@@ -138,17 +143,11 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(driveTrain::enableXstance))
         .onFalse(Commands.runOnce(driveTrain::disableXstance));
 
-    // oi.getDriveScaling()
-    //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
-    // oi.getDriveSlowMode()
-    //     .onTrue(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(TRIGGER_SPEEDFACTOR)))
-    //     .onFalse(Commands.runOnce(() -> driveTrain.scaleMaximumSpeed(oi.driveScalingValue())));
-
-    // oi.getRunIntake().onTrue(Commands.runOnce(shooter::intake));
-    // oi.getShoot().onTrue(Commands.runOnce(shooter::shoot)).onFalse(Commands.runOnce(shooter::stop));
-    // oi.getShootSlow()
-    //     .onTrue(Commands.runOnce(shooter::shoot2))
-    //     .onFalse(Commands.runOnce(shooter::stop));
+    oi.getRunIntake().onTrue(Commands.runOnce(shooter::intake));
+    oi.getShoot().onTrue(Commands.runOnce(shooter::shoot)).onFalse(Commands.runOnce(shooter::stop));
+    oi.getShootSlow()
+        .onTrue(Commands.runOnce(shooter::shoot2))
+        .onFalse(Commands.runOnce(shooter::stop));
   }
 
   /**

@@ -184,12 +184,12 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public double getLClimber() {
+  public double getElevator() {
     return MathUtil.applyDeadband(controller.getLeftTriggerAxis(), STICK_DEADBAND);
   }
 
   @Override
-  public double getRClimber() {
+  public double getWrist() {
     return MathUtil.applyDeadband(controller.getRightTriggerAxis(), STICK_DEADBAND);
   }
 }

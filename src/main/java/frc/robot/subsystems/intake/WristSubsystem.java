@@ -8,12 +8,19 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.WristConstants;
 
 public class WristSubsystem extends SubsystemBase {
 
-  private final TalonFX m_wristMotor = new TalonFX(WristConstants.WRISTMOTOR_ID);
-  private final CANcoder m_canCoder = new CANcoder(WristConstants.CANCODER_ID);
+  private final TalonFX m_wristMotor = new TalonFX(WristConstants.WRISTMOTOR_ID, "CANivore");
+  private final CANcoder m_canCoder = new CANcoder(WristConstants.CANCODER_ID, "CANivore");
 
   private final PositionDutyCycle m_wristrequest = new PositionDutyCycle(0).withSlot(0);
   // private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withSlot(0);
@@ -23,6 +30,15 @@ public class WristSubsystem extends SubsystemBase {
   public WristSubsystem() {
 
     TalonFXConfiguration configWrist = new TalonFXConfiguration();
+
+    configWrist.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    configWrist.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    configWrist.Feedback.FeedbackRemoteSensorID = m_canCoder.getDeviceID();
+    configWrist.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    configWrist.Feedback.SensorToMechanismRatio = 1.0;
+    configWrist.Feedback.RotorToSensorRatio = WristConstants.kWristGearRatio;
+
     configWrist.Slot0.kS = WristConstants.wristMotorKS;
     configWrist.Slot0.kV = WristConstants.wristMotorKV;
     configWrist.Slot0.kA = WristConstants.wristMotorKA;
@@ -36,7 +52,16 @@ public class WristSubsystem extends SubsystemBase {
     configMagic.MotionMagicJerk = WristConstants.MMagicJerk;
 
     m_wristMotor.getConfigurator().apply(configWrist);
-    m_wristMotor.setPosition(m_canCoder.getPosition().getValue());
+    m_wristMotor.setPosition(m_canCoder.getAbsolutePosition().getValue());
+  }
+
+  @Override
+  public void periodic() {
+    // Put code here to be run every loop
+    // if (this.getPosition() <= 0.01) {
+    //   m_wristMotor.stopMotor();
+    // }
+    updateSmartDashboard();
   }
 
   public void up() {
@@ -69,5 +94,16 @@ public class WristSubsystem extends SubsystemBase {
 
   public void stop() {
     this.setSpeed(0.0);
+  }
+
+  public void teleop(double val) {
+    m_wristMotor.set(MathUtil.applyDeadband(val, STICK_DEADBAND));
+  }
+
+  // Update the smart dashboard
+  private void updateSmartDashboard() {
+    SmartDashboard.putNumber("Wrist Postion", this.getPosition());
+    SmartDashboard.putNumber("WristCanCoder Postion", m_canCoder.getPosition().getValue());
+    SmartDashboard.putNumber("Wrist TargetPostion", wristTargetPosition);
   }
 }
