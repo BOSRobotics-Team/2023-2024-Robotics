@@ -20,7 +20,19 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateUp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
           }
         },
         {
@@ -30,21 +42,21 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.2
+            "name": "RotateDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ElevateDown"
           }
         },
         {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "AimDown"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -73,16 +85,16 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AimUp"
+                  "name": "ElevateUp"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Ring1-to-Position1"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Ring1-to-Position1"
           }
         },
         {
@@ -94,13 +106,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": null
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -112,14 +130,20 @@
                 "data": {
                   "name": "AimDown"
                 }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Position1-to-Ring1"
+                }
               }
             ]
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Position1-to-Ring1"
+            "name": "ElevateDown"
           }
         }
       ]
