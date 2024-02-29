@@ -88,48 +88,53 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
   }
 
   @Override
-  public Trigger getManualIntake() {
-    return new Trigger(operator::getBButton);
-  }
-
-  @Override
-  public Trigger getUnStuckIntake() {
-    return new Trigger(operator::getLeftBumper);
-  }
-
-  @Override
-  public Trigger getUnStuckShooter() {
-    return new Trigger(operator::getRightBumper);
-  }
-
-  @Override
-  public Trigger getAimMotorUp() {
-    return new Trigger(() -> operator.getPOV() == 0);
-  }
-
-  @Override
-  public Trigger getAimMotorDown() {
-    return new Trigger(() -> operator.getPOV() == 180);
-  }
-
-  @Override
   public Trigger getShoot() {
     return new Trigger(() -> operator.getRightTriggerAxis() > Constants.TRIGGER_DEADBAND);
   }
 
   @Override
-  public Trigger getShootSlow() {
-    return new Trigger(operator::getBackButton);
+  public Trigger getLeftBumper() {
+    return new Trigger(operator::getLeftBumper);
   }
 
   @Override
-  public Trigger getSpinupShooter() {
+  public Trigger getRightBumper() {
+    return new Trigger(operator::getRightBumper);
+  }
+
+  @Override
+  public Trigger getAButton() {
+    return new Trigger(operator::getAButton);
+  }
+
+  @Override
+  public Trigger getBButton() {
+    return new Trigger(operator::getBButton);
+  }
+
+  @Override
+  public Trigger getXButton() {
+    return new Trigger(operator::getXButton);
+  }
+
+  @Override
+  public Trigger getYButton() {
     return new Trigger(operator::getYButton);
   }
 
   @Override
-  public Trigger getSpinDownShooter() {
-    return new Trigger(operator::getAButton);
+  public Trigger getBackButton() {
+    return new Trigger(operator::getBackButton);
+  }
+
+  @Override
+  public Trigger getElevatorUp() {
+    return new Trigger(() -> operator.getPOV() == 0);
+  }
+
+  @Override
+  public Trigger getElevatorDown() {
+    return new Trigger(() -> operator.getPOV() == 180);
   }
 
   @Override
@@ -140,6 +145,16 @@ public class DualJoystickXboxOI extends DualJoysticksOI {
   @Override
   public double getWrist() {
     return -MathUtil.applyDeadband(operator.getRightY(), STICK_DEADBAND);
+  }
+
+  @Override
+  public Trigger getWristUp() {
+    return new Trigger(() -> operator.getPOV() == 90);
+  }
+
+  @Override
+  public Trigger getWristDown() {
+    return new Trigger(() -> operator.getPOV() == 270);
   }
 
   @Override

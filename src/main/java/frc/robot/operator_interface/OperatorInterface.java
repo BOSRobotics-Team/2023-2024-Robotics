@@ -48,44 +48,56 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getManualIntake() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getUnStuckIntake() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getUnStuckShooter() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getAimMotorUp() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getAimMotorDown() {
-    return new Trigger(() -> false);
-  }
-
   public default Trigger getShoot() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getShootSlow() {
+  public default Trigger getBButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getSpinupShooter() {
+  public default Trigger getLeftBumper() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getSpinDownShooter() {
+  public default Trigger getRightBumper() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getBackButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getXButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getYButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getElevatorUp() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getElevatorDown() {
     return new Trigger(() -> false);
   }
 
   public default double getElevator() {
     return 0.0;
+  }
+
+  public default Trigger getWristUp() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getWristDown() {
+    return new Trigger(() -> false);
   }
 
   public default double getWrist() {

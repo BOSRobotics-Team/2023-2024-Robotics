@@ -59,8 +59,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_leftElevatorMotor.setInverted(false);
     m_leftElevatorMotor.setIdleMode(IdleMode.kBrake);
     m_leftElevatorEncoder.setPositionConversionFactor(1.0 / ElevatorConstants.kElevatorGearRatio);
-    m_leftElevatorEncoder.setPosition(
-        m_canCoder.getAbsolutePosition().getValue());
+    m_leftElevatorEncoder.setPosition(m_canCoder.getAbsolutePosition().getValue());
 
     m_leftElevatorController.setP(ElevatorConstants.proportialPIDConstant);
     m_leftElevatorController.setI(ElevatorConstants.integralPIDConstant);
@@ -73,10 +72,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     m_rightElevatorMotor.restoreFactoryDefaults();
     m_rightElevatorMotor.setInverted(true);
-    m_rightElevatorMotor.setIdleMode(IdleMode.kBrake);
+    m_rightElevatorMotor.setIdleMode(IdleMode.kCoast);
     m_rightElevatorEncoder.setPositionConversionFactor(1.0 / ElevatorConstants.kElevatorGearRatio);
-    m_rightElevatorEncoder.setPosition(
-        m_canCoder.getAbsolutePosition().getValue());
+    m_rightElevatorEncoder.setPosition(m_canCoder.getAbsolutePosition().getValue());
     m_rightElevatorController.setP(ElevatorConstants.proportialPIDConstant);
     m_rightElevatorController.setI(ElevatorConstants.integralPIDConstant);
     m_rightElevatorController.setD(ElevatorConstants.derivativePIDConstant);
@@ -86,7 +84,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         ElevatorConstants.minPIDOutput, ElevatorConstants.maxPIDOutput);
     m_rightElevatorMotor.burnFlash();
 
-    m_rightElevatorMotor.follow(m_leftElevatorMotor);
+    // m_rightElevatorMotor.follow(m_leftElevatorMotor);
 
     if (RobotBase.isSimulation()) {
       mLeftSim =
@@ -123,6 +121,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void setHeight(double ht) {
     m_targetHeight = ht;
     m_leftElevatorController.setReference(m_targetHeight, CANSparkBase.ControlType.kPosition);
+    m_rightElevatorController.setReference(m_targetHeight, CANSparkBase.ControlType.kPosition);
+    // m_rightElevatorMotor.follow(m_leftElevatorMotor);
   }
 
   public void stop() {
@@ -140,8 +140,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void teleop(double val) {
-    m_leftElevatorMotor.set(MathUtil.applyDeadband(val, STICK_DEADBAND));
-    // m_rightElevatorMotor.set(MathUtil.applyDeadband(rval, STICK_DEADBAND));
+    m_leftElevatorMotor.set(MathUtil.applyDeadband(val, STICK_DEADBAND) * 0.5);
+    m_rightElevatorMotor.set(MathUtil.applyDeadband(val, STICK_DEADBAND) * 0.5);
   }
 
   // Update the smart dashboard

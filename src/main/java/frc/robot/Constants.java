@@ -71,8 +71,8 @@ public final class Constants {
     public static final int BOTTOMSHOOTERMOTOR_ID = 22;
 
     public static final double kTargetVelocity = 3200.0;
-    public static final double kTargetVelocity2 = 1500.0;
-    public static final double shooterReverseSpeed = -0.2;
+    public static final double kTargetVelocity2 = 1000.0;
+    public static final double shooterReverseSpeed = -0.1;
 
     /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
     public static final double KSConstant = 0.0; // Static feedforward gain
@@ -85,8 +85,8 @@ public final class Constants {
     public static final double feedForwardPIDConstant =
         0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts /
     // Rotation per second
-    public static final double peakForwardVoltage = 8.0; // Peak output of 8 volts
-    public static final double peakReverseVoltage = -8.0; // Peak output of 8 volts
+    public static final double peakForwardVoltage = 12.0; // Peak output of 8 volts
+    public static final double peakReverseVoltage = -12.0; // Peak output of 8 volts
     /* Torque-based velocity does not require a feed forward, as torque will accelerate the rotor up to the desired velocity by itself */
     public static final double proportialTorquePIDConstant =
         5.0; // An error of 1 rotation per second results in 5 amps output
@@ -112,17 +112,17 @@ public final class Constants {
     public static final int WRISTMOTOR_ID = 31; // Figure it out
     public static final int CANCODER_ID = 32;
 
-    public static final double wristMotorKS = 0.25;
-    public static final double wristMotorKV = 0.12;
-    public static final double wristMotorKA = 0.01;
+    public static final double wristMotorKS = 0.0;
+    public static final double wristMotorKV = 0.0;
+    public static final double wristMotorKA = 0.0;
     public static final double wristMotorKP = 4.0;
     public static final double wristMotorKI = 0.0;
-    public static final double wristMotorKD = 0.1;
-    public static final double MMagicCruiseVelocity = 80;
-    public static final double MMagicAcceleration = 160;
-    public static final double MMagicJerk = 1600;
+    public static final double wristMotorKD = 0.0;
+    public static final double MMagicCruiseVelocity = 40;
+    public static final double MMagicAcceleration = 80;
+    public static final double MMagicJerk = 800;
 
-    public static final double kTargetWristHigh = 200.0;
+    public static final double kTargetWristHigh = 25.0;
     public static final double kTargetWristLow = 0.0;
     public static final double kWristGearRatio = 64.0; // gear ratio is 64:1
   }
@@ -133,15 +133,15 @@ public final class Constants {
     public static final int RIGHTELEVATOR_ID = 41;
     public static final int CANCODER_ID = 42;
 
-    public static final double proportialPIDConstant = 0.00012;
+    public static final double proportialPIDConstant = 0.23;
     public static final double integralPIDConstant = 0.0;
     public static final double derivativePIDConstant = 0.001;
     public static final double integralPIDZone = 0.0;
-    public static final double feedForwardPIDConstant = 0.00017;
-    public static final double maxPIDOutput = 1.0;
-    public static final double minPIDOutput = 0.0;
+    public static final double feedForwardPIDConstant = 0.017;
+    public static final double maxPIDOutput = 0.4;
+    public static final double minPIDOutput = -0.3;
     public static final double kElevatorGearRatio = 9.0; // gear ratio is 9:1
-    public static final float kElevatorMaxHeight = 335.0f;
+    public static final float kElevatorMaxHeight = 2.5f;
     public static final double kOnTargetThreshold = 5.0;
   }
 

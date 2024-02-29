@@ -169,7 +169,7 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getManualIntake() {
+  public Trigger getBButton() {
     return new Trigger(controller::getBButton);
   }
 
@@ -179,7 +179,7 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getShootSlow() {
+  public Trigger getBackButton() {
     return new Trigger(controller::getBackButton);
   }
 

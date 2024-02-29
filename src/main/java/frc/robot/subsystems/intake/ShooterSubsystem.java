@@ -4,7 +4,6 @@ import static frc.robot.Constants.*;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 // import com.ctre.phoenix6.controls.NeutralOut;
 // import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -30,9 +29,6 @@ public class ShooterSubsystem extends SubsystemBase {
   /* Keep a neutral out so we can disable the motor */
   // private final NeutralOut m_brake = new NeutralOut();
 
-  private TalonFXConfiguration configTopShooter = new TalonFXConfiguration();
-  private TalonFXConfiguration configBottomShooter = new TalonFXConfiguration();
-
   private double targetVelocity = 0;
   private int rollingAvg = 0;
 
@@ -41,7 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
-    configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     configs.Slot0.kS = ShooterConstants.KSConstant;
     configs.Slot0.kP = ShooterConstants.proportialPIDConstant;
     configs.Slot0.kI = ShooterConstants.integralPIDConstant;
@@ -57,15 +53,14 @@ public class ShooterSubsystem extends SubsystemBase {
     configs.TorqueCurrent.PeakReverseTorqueCurrent = ShooterConstants.peakReverseTorqueCurrent;
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
-    status = m_topShooterMotor.getConfigurator().apply(configTopShooter);
+    status = m_topShooterMotor.getConfigurator().apply(configs);
     if (!status.isOK()) {
       System.out.println("Could not apply top configs, error code: " + status.toString());
     }
-    status = m_bottomShooterMotor.getConfigurator().apply(configBottomShooter);
+    status = m_bottomShooterMotor.getConfigurator().apply(configs);
     if (!status.isOK()) {
       System.out.println("Could not apply bottom configs, error code: " + status.toString());
     }
-    m_bottomShooterMotor.setControl(new Follower(m_topShooterMotor.getDeviceID(), true));
   }
 
   public void setVelocity(double velocity) {
@@ -73,7 +68,9 @@ public class ShooterSubsystem extends SubsystemBase {
     rollingAvg = 0;
 
     m_topShooterMotor.setControl(m_voltageVelocity.withVelocity(targetVelocity));
+    m_bottomShooterMotor.setControl(m_voltageVelocity.withVelocity(targetVelocity));
     // m_topShooterMotor.setControl(m_torqueVelocity.withVelocity(targetVelocity).withFeedForward(1.0));
+    // m_bottomShooterMotor.setControl(m_torqueVelocity.withVelocity(targetVelocity).withFeedForward(1.0));
   }
 
   public void setSpeed(double speed) {
