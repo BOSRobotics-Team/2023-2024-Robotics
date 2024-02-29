@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AimUp"
+            "name": "ElevateUp"
           }
         },
         {
@@ -106,7 +106,7 @@
         {
           "type": "named",
           "data": {
-            "name": null
+            "name": "RotateUp"
           }
         },
         {
@@ -128,7 +128,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AimDown"
+                  "name": "RotateDown"
                 }
               },
               {
