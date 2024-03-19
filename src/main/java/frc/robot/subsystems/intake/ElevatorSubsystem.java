@@ -42,6 +42,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final CANcoder m_canCoder = new CANcoder(ElevatorConstants.CANCODER_ID);
 
   private double m_targetHeight = 0.0;
+  private boolean m_isTeleop = true;
 
   private ISimWrapper mLeftSim;
   private ISimWrapper mRightSim;
@@ -127,20 +128,26 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void setHeight(double ht) {
-    m_targetHeight = ht;
+    m_isTeleop = false;
+    m_targetHeight = Math.min(ht, ElevatorConstants.kElevatorMaxHeight);
     m_leftElevatorController.setReference(m_targetHeight, CANSparkBase.ControlType.kPosition);
     m_rightElevatorController.setReference(m_targetHeight, CANSparkBase.ControlType.kPosition);
     // m_rightElevatorMotor.follow(m_leftElevatorMotor);
   }
 
-  public void stop() {
+  public void setSpeed(double speed) {
+    m_isTeleop = true;
     m_targetHeight = 0.0;
-    m_leftElevatorMotor.set(0);
-    m_rightElevatorMotor.set(0);
+    m_leftElevatorMotor.set(speed);
+    m_rightElevatorMotor.set(speed);
+  }
+
+  public void stop() {
+    this.setSpeed(0);
   }
 
   public double getPosition() {
-    return m_canCoder.getPosition().getValue();
+    return m_leftElevatorEncoder.getPosition();
   }
 
   public boolean getOnTarget() {
@@ -148,14 +155,18 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void teleop(double val) {
-    m_leftElevatorMotor.set(MathUtil.applyDeadband(val, STICK_DEADBAND) * 0.5);
-    m_rightElevatorMotor.set(MathUtil.applyDeadband(val, STICK_DEADBAND) * 0.5);
+    val = MathUtil.applyDeadband(val, STICK_DEADBAND) * 0.5;
+
+    if (m_isTeleop || (val != 0.0)) {
+      this.setSpeed(val);
+    }
   }
 
   // Update the smart dashboard
   private void updateSmartDashboard() {
-    SmartDashboard.putNumber("Elevator Postion", m_leftElevatorEncoder.getPosition());
-    SmartDashboard.putNumber("ElevatorCanCoder Postion", m_canCoder.getPosition().getValue());
+    SmartDashboard.putNumber("Elevator Postion", this.getPosition());
+    SmartDashboard.putNumber(
+        "ElevatorCanCoder Postion", m_canCoder.getAbsolutePosition().getValue());
     SmartDashboard.putNumber("Elevator TargetPostion", m_targetHeight);
     // SmartDashboard.putNumber("RClimber Postion", m_rightElevatorEncoder.getPosition());
   }

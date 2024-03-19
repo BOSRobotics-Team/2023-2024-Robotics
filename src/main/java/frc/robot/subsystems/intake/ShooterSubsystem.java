@@ -85,7 +85,12 @@ public class ShooterSubsystem extends SubsystemBase {
     this.setSpeed(ShooterConstants.shooterReverseSpeed);
   }
 
+  public void reverseintake() {
+    this.setSpeed(-ShooterConstants.shooterReverseSpeed);
+  }
+
   public void shoot() {
+    // this.setSpeed(1.0);
     this.setVelocity(ShooterConstants.kTargetVelocity);
   }
 

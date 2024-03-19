@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 // import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
 // import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,6 +25,7 @@ public class WristSubsystem extends SubsystemBase {
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withSlot(0);
 
   private double wristTargetPosition = 0;
+  private boolean m_isTeleop = true;
 
   public WristSubsystem() {
 
@@ -31,11 +33,6 @@ public class WristSubsystem extends SubsystemBase {
 
     configWrist.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     configWrist.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-    // configWrist.Feedback.FeedbackRemoteSensorID = m_canCoder.getDeviceID();
-    // configWrist.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    // configWrist.Feedback.SensorToMechanismRatio = 1.0;
-    // configWrist.Feedback.RotorToSensorRatio = WristConstants.kWristGearRatio;
 
     configWrist.Slot0.kS = WristConstants.wristMotorKS;
     configWrist.Slot0.kV = WristConstants.wristMotorKV;
@@ -72,6 +69,7 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public void setPosition(double pos) {
+    m_isTeleop = false;
     wristTargetPosition = pos;
 
     // m_wristMotor.setControl(m_wristrequest.withPosition(wristTargetPosition));
@@ -79,7 +77,7 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public double getPosition() {
-    return m_canCoder.getPosition().getValue();
+    return m_wristMotor.getPosition().getValue();
   }
 
   public boolean getOnTarget() {
@@ -88,6 +86,7 @@ public class WristSubsystem extends SubsystemBase {
 
   public void setSpeed(double wspeed) {
     wristTargetPosition = 0;
+    m_isTeleop = true;
     m_wristMotor.set(wspeed);
   }
 
@@ -96,7 +95,11 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public void teleop(double val) {
-    // m_wristMotor.set(MathUtil.applyDeadband(val, STICK_DEADBAND) * 0.1);
+    val = MathUtil.applyDeadband(val, STICK_DEADBAND) * 0.1;
+
+    if (m_isTeleop || (val != 0.0)) {
+      this.setSpeed(val);
+    }
   }
 
   // Update the smart dashboard

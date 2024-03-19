@@ -70,14 +70,14 @@ public final class Constants {
     public static final int TOPSHOOTERMOTOR_ID = 23;
     public static final int BOTTOMSHOOTERMOTOR_ID = 22;
 
-    public static final double kTargetVelocity = 3200.0;
+    public static final double kTargetVelocity = 500.0;
     public static final double kTargetVelocity2 = 1000.0;
     public static final double shooterReverseSpeed = -0.1;
 
     /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
     public static final double KSConstant = 0.0; // Static feedforward gain
     public static final double proportialPIDConstant =
-        0.11; // An error of 1 rotation per second results in 2V output
+        0.2; // An error of 1 rotation per second results in 2V output
     public static final double integralPIDConstant =
         0.5; // An error of 1 rotation per second increases output by 0.5V every second
     public static final double derivativePIDConstant =
@@ -133,7 +133,7 @@ public final class Constants {
     public static final int RIGHTELEVATOR_ID = 41;
     public static final int CANCODER_ID = 42;
 
-    public static final double proportialPIDConstant = 0.23;
+    public static final double proportialPIDConstant = 0.24;
     public static final double integralPIDConstant = 0.0;
     public static final double derivativePIDConstant = 0.001;
     public static final double integralPIDZone = 0.0;
@@ -141,10 +141,10 @@ public final class Constants {
     public static final double maxPIDOutput = 0.4;
     public static final double minPIDOutput = -0.3;
     public static final double kElevatorGearRatio = 9.0; // gear ratio is 9:1
-    public static final float kElevatorMaxHeight = 2.5f;
+    public static final double kElevatorMaxHeight = 1.3;
     public static final double kOnTargetThreshold = 5.0;
 
-    public static final double kTargetElevatorHigh = 2.55;
+    public static final double kTargetElevatorHigh = 1.0;
     public static final double kTargetElevatorLow = 0;
   }
 
