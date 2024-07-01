@@ -24,7 +24,9 @@ import frc.robot.commands.intake.ElevateCommand;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.RotateWristCommand;
 import frc.robot.commands.intake.ShootCommand;
-// import frc.robot.commands.intake.TeleopWrist;
+import frc.robot.commands.intake.ShootSlowCommand;
+import frc.robot.commands.intake.TeleopElevator;
+import frc.robot.commands.intake.TeleopWrist;
 // import frc.robot.commands.vision.VisionCommand;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
@@ -128,8 +130,8 @@ public class RobotContainer {
           driveTrain.driveCommand(
               oi::getTranslateX, oi::getTranslateY, oi::getRotate, oi::isRobotRelative));
     }
-    // elevator.setDefaultCommand(new TeleopElevator(elevator, oi::getElevator));
-    // wrist.setDefaultCommand(new TeleopWrist(wrist, oi::getWrist));
+    elevator.setDefaultCommand(new TeleopElevator(elevator, oi::getElevator));
+    wrist.setDefaultCommand(new TeleopWrist(wrist, oi::getWrist));
     // vision.setDefaultCommand(new VisionCommand(vision, driveTrain));
   }
 
@@ -154,6 +156,10 @@ public class RobotContainer {
     oi.getShoot().onTrue(Commands.runOnce(shooter::shoot)).onFalse(Commands.runOnce(shooter::stop));
     oi.getYButton()
         .onTrue(Commands.runOnce(shooter::shoot2))
+        .onFalse(Commands.runOnce(shooter::stop));
+
+    oi.getLeftBumper()
+        .onTrue(Commands.runOnce(shooter::reverseintake))
         .onFalse(Commands.runOnce(shooter::stop));
 
     oi.getElevatorUp().onTrue(Commands.runOnce(elevator::up));
@@ -192,6 +198,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "RotateDown", new RotateWristCommand(wrist, WristConstants.kTargetWristLow));
     NamedCommands.registerCommand("Shoot", new ShootCommand(shooter));
+    NamedCommands.registerCommand("ShootSlow", new ShootSlowCommand(shooter));
   }
 
   public void simulationInit() {}
